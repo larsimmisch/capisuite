@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.5 $
+    $Revision: 1.6 $
 */
 
 /***************************************************************************
@@ -103,8 +103,8 @@ Connection::Connection (Capi* capi, _cdword controller, string call_from_in, boo
 		for (unsigned j=0;j<call_to.size();j++)
 			calledPartyNumber[j+2]=call_to[j];
 
-		callingPartyNumber=new unsigned char [1+2+call_to.size()];
-		callingPartyNumber[0]=2+call_to.size(); // length
+		callingPartyNumber=new unsigned char [1+2+call_from.size()];
+		callingPartyNumber[0]=2+call_from.size(); // length
 		callingPartyNumber[1]=0x00; // as suggested by CAPI spec (unknown number type, unknown number plan, see ETS 300 102-1)
 		if (clir)
 			callingPartyNumber[2]=0xA0; // suppress calling id presentation (CLIR)
@@ -979,6 +979,9 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.6  2003/04/17 10:36:29  gernot
+- fix another typo which could probably lead to errors in sending own number...
+
 Revision 1.5  2003/04/10 21:29:51  gernot
 - support empty destination number for incoming calls correctly (austrian
   telecom does this (sic))
