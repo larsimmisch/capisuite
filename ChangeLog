@@ -1,3 +1,6 @@
+2004-03-23  Gernot Hillier  <gernot@hillier.de>
+	* docs/manual-de.docbook (capicodes_protocol): fix small typo
+
 2004-03-20  Gernot Hillier  <gernot@hillier.de>
 	* src/application/pythonscript.h: extend prefix() so that it can create
 	  a short prefix, too; use short prefix for Python traceback (fixes bug

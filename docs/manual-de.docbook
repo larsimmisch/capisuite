@@ -2967,7 +2967,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 	Skript-Schreiber interessant, da sie von einigen &cs;-Python-Funktionen zurück gegeben werden.
 	Siehe <xref linkend="command_reference"/> für weitere Details.</para>
 
-	<section id="capicodes_protocol"><title>Protololl-Fehler</title>
+	<section id="capicodes_protocol"><title>Protokoll-Fehler</title>
 		<para>Protokoll-Fehler deuten auf übertragungsfehler hin. Es werden hier nur Meldungen des 
 		transparenten (Sprache) und des Fax-Protokolls, die von &cs; gesprochen werden, angezeigt.</para>
 
