@@ -1,23 +1,42 @@
 0.5 (CVS nn):
 =============
 
-        * scripts: fix a bug in faxIncoming which lead to a non-working
+	* scripts: received voice calls are now converted to 16 bit WAV files
+	  instead of 8 bit; this leads to a dramatically better playback quality
+	  for the sound files attached to the sent mails (thx to Holger Krull
+	  for the fix; closes bug #51)
+
+	* scripts: the mails sent with received voice and fax calls will now
+	  also contain some general information like length of calls, number
+	  of pages, etc. (thx to Achim Bohnet and Thomas Niesel for the feature
+	  requests; closes bug #6 finally)
+
+	* core: the Python functions switch_to_faxG3, fax_receive, fax_send,
+	  audio_send and audio_receive now return some informational data about
+	  the transfer
+
+	* core: the Python functions will now only throw the CallGoneError
+	  exception when a hangup is NOT expected; this means many functions
+	  like faxReceive() will now finish normally when no call abort happens
+
+	* core: accept incoming color faxes now
+
+	* scripts: fix a bug in faxIncoming which lead to a non-working
           fax reception after automatic switch from voice to fax mode
           (thx to Andreas Scholz and Harald Jansen)
-
-        * core: switch_to_faxG3 now also returns a faxInfo structure
 
         * scripts: added new non-error ISDN cause (0x349f) to fax send routine.
           It was understood as error by CapiSuite but means "normal call
           clearing, unspecified" (thx to Stefan Brandner for reporting)
-	
-	* Makefiles: moved a "mkdir" from the build ("make") to install stage 
-          ("make install") (thx to Steffen Barszus for reporting)
+
+	* Makefiles: fixed "make" to not trying to create directories any more -
+	  this prevented normal users to call "make" sometimes (thx to Steffen
+	  Barszus for the detailled report)
 
 	* scripts: added new options "fax_email_from" and "voice_email_from" to
 	  answering_machine.conf and fax.conf (thx to Achim Bohnet for submitting
-	  a patch with this feature!; closes bug #46) 
-	
+	  a patch with this feature!; closes bug #46)
+
 	* started a detailed ChangeLog file from 2003-10-05. From now on, NEWS
 	  should only contain important changes from a user's point of view, while
 	  ChangeLog records all changes in detail.
