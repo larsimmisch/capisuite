@@ -1,7 +1,7 @@
-# Makefile for bootstrapping the CVS version
-# 
-# Thx to Achim Bohnet <ach@mpe.mpg.de>
+# Makefile for bootstrapping the CVS/SVN version
 
+
+# avoid rebuild of man-pages due to wrong timestamps from the checkout.
 bootstrap:
-	-autoreconf
-	automake -a --copy
+	touch docs/capisuite.8 docs/capisuite.conf.5 docs/fax.conf.5 \
+	  docs/answering_machine.conf.5 docs/capisuitefax.1
