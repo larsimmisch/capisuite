@@ -29,8 +29,9 @@ manual-pdf: manual-html
 	-rm CATALOG.local manual.aux manual.log manual.out manual.tex suse-*.dsl
 
 reference-html: Doxyfile.in
-	sed -e 's,@version\@,$(VERSION),g' \
+	sed -e 's,@VERSION\@,$(VERSION),g' \
 	    -e 's,@capisuite_sources\@,$(top_srcdir)/src,g' \
+	    -e 's,@docbuilddir\@,.,g' \
 	    -e 's,@srcdir\@,$(srcdir),g' Doxyfile.in > Doxyfile
 	$(doxygen) Doxyfile
 	if test ! -d reference; then \

@@ -1,3 +1,8 @@
+2004-02-20  Hartmut Goebel  <h.goeben@goebel-consult.de>
+	* docs/Doxyfile.in: modified variable replacement for possible
+	  change of build system
+	* docs/Makefile.am: Likewise.
+
 2004-02-20  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin: fixed typo
 
