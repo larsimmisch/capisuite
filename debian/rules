@@ -25,14 +25,14 @@ config.status: configure
 	dh_testdir
 	
 	# Apply Debian specific patches
-	#if test ! -f patch-stamp; then \
-	#	for patch in $(CURDIR)/debian/patches/*.diff ;\
-	#	do \
-	#		echo APPLYING PATCH\: ${patch##*/};\
-	#		patch -p1 < $$patch ;\
-	#	done ;\
-	#	touch patch-stamp ;\
-	#fi
+	if test ! -f patch-stamp; then \
+		for patch in $(CURDIR)/debian/patches/*.diff ;\
+		do \
+			echo APPLYING PATCH\: ${patch##*/};\
+			patch -p0 < $$patch ;\
+		done ;\
+		touch patch-stamp ;\
+	fi
 	
 	# Add here commands to configure the package.
 
@@ -61,14 +61,14 @@ clean:
 	rm -f build-stamp 
 
 	# Remove Debian specific patches
-	#if test -f patch-stamp; then \
-	#	for patch in $(CURDIR)/debian/patches/*.diff ;\
-	#	do \
-	#		echo REMOVING PATCH\: ${patch##*/};\
-	#		patch -p1 -R < $$patch ;\
-	#	done ;\
-	#	rm -f patch-stamp ;\
-	#fi
+	if test -f patch-stamp; then \
+		for patch in $(CURDIR)/debian/patches/*.diff ;\
+		do \
+			echo REMOVING PATCH\: ${patch##*/};\
+			patch -p0 -R < $$patch ;\
+		done ;\
+		rm -f patch-stamp ;\
+	fi
 	
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
@@ -89,8 +89,12 @@ install: build
 	# Add here commands to install the package into debian/capisuite.
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/capisuite
 
-	cp -p debian/etc-default $(CURDIR)/debian/capisuite/etc/default/capisuite
-	
+	cp -p debian/etc-default	$(CURDIR)/debian/capisuite/etc/default/capisuite
+	cp -p debian/README.examples	$(CURDIR)/debian/capisuite/usr/share/doc/capisuite/
+	cp -p cronjob.conf		$(CURDIR)/debian/capisuite/usr/share/doc/capisuite/examples/
+	cp -p capisuite.cron		$(CURDIR)/debian/capisuite/usr/share/doc/capisuite/examples/
+	rm $(CURDIR)/debian/capisuite/usr/share/doc/capisuite/COPYING
+
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.

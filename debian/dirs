@@ -1,10 +1,7 @@
-usr/bin
-usr/sbin
-etc/capisuite
 etc/default
-var/log
+var/spool/capisuite
 var/spool/capisuite/done
 var/spool/capisuite/sendq
 var/spool/capisuite/failed
 var/spool/capisuite/users
-var/spool/capisuite
+usr/share/doc/capisuite/examples

@@ -1,0 +1,11 @@
+The files
+
+	examples/capisuite.cron
+	examples/cronjobs.conf
+
+are from the capisuite tarball.  To use them
+
+	cp examples/cronjob.conf	/etc/capisuite/cronjobs.conf
+	cp examples/capisuite.cron	/etc/cron.daily/capisuite
+
+edit /etc/cronjob/cronjob.conf and adjust the settings.

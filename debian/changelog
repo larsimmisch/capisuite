@@ -6,8 +6,13 @@ capisuite (0.4.1a-1) unstable; urgency=low
   * added missing dependencies: sox, libtiff-tools
     (as listed in manual software requirements)
   * include fixes from cvs as of 7-Apr-2003 (See NEWS.gz)
+  * remove COPYRIGHT file. Debian has a copy in /usr/share/common-licences/GPL
+  * add cronscript and it's config to /usr/share/doc/capisuite/examples. Add
+    README.examples
+  * patch: gcc-2.95 compile fix
+  * patch: don't (re)build doxygen docs
 
- -- Achim Bohnet <ach@mpe.mpg.de>  Mon,  7 Apr 2003 19:11:06 +0200
+ -- Achim Bohnet <ach@mpe.mpg.de>  Tue,  8 Apr 2003 00:26:17 +0200
 
 capisuite (0.4.1-1) unstable; urgency=low
 
