@@ -1,3 +1,11 @@
+2004-05-18  Gernot Hillier  <gernot@hillier.de>
+	* docs/Makefile.am: remove PDF generation as it doesn't work currently;
+	  adapt Makefiles to only create man pages for "make dist"; break long 
+	  lines; ignore return values of rm commands
+	* docs/manual.docbook: renamed to manual.docbook.in; this was necessary
+	  to avoid using phony targets in man page creation
+	* docs/manual.docbook.in: see above.
+
 2004-04-18  Gernot Hillier  <gernot@hillier.de>
 	* scripts/capisuitefax.in: allow * and # in destination numbers
 
