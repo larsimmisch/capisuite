@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.6 $
+    $Revision: 1.7 $
 */
 
 /***************************************************************************
@@ -542,7 +542,7 @@ capisuite_connect(Connection *conn, int delay, Connection::service_t service, st
 	}
 	catch (CapiWrongState e) {
 		Py_BLOCK_THREADS
-		PyErr_SetString(CallGoneError,"Call was finished from partner.");
+		PyErr_SetString(CallGoneError,(e.message()).c_str());
 		return false;
 	}
 	catch (CapiExternalError e) {
@@ -598,7 +598,7 @@ capisuite_connect_voice(PyObject *, PyObject *args)
     	- <b>faxStationID (string)</b> the station ID to use
 	- <b>faxHeadline (string)</b> the fax headline to use
 	- <b>delay (integer, optional)</b> delay in seconds _before_ connection will be established (default: 0=immediate connect)
-    @return None or a tuple (stationID,rate,hiRes,format) containing the values:
+    @return If faxInfo is available, a tuple (stationID,rate,hiRes,format) otherwise None. Tuple contains:
     	- fax station ID from the calling party (String)
 	- bit rate which was used for connecting
 	- high (1) or low (0) resolution
@@ -764,7 +764,11 @@ capisuite_call_faxG3(PyObject *, PyObject *args)
     	- <b>call</b> Reference to the current call
     	- <b>faxStationID (string)</b> the station ID to use
 	- <b>faxHeadline (string)</b> the fax headline to use
-    @return None
+    @return If faxInfo is available, a tuple (stationID,rate,hiRes,format) otherwise None. Tuple contains:
+    	- fax station ID from the calling party (String)
+	- bit rate which was used for connecting
+	- high (1) or low (0) resolution
+	- transmit format: 0=SFF,black&white, 1=ColorJPEG
 */
 static PyObject*
 capisuite_switch_to_faxG3(PyObject *, PyObject *args)
@@ -793,8 +797,14 @@ capisuite_switch_to_faxG3(PyObject *, PyObject *args)
 		return NULL;
 	}
 
-	Py_XINCREF(Py_None);
-	return (Py_None);
+	Connection::fax_info_t* fax_info = conn->getFaxInfo();
+	if (fax_info) {
+		PyObject *r=Py_BuildValue("siii",fax_info->stationID.c_str(),fax_info->rate,fax_info->hiRes,fax_info->format);
+		return (r);
+	} else {
+		Py_XINCREF(Py_None);
+		return (Py_None);
+	}
 }
 
 /** @brief Enable recognition of DTMF tones.
@@ -978,6 +988,9 @@ capisuitemodule_init () throw (ApplicationError)
 /* History
 
 $Log: capisuitemodule.cpp,v $
+Revision 1.7  2003/08/24 12:49:21  gernot
+- switch_to_faxG3: return faxInfo structure instead of None
+
 Revision 1.6  2003/08/10 12:00:57  gernot
 - added better description for controller ID
 
