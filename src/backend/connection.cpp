@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.8 $
+    $Revision: 1.9 $
 */
 
 /***************************************************************************
@@ -415,12 +415,12 @@ Connection::connect_b3_active_ind(_cmsg& message) throw (CapiWrongState, CapiExt
 				fax_info=new fax_info_t;
 			fax_info->rate=ncpi[1]+(ncpi[2]<<8);
 			fax_info->hiRes=((ncpi[3] & 0x01) == 0x01);
-			fax_info->colorJPEG=((ncpi[4] & 0x04) == 0x04);
+			fax_info->format=((ncpi[4] & 0x04) == 0x04);
 			fax_info->pages=ncpi[7]+(ncpi[8]<<8);
 			fax_info->stationID.assign(reinterpret_cast<char*>(&ncpi[10]),static_cast<int>(ncpi[9])); // indx 9 helds the length, string starts at 10
 			if (debug_level >= 2) {
 				debug << prefix() << "fax connected with rate " << dec << fax_info->rate
-				  << (fax_info->hiRes ? ", hiRes" : ", lowRes") << (fax_info->colorJPEG ? ", JPEG" : "")
+				  << (fax_info->hiRes ? ", hiRes" : ", lowRes") << (fax_info->format ? ", JPEG" : "")
 				  << ", ID: " << fax_info->stationID << endl;
 			}
 		}
@@ -449,12 +449,12 @@ Connection::disconnect_b3_ind(_cmsg& message) throw (CapiWrongState)
 				fax_info=new fax_info_t;
 			fax_info->rate=ncpi[1]+(ncpi[2]<<8);
 			fax_info->hiRes=((ncpi[3] & 0x01) == 0x01);
-			fax_info->colorJPEG=((ncpi[4] & 0x04) == 0x04);
+			fax_info->format=((ncpi[4] & 0x04) == 0x04);
 			fax_info->pages=ncpi[7]+(ncpi[8]<<8);
 			fax_info->stationID.assign(reinterpret_cast<char*>(&ncpi[10]),static_cast<int>(ncpi[9])); // indx 9 helds the length, string starts at 10
 			if (debug_level >= 2) {
 				debug << prefix() << "fax finished with rate " << dec << fax_info->rate
-				  << (fax_info->hiRes ? ", hiRes" : ", lowRes") << (fax_info->colorJPEG ? ", JPEG" : "")
+				  << (fax_info->hiRes ? ", hiRes" : ", lowRes") << (fax_info->format ? ", JPEG" : "")
 				  << ", ID: " << fax_info->stationID << ", " << fax_info->pages << " pages" << endl;
 			}
 		}
@@ -1040,6 +1040,9 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.9  2003/05/25 13:38:30  gernot
+- support reception of color fax documents
+
 Revision 1.8  2003/05/24 13:48:54  gernot
 - get fax details (calling station ID, transfer format, ...), handle PLCI
 

@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.6 $
+#    version              : $Revision: 1.7 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -73,13 +73,6 @@ def callIncoming(call,service,call_from,call_to):
 			capisuite.connect_voice(call,int(delay))
 			voiceIncoming(call,call_from,call_to,curr_user,config)
 		elif (curr_service==capisuite.SERVICE_FAXG3):
-			stationID=cs_helpers.getOption(config,curr_user,"fax_stationID")
-			if (stationID==None):
-				capisuite.error("Warning: fax_stationID not found for user "+curr_user+" -> using empty string")
-				stationID=""
-			headline=cs_helpers.getOption(config,curr_user,"fax_headline","") # empty string is no problem here
-			capisuite.log("call from "+call_from+" to "+call_to+" for "+curr_user+" connecting with fax",1,call)
-			capisuite.connect_faxG3(call,stationID,headline,0)
 			faxIncoming(call,call_from,call_to,curr_user,config)
 	except capisuite.CallGoneError: # catch exceptions from connect_*
 		(cause,causeB3)=capisuite.disconnect(call)
@@ -112,8 +105,19 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		capisuite.error("user "+curr_user+" is not a valid system user. Disconnecting",call)
 		capisuite.reject(call,0x34A9)
 		return
-	filename=cs_helpers.uniqueName(udir+"received/","fax","sff")
 	try:
+		stationID=cs_helpers.getOption(config,curr_user,"fax_stationID")
+		if (stationID==None):
+			capisuite.error("Warning: fax_stationID not found for user "+curr_user+" -> using empty string")
+			stationID=""
+		headline=cs_helpers.getOption(config,curr_user,"fax_headline","") # empty string is no problem here
+		capisuite.log("call from "+call_from+" to "+call_to+" for "+curr_user+" connecting with fax",1,call)
+		faxInfo=capisuite.connect_faxG3(call,stationID,headline,0)
+		if (faxInfo!=None and faxInfo[3]==1):
+			faxFormat="cff" # color fax
+		else:
+			faxFormat="sff" # normal b&w fax
+		filename=cs_helpers.uniqueName(udir+"received/","fax",faxFormat)
 		capisuite.fax_receive(call,filename)
 		(cause,causeB3)=capisuite.disconnect(call)
 		capisuite.log("connection finished with cause 0x%x,0x%x" % (cause,causeB3),1,call)
@@ -140,7 +144,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 			capisuite.error("Warning: No valid fax_action definition found for user "+curr_user+" -> assuming SaveOnly")
 			action="saveonly"
 		if (action=="mailandsave"):
-			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Fax received from "+call_from+" to "+call_to, "sff",
+			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Fax received from "+call_from+" to "+call_to, faxFormat,
 			  "You got a fax from "+call_from+" to "+call_to+"\nDate: "+time.ctime()+"\n\n"
 			  +"See attached file.\nThe original file was saved to file://"+filename+"\n\n", filename)
 
@@ -402,6 +406,9 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.7  2003/05/25 13:38:30  gernot
+# - support reception of color fax documents
+#
 # Revision 1.6  2003/04/10 21:29:51  gernot
 # - support empty destination number for incoming calls correctly (austrian
 #   telecom does this (sic))

@@ -230,13 +230,25 @@
 					<varlistentry>
 						<term>aktueller Ghostscript mit cfax-Patch</term>
 						<listitem><para>Aktuelle Ghostscript-Versionen enthalten ein Device, um die 
-                            oben erwähnten SFF-Dateien zu erstellen. Wenn Sie eine ältere Version haben,
-                            brauchen Sie den Patch von
-							<ulink url="http://sfftools.sourceforge.net/ghostscript.html"/>. Um zu 
-                            prüfen, ob Ihre GhostScript-Version diesen Patch bereits hat, rufen Sie bitte
-                            <command>gs --help</command> auf und sehen nach, ob Sie das Device
+							oben erwähnten SFF-Dateien zu erstellen. Wenn Sie eine ältere Version haben,
+							brauchen Sie den Patch von
+							<ulink url="http://sfftools.sourceforge.net/ghostscript.html"/>. Um zu
+							prüfen, ob Ihre GhostScript-Version diesen Patch bereits hat, rufen Sie bitte
+							<command> auf und sehen nach, ob Sie das Device
 							<literal>cfax</literal> in der langen Liste der unterstützten Devices
-                            finden können.</para>
+							finden können.</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term>jpeg2ps</term>
+						<listitem><para>Das <command>jpeg2ps</command>-Kommando wird zur Konvertierung von Farbfaxen in
+						das PostScript-Format für die Mailzustellung benötigt. Sie brauchen es nicht, wenn Sie keine
+						Farbfaxe empfangen wollen. Unglücklicherweise gibt es wegen eines Treiberfehlers momentan keine
+						Möglichkeit, den Empfang von Faxdokumenten bei AVM-ISDN-Karten komplett zu deaktivieren. Wenn Ihnen
+						also jemand ein Farbfax schicken sollte (was nach meiner Erfahrung nur sehr selten vorkommt), dann
+						bekommen Sie eine Fehlermeldung per Mail, wenn Sie dieses Programm nicht installiert haben.
+						Wenn Ihre Linux-Distribution dieses Paket nicht enthält, können Sie es von
+						<ulink url="http://www.pdflib.com/jpeg2ps/"/> herunterladen.
 						</listitem>
 					</varlistentry>
 				</variablelist>
@@ -1660,6 +1672,9 @@ is not present, current time as returned by localtime() is used.
 			einige kleine Tools gefunden, die Peter Schäfer geschrieben hat und die wir hier verwenden
 			werden.</para>
 
+			<para>CapiSuite kann auch Farbfaxe empfangen, welche in einem speziellen Dateiformat abgelegt
+			werden, das ich CFF genannt habe.</para>
+
 			<sect3 id="create_sff"><title>Erzeugen eines SFF</title>
 				<para>In aktuellen Ghostscript-Versionen gibt es einen Patch von Peter, um SF-Dateien zu
 				erstellen. Um zu prüfen, ob Ihr Ghostscript das schon unterstützt,
@@ -1697,7 +1712,23 @@ is not present, current time as returned by localtime() is used.
 				konvertieren können.
 				</para>
 			</sect3>
+			<sect3 id="cff"><title>Farbfaxe - das CFF-Format</title>
+				<para>Es gibt eine Erweiterung zum Fax-Standard, die die Übertragung von farbigen
+				Dokumenten erlaubt. Sie wird nur selten benutzt, aber da einige User sie trotzdem
+				benötigten, habe ich den Empfang solcher Dokumente mittlerweile in CapiSuite realisiert.
+				</para>
 
+				<para>Das CFF-Format (ich weiß nicht sicher, ob das ein offizieller Name für das Format ist)
+				scheint eine JPEG-Datei mit spezieller Kodierung zu sein. Die meisten Programme, die
+				JPEG-Dateien unterstützen, sollten CFF-Dateien ebenfalls öffnen können. Eventuell müssen
+				Sie die Datei von <filename>.cff</filename> in <filename>.jpg</filename> umbenennen, bevor
+				Sie sie öffnen können.
+
+				<para>Leider kenne ich momentan keinen Weg, dieses Format manuell zu erzeugen.
+				Daher unterstützt CapiSuite bis jetzt nur den Empfang solcher Dokumente. Wenn Sie
+				mehr darüber wissen sollten oder den JPEG-Standard gut kennen, dann kontaktieren
+				Sie mich bitte!
+			</sect3>
 		</sect2>
 	</sect1>
 

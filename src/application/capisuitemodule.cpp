@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -496,8 +496,9 @@ capisuite_reject(PyObject *, PyObject *args)
     @param service with which service we should connect
     @param faxStationID only used for fax connections
     @param faxHeadline only used for fax connections
+    @return false if exception was rased -> calling function must return NULL then
 */
-static PyObject*
+bool
 capisuite_connect(Connection *conn, int delay, Connection::service_t service, string faxStationID, string faxHeadline)
 {
 	PyThreadState *_save;
@@ -514,20 +515,19 @@ capisuite_connect(Connection *conn, int delay, Connection::service_t service, st
 	catch (CapiMsgError e) {
 		Py_BLOCK_THREADS
 		PyErr_SetString(BackendError,(e.message()).c_str());
-		return NULL;
+		return false;
 	}
 	catch (CapiWrongState e) {
 		Py_BLOCK_THREADS
 		PyErr_SetString(CallGoneError,"Call was finished from partner.");
-		return NULL;
+		return false;
 	}
 	catch (CapiExternalError e) {
 		Py_BLOCK_THREADS
 		PyErr_SetString(BackendError,(e.message()).c_str());
-		return NULL;
+		return false;
 	}
-	Py_XINCREF(Py_None);
-	return (Py_None);
+	return true;
 }
 
 /** @brief Accept an incoming call and connect with voice service.
@@ -554,7 +554,11 @@ capisuite_connect_voice(PyObject *, PyObject *args)
 	if (!PyArg_ParseTuple(args,"O&|i:connect_voice",convertConnRef,&conn,&delay))
 		return NULL;
 
-	return capisuite_connect(conn,delay,Connection::VOICE,"","");
+	if (capisuite_connect(conn,delay,Connection::VOICE,"","")) {
+		Py_XINCREF(Py_None);
+		return (Py_None);
+	} else
+		return NULL;
 }
 
 /** @brief Accept an incoming call and connect with fax (analog, group 3) service.
@@ -571,7 +575,11 @@ capisuite_connect_voice(PyObject *, PyObject *args)
     	- <b>faxStationID (string)</b> the station ID to use
 	- <b>faxHeadline (string)</b> the fax headline to use
 	- <b>delay (integer, optional)</b> delay in seconds _before_ connection will be established (default: 0=immediate connect)
-    @return None
+    @return None or a tuple (stationID,rate,hiRes,format) containing the values:
+    	- fax station ID from the calling party (String)
+	- bit rate which was used for connecting
+	- high (1) or low (0) resolution
+	- transmit format: 0=SFF,black&white, 1=ColorJPEG
 */
 static PyObject*
 capisuite_connect_faxG3(PyObject *, PyObject *args)
@@ -583,7 +591,17 @@ capisuite_connect_faxG3(PyObject *, PyObject *args)
 	if (!PyArg_ParseTuple(args,"O&ss|i:connect_faxG3",convertConnRef,&conn,&faxStationID,&faxHeadline,&delay))
 		return NULL;
 
-	return capisuite_connect(conn,delay,Connection::FAXG3,faxStationID,faxHeadline);
+	if (capisuite_connect(conn,delay,Connection::FAXG3,faxStationID,faxHeadline)) {
+		Connection::fax_info_t* fax_info = conn->getFaxInfo();
+		if (fax_info) {
+			PyObject *r=Py_BuildValue("siii",fax_info->stationID.c_str(),fax_info->rate,fax_info->hiRes,fax_info->format);
+			return (r);
+		} else {
+			Py_XINCREF(Py_None);
+			return (Py_None);
+		}
+	} else
+		return NULL;
 }
 
 /** @brief helper function for capisuite_call_voice() and capisuite_call_faxG3()
@@ -937,6 +955,9 @@ capisuitemodule_init () throw (ApplicationError)
 /* History
 
 $Log: capisuitemodule.cpp,v $
+Revision 1.4  2003/05/25 13:38:30  gernot
+- support reception of color fax documents
+
 Revision 1.3  2003/04/17 10:53:54  gernot
 - update documentation of capisuite_call_* to the new behaviour (timeout for
   outgoing calls starts when other party gets signalled), moved error code

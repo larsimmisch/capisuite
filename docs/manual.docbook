@@ -20,7 +20,7 @@
 <preface id="intro"><title>Introduction</title>
 
 	<sect1 id="welcome"><title>Welcome to &cs;</title>
-		<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite. 
+		<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite.
 		It uses the new CAPI interface for accessing
 		your ISDN-hardware - so you'll need a card for which a CAPI compatible
 		driver is available. Currently these are all cards manufactured by AVM
@@ -212,6 +212,17 @@
 							<ulink url="http://sfftools.sourceforge.net/ghostscript.html"/>. To see if your GhostScript
 							version already has this patch, please call <command>gs --help</command> and see if you can
 							find the device <literal>cfax</literal> in the long list of supported devices.</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term>jpeg2ps</term>
+						<listitem><para>The <command>jpeg2ps</command> command is used to convert color fax files to the
+						PostScript format for mail delivery. It's not so important, unless you want to be able to receive
+						color faxes. Unfortunately, there's currently no way to disable the reception of color faxes with
+						AVM cards due to a bug in the AVM CAPI driver. So if someone sends you a color fax (which seems to
+						be a very rare case), you'll need this package - unless you'll get a mail stating this error.
+						If your distribution doesn't have this packages, you can download it from
+						<ulink url="http://www.pdflib.com/jpeg2ps/"/>.
 						</listitem>
 					</varlistentry>
 				</variablelist>
@@ -1491,6 +1502,9 @@ is not present, current time as returned by localtime() is used.
 			Finally I found some small tools written by Peter Sch&auml;fer, which we can
 			use here.</para>
 
+			<para>CapiSuite is also able to receive color fax files which will be stored in
+			a special file format I called CFF.</para>
+
 			<sect3 id="create_sff"><title>Creating a SFF</title>
 				<para>In current Ghostscript releases, a patch from Peter has been
 				included to produce SF files. To see if your Ghostscript already
@@ -1526,7 +1540,20 @@ is not present, current time as returned by localtime() is used.
 				any other useful format with the TIFF tools, for example <command>tiff2ps</command>.
 				</para>
 			</sect3>
+			<sect3 id="cff"><title>Color faxes - the CFF format</title>
+				<para>There exists an enhancement to the fax standard which allows to transfer
+				documents in color. It's not very widely used, but as some people wanted it for CapiSuite,
+				I added support for receiving this faxes with CapiSuite.</para>
 
+				<para>The CFF format (I don't know if this is an official name for the format) seems
+				to be some sort of JPEG file with a special encoding. Most programs who can handle
+				JPEG files should be able to open it. Perhaps you must rename it from
+				<filename>.cff</filename> to <filename>.jpg</filename> first, before it will be recognized.</para>
+
+				<para>Currently, I don't know a nice way to create this format manually. Therefore,
+				CapiSuite currently only supports the reception of these files. If someone knows
+				more about it or knows the JPEG standards well, please contace me!</para>
+			</sect3>
 		</sect2>
 	</sect1>
 

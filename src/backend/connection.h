@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -316,7 +316,7 @@ class Connection
 		struct fax_info_t {
 			int rate; ///< bit rate used at connect or at disconnect (depends when you ask for it)
 			bool hiRes; ///< fax is transferred in high resolution
-			bool colorJPEG; ///< color fax transmitted as JPEG file
+			unsigned short format; ///< 0=SFF,black&white, 1=colorJPEG
 			int pages; ///< number of transmitted pages (only available after disconnection!)
 			std::string stationID; ///< ID of the sending station
 		};
@@ -657,6 +657,9 @@ class Connection
 /*  History
 
 $Log: connection.h,v $
+Revision 1.5  2003/05/25 13:38:30  gernot
+- support reception of color fax documents
+
 Revision 1.4  2003/05/24 13:48:54  gernot
 - get fax details (calling station ID, transfer format, ...), handle PLCI
 
