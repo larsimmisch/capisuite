@@ -20,7 +20,7 @@ License:      GPL
 Group:        Hardware/ISDN
 Autoreqprov:  on
 Version:      0.4.1a  
-Release:      0 
+Release:      2 
 Requires:     sfftobmp sox tiff ghostscript-library
 Summary:      ISDN telecommunication suite providing fax and voice services
 Source0:      capisuite-%{version}.tar.gz
@@ -48,6 +48,7 @@ Authors:
 
 %build
 make 
+strip src/capisuite
 
 %install
 make DESTDIR=$RPM_BUILD_ROOT install
