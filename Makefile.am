@@ -17,7 +17,7 @@ capisuite.cron: capisuite.cronin
 rc.capisuite: rc.capisuite.in
 	rm -f $@
 	sed -e 's,@pkgsysconfdir\@,$(pkgsysconfdir),g' \
-	    -e 's,@bindir\@,$(bindir),g' $< >$@
+	    -e 's,@sbindir\@,$(sbindir),g' $< >$@
 	chmod a+x $@
 
 clean-local:

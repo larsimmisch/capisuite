@@ -33,7 +33,7 @@
 # 
 
 # Check for missing binaries (stale symlinks should not happen)
-CAPISUITE_BIN=@bindir@/capisuite
+CAPISUITE_BIN=@sbindir@/capisuite
 test -x $CAPISUITE_BIN || exit 5
 
 # Check for existence of needed config file and read it
