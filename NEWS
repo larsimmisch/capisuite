@@ -7,6 +7,10 @@
 
         * core: switch_to_faxG3 now also returns a faxInfo structure
 
+        * scripts: added new non-error ISDN cause (0x349f) to fax send routine.
+          It was understood as error by CapiSuite but means "normal call
+          clearing, unspecified"
+
 0.4.3 (CVS tag CAPISUITE_043):
 ==============================
 
