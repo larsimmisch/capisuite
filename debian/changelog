@@ -1,0 +1,34 @@
+capisuite (0.4.1-0) unstable; urgency=low
+
+  * remove gcc-2.95 patch. Fixed upstream
+
+ -- Gernot Hillier <gernot@hillier.de> Sat, 22 Mar 2003 00:31:05 +0100
+
+capisuite (0.4.1-0) unstable; urgency=low
+
+  * new upstream release
+  * remove fix-interpreter patch. Fixed upstream
+  * remove conffiles entries.  Looks like one of the dh_*
+    marks everything below /etc as a conf file automaticly
+
+ -- Achim Bohnet <ach@mpe.mpg.de>  Thu, 20 Mar 2003 21:12:02 +0100
+
+capisuite (0.4-0cvs20030320.1) unstable; urgency=low
+
+  * update from cvs:  better config checks and config error msg
+  * added TODO.Debian
+  * removed DESTDIR patch. Fix upstream
+
+ -- Achim Bohnet <ach@mpe.mpg.de>  Thu, 20 Mar 2003 12:53:35 +0100
+
+capisuite (0.4-0cvs20030319.1) unstable; urgency=low
+
+  * Initial Release.
+  * cvs update upto 19 Mar 2003
+  * added init.d script (S21, K19)
+  * patch: upstream gcc-2.95.diff
+  * patch DESTDIR fix (send upstream)
+  * patch: capicuitefax interpreter python -> python2.2
+
+ -- Achim Bohnet <ach@mpe.mpg.de>  Mon, 19 Mar 2003 21:37:06 +0100
+

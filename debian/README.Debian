@@ -1,0 +1,39 @@
+capisuite for Debian
+--------------------
+
+That's my first non trivial package. If violations to the debian-policy
+are found please let me know.
+
+Using capisuite on Debian
+-------------------------
+
+  o I'll assume that you'll have a working CAPI capable card
+  o configure files in /etc/init.d/capisuite to your needs
+  o set run_capisuite_daemon in /etc/default/capisuite to 'y'
+    now capisuite daemon will be start/stop on boot/shutdown,
+    respectively.
+
+ISDN PCMCIA card users
+----------------------
+
+For PCMCIA cards it makes more sense to not start capisuite always
+on boot but let the cardmgr start and stop capisuite when the card
+is inserted/removed:
+
+  o install pcmcia-cs pkg that contains the cardmgr daemon
+  o remove boot/shutdown scripts
+
+	update-rc.d -f capisuite remove
+
+  o insert the card into the PCMCIA slot
+  o check new the cardmgr entries at the end of
+
+  	/var/log/daemon.log
+
+    to find out what script in /etc/pcmcia cardmgr call on insertion
+
+  o add /etc/init.d/capisuite start|stop to end|start of the the
+    start)|stop) branches in the /etc/pcmcia/ script
+
+
+ -- Achim Bohnet <ach@mpe.mpg.de>, Mon, 19 Mar 2003 19:28:23 +0100

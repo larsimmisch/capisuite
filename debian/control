@@ -1,0 +1,19 @@
+Source: capisuite
+Section: comm
+Priority: optional
+Maintainer: Achim Bohnet <ach@mpe.mpg.de>
+Build-Depends: debhelper (>> 3.0.0), python2.2-dev
+Standards-Version: 3.5.2
+
+Package: capisuite
+Architecture: any
+Depends: ${shlibs:Depends}, sfftobmp, gs, exim | mail-transport-agent
+Suggests: sffview
+Description: easy fax and voice box solution for ISDN/CAPI capable devices
+ In the default setup CapiSuite provides a fax and voice box solution for
+ multi users.
+ .
+ Further CapiSuite tries to give the user the ability to code his own ISDN
+ applications without having to fiddle around with all the dirty
+ programming details like callback functions, data buffers, protocol
+ settings and so on.

@@ -1,0 +1,12 @@
+TODO (high to low IMHO)
+
+o fix perms of installed dirs
+o split manpages out of manual.sgml
+o logrotate log files
+o add cronjob for cleanup fax/voice msg
+
+o split manual into capisuite-doc
+
+o Try to build on Debian unstable
+o limit arch to i386 just as libcapi20 does
+__END__
