@@ -77,17 +77,14 @@ rc_reset
 case "$1" in
     start)
 	echo -n "Starting CapiSuite "
-	configured=yes
 	# Check if there are configured users for fax or
 	# answering machine. Otherwise exit.
 	# IMPORTANT: Change this or comment it out if you want to use
 	#            your own CapiSuite scripts.
-	if [ ! @sbindir@/capisuite-checkconfig -t >/dev/null ] ; then
-		configured=no
-	fi
-	## Start daemon with startproc(8). If this fails
-	## the return value is set appropriately by startproc.
-	if [ $configured = "yes" ]; then
+	@sbindir@/capisuite-checkconfig -t > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		## Start daemon with startproc(8). If this fails
+		## the return value is set appropriately by startproc.
 		startproc $CAPISUITE_BIN -d
 	else
 		rc_failed 6
