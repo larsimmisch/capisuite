@@ -68,8 +68,7 @@ builddir=build/
 #make DESTDIR=$RPM_BUILD_ROOT install
 install -Dm 644 cronjob.conf   $RPM_BUILD_ROOT%{_sysconfdir}/capisuite/cronjob.conf
 mkdir -p $RPM_BUILD_ROOT%{_initrddir}
-install -Dm 755 ${builddir}/rc.capisuite \
-   $RPM_BUILD_ROOT%{_initrddir}/capisuite
+install -Dm 755 ${builddir}/rc.capisuite $RPM_BUILD_ROOT%{_initrddir}/capisuite
 install -Dm 755 ${builddir}/capisuite.cron $RPM_BUILD_ROOT%{_sysconfdir}/cron.daily/capisuite
 gzip --recursive --best $RPM_BUILD_ROOT%{_mandir}
 
@@ -88,7 +87,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/capisuite/capisuite.conf
 %config(noreplace) %{_sysconfdir}/capisuite/fax.conf
 %config(noreplace) %{_sysconfdir}/capisuite/answering_machine.conf
-#__RPM_FILES__
 %{_sbindir}/capisuite
 %{_sbindir}/capisuite-checkconfig
 %{_bindir}/capisuitefax
@@ -101,8 +99,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/capisuite
 %dir %{_var}/spool/capisuite
 %{_var}/spool/capisuite/*
-%{_libexecdir}/python2.?/site-packages/cs_helpers.py*
 %dir %{_libexecdir}/python2.?/site-packages/capisuite
+%{_libexecdir}/python2.?/site-packages/cs_helpers.py*
 %{_libexecdir}/python2.?/site-packages/capisuite/*
 %{_initrddir}/capisuite
 %{_sysconfdir}/cron.daily/capisuite
