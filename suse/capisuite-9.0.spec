@@ -12,8 +12,8 @@
 # If you created your own RPM, please tell me and I'll happily include
 # the spec or a link to your RPM on the homepage.
 #
-# neededforbuild i4l gpp libstdc++-devel libxml2-devel python python-devel
-# usedforbuild    aaa_base aaa_dir aaa_version base bash bindutil bison bzip cpio cpp cyrus-sasl db devs diffutils e2fsprogs file fileutils findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm gppshare grep groff gzip kbd less m4 make man mktemp modutils ncurses ncurses-devel net-tools netcfg pam-devel pam-modules patch ps rcs readline sendmail sh-utils shadow strace syslogd sysvinit texinfo textutils timezone unzip util-linux vim autoconf automake binutils cracklib gcc gdbm gettext gpp i4l libgpp libtool libxml2-devel libz pam perl python python-devel rpm
+# neededforbuild  capi4linux gcc-c++ libstdc++-devel libxml2-devel python python-devel
+# usedforbuild    aaa_base acl attr bash bind9-utils bison coreutils cpio cpp cvs cyrus-sasl2 db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv kbd less libacl libattr libgcc libstdc++ libxcrypt m4 make man mktemp modutils ncurses ncurses-devel net-tools netcfg pam pam-devel pam-modules patch permissions ps rcs readline sed sendmail shadow strace syslogd sysvinit tar texinfo timezone unzip util-linux vim zlib zlib-devel autoconf automake binutils bzip2 capi4linux cracklib gcc gcc-c++ gdbm gettext libstdc++-devel libtool libxml2-devel perl python python-devel rpm
 
 Name:         capisuite
 License:      GPL
@@ -21,11 +21,12 @@ Group:        Hardware/ISDN
 Autoreqprov:  on
 Version:      0.4.4  
 Release:      0 
-Requires:     sfftobmp sox tiff ghostscript-library glibc-locale
+Requires:     sfftobmp sox tiff ghostscript-library
 Summary:      ISDN telecommunication suite providing fax and voice services
 Source0:      capisuite-%{version}.tar.gz
 URL:          http://www.capisuite.de
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
+PreReq:       %insserv_prereq
 
 %description
 CapiSuite is an ISDN telecommunication suite providing easy to use

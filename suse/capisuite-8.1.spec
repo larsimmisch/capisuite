@@ -19,7 +19,7 @@ Name:         capisuite
 License:      GPL
 Group:        Hardware/ISDN
 Autoreqprov:  on
-Version:      0.4.3  
+Version:      0.4.4  
 Release:      0
 Requires:     sfftobmp sox tiff ghostscript-library glibc-locale
 Summary:      ISDN telecommunication suite providing fax and voice services
@@ -86,6 +86,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/rccapisuite
 
 %changelog -n capisuite
+* Sun Jan 18 2004 - gernot@hillier.de
+- updated to 0.4.4
 * Sun Jul 20 2003 - gernot@hillier.de
 - updated to 0.4.3
 * Sun Apr 27 2003 - gernot@hillier.de
