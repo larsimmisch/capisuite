@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.3 $
+#    version              : $Revision: 1.4 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -70,11 +70,11 @@ def callIncoming(call,service,call_from,call_to):
 				udir=config.get("GLOBAL","fax_user_dir")+curr_user+"/"
 			if (not os.access(udir,os.F_OK)):
 				userdata=pwd.getpwnam(curr_user)
-				os.mkdir(udir)
+				os.mkdir(udir,0700)
 				os.chown(udir,userdata[2],userdata[3])
 			if (not os.access(udir+"received/",os.F_OK)):
 				userdata=pwd.getpwnam(curr_user)
-				os.mkdir(udir+"received/")
+				os.mkdir(udir+"received/",0700)
 				os.chown(udir+"received/",userdata[2],userdata[3])
 		except KeyError:
 			capisuite.error("user "+curr_user+" is not a valid system user. Disconnecting",call)
@@ -115,7 +115,9 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		  "call_from=\""+call_from+"\"\ncall_to=\""+call_to+"\"\ntime=\""
 		  +time.ctime()+"\"\ncause=\"0x%x/0x%x\"\n" % (cause,causeB3))
 		userdata=pwd.getpwnam(curr_user)
+		os.chmod(filename,0600)
 		os.chown(filename,userdata[2],userdata[3])
+		os.chmod(filename[:-3]+"txt",0600)
 		os.chown(filename[:-3]+"txt",userdata[2],userdata[3])
 
 		mailaddress=cs_helpers.getOption(config,curr_user,"fax_email")
@@ -124,7 +126,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		if (cs_helpers.getOption(config,curr_user,"fax_action").lower()=="mailandsave"):
 			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Fax received from "+call_from+" to "+call_to, "sff",
 			  "You got a fax from "+call_from+" to "+call_to+"\nDate: "+time.ctime()+"\n\n"
-			  +"See attached file.\nThe original file was saved to "+filename+"\n\n", filename)
+			  +"See attached file.\nThe original file was saved to file://"+filename+"\n\n", filename)
 
 # @brief called by callIncoming when an incoming voice call is received
 #
@@ -183,7 +185,9 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		  "call_from=\""+call_from+"\"\ncall_to=\""+call_to+"\"\ntime=\""
 		  +time.ctime()+"\"\ncause=\"0x%x/0x%x\"\n" % (cause,causeB3))
 		userdata=pwd.getpwnam(curr_user)
+		os.chmod(filename,0600)
 		os.chown(filename,userdata[2],userdata[3])
+		os.chmod(filename[:-2]+"txt",0600)
 		os.chown(filename[:-2]+"txt",userdata[2],userdata[3])
 
 		mailaddress=cs_helpers.getOption(config,curr_user,"voice_email")
@@ -192,7 +196,7 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		if (cs_helpers.getOption(config,curr_user,"voice_action").lower()=="mailandsave"):
 			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Voice call received from "+call_from+" to "+call_to, "la",
 			  "You got a voice call from "+call_from+" to "+call_to+"\nDate: "+time.ctime()+"\n\n"
-			  +"See attached file.\nThe original file was saved to "+filename+"\n\n", filename)
+			  +"See attached file.\nThe original file was saved to file://"+filename+"\n\n", filename)
 
 
 # @brief remote inquiry function (uses german wave snippets!)
@@ -212,111 +216,112 @@ def remoteInquiry(call,userdir,curr_user,config):
 	# acquire lock
 	lockfile=open(userdir+"received/inquiry_lock","w")
 	try:
-		try:
-			# read directory contents
-			fcntl.lockf(lockfile,fcntl.LOCK_EX | fcntl.LOCK_NB) # only one inquiry at a time!
+		fcntl.lockf(lockfile,fcntl.LOCK_EX | fcntl.LOCK_NB) # only one inquiry at a time!
 
-			messages=os.listdir(userdir+"received/")
-			messages=filter (lambda s: re.match("voice-.*\.la",s),messages)  # only use voice-* files
-			messages=map(lambda s: int(re.match("voice-([0-9]+)\.la",s).group(1)),messages) # filter out numbers
-			messages.sort()
-			
-			# read the number of the message heard last at the last inquiry
-			lastinquiry=-1
-                        if (os.access(userdir+"received/last_inquiry",os.W_OK)):
-				lastfile=open(userdir+"received/last_inquiry","r")
-				lastinquiry=int(lastfile.readline())
-				lastfile.close()
+	except IOError,err: # can't get the lock
+		if (err.errno in (errno.EACCES,errno.EAGAIN)):
+			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fernabfrage-aktiv.la"))
+			lockfile.close()
+			return
 
-			# sort out old messages
-			oldmessages=[]
-			i=0
-			while (i<len(messages)):
+	try:
+		# read directory contents
+		messages=os.listdir(userdir+"received/")
+		messages=filter (lambda s: re.match("voice-.*\.la",s),messages)  # only use voice-* files
+		messages=map(lambda s: int(re.match("voice-([0-9]+)\.la",s).group(1)),messages) # filter out numbers
+		messages.sort()
+
+		# read the number of the message heard last at the last inquiry
+		lastinquiry=-1
+		if (os.access(userdir+"received/last_inquiry",os.W_OK)):
+			lastfile=open(userdir+"received/last_inquiry","r")
+			lastinquiry=int(lastfile.readline())
+			lastfile.close()
+
+		# sort out old messages
+		oldmessages=[]
+		i=0
+		while (i<len(messages)):
+			if (messages[i]<=lastinquiry):
 				oldmessages.append(messages[i])
-				if (messages[i]<=lastinquiry):
-					del messages[i]
-				else:
-					i+=1
-
-			cs_helpers.sayNumber(call,str(len(messages)),curr_user,config)
-			if (len(messages)==1):
-				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachricht.la"),1)
+				del messages[i]
 			else:
-				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachrichten.la"),1)
+				i+=1
 
-			# menu for record new announcement
-			cmd=""
-			while (cmd not in ("1","9")):
-				if (len(oldmessages)):
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"zum-abhoeren-1.la"),1)
-				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fuer-neue-ansage-9.la"),1)
-				cmd=capisuite.read_DTMF(call,0,1)
-			if (cmd=="9"):
-				newAnnouncement(call,userdir,curr_user,config)
-				return
+		cs_helpers.sayNumber(call,str(len(messages)),curr_user,config)
+		if (len(messages)==1):
+			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachricht.la"),1)
+		else:
+			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachrichten.la"),1)
 
-			# start inquiry
-			for curr_msgs in (messages,oldmessages):
-				cs_helpers.sayNumber(call,str(len(curr_msgs)),curr_user,config)
-				if (curr_msgs==messages):
-					if (len(curr_msgs)==1):
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachricht.la"),1)
-					else:
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachrichten.la"),1)
+		# menu for record new announcement
+		cmd=""
+		while (cmd not in ("1","9")):
+			if (len(messages)+len(oldmessages)):
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"zum-abhoeren-1.la"),1)
+			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fuer-neue-ansage-9.la"),1)
+			cmd=capisuite.read_DTMF(call,0,1)
+		if (cmd=="9"):
+			newAnnouncement(call,userdir,curr_user,config)
+			return
+
+		# start inquiry
+		for curr_msgs in (messages,oldmessages):
+			cs_helpers.sayNumber(call,str(len(curr_msgs)),curr_user,config)
+			if (curr_msgs==messages):
+				if (len(curr_msgs)==1):
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachricht.la"),1)
 				else:
-					if (len(curr_msgs)==1):
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht.la"),1)
-					else:
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachrichten.la"),1)
-
-				i=0
-				while (i<len(curr_msgs)):                                    
-					filename=userdir+"received/voice-"+str(curr_msgs[i])+".la"
-					descr=cs_helpers.readConfig(filename[:-2]+"txt")
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachrichten.la"),1)
+			else:
+				if (len(curr_msgs)==1):
 					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht.la"),1)
-					cs_helpers.sayNumber(call,str(i+1),curr_user,config)
-					if (descr.get('GLOBAL','call_from')!="??"):
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"von.la"),1)
-						cs_helpers.sayNumber(call,descr.get('GLOBAL','call_from'),curr_user,config)
-					if (descr.get('GLOBAL','call_to')!="??"):
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fuer.la"),1)
-						cs_helpers.sayNumber(call,descr.get('GLOBAL','call_to'),curr_user,config)
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"am.la"),1)
-					calltime=time.strptime(descr.get('GLOBAL','time'))
-					cs_helpers.sayNumber(call,str(calltime[2]),curr_user,config)
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"..la"),1)
-					cs_helpers.sayNumber(call,str(calltime[1]),curr_user,config)
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"..la"),1)
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"um.la"),1)
-					cs_helpers.sayNumber(call,str(calltime[3]),curr_user,config)
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"uhr.la"),1)
-					cs_helpers.sayNumber(call,str(calltime[4]),curr_user,config)
-					capisuite.audio_send(call,filename,1)
-					cmd=""
-					while (cmd not in ("1","4","5","6")):
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"erklaerung.la"),1)
-						cmd=capisuite.read_DTMF(call,0,1)
-					if (cmd=="1"):
-						os.remove(filename)
-						os.remove(filename[:-2]+"txt")
-						if (curr_msgs==messages): # if we are in new message mode...
-							oldmessages.remove(curr_msgs[i]) # ... don't forget to delete it in both lists
-						del curr_msgs[i]
-						capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht-gelöscht.la"))
-					elif (cmd=="4"):
-						if (curr_msgs[i]>lastinquiry):
-							lastinquiry=curr_msgs[i]
-							lastfile=open(userdir+"received/last_inquiry","w")
-							lastfile.write(str(curr_msgs[i])+"\n")
-							lastfile.close()
-						i+=1
-					elif (cmd=="5"):
-						i-=1
-			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"keine-weiteren-nachrichten.la"))
+				else:
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachrichten.la"),1)
 
-		except IOError,err:
-			if (err.errno in (errno.EACCES,errno.EAGAIN)):
-				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fernabfrage-aktiv.la"))
+			i=0
+			while (i<len(curr_msgs)):
+				filename=userdir+"received/voice-"+str(curr_msgs[i])+".la"
+				descr=cs_helpers.readConfig(filename[:-2]+"txt")
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht.la"),1)
+				cs_helpers.sayNumber(call,str(i+1),curr_user,config)
+				if (descr.get('GLOBAL','call_from')!="??"):
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"von.la"),1)
+					cs_helpers.sayNumber(call,descr.get('GLOBAL','call_from'),curr_user,config)
+				if (descr.get('GLOBAL','call_to')!="??"):
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fuer.la"),1)
+					cs_helpers.sayNumber(call,descr.get('GLOBAL','call_to'),curr_user,config)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"am.la"),1)
+				calltime=time.strptime(descr.get('GLOBAL','time'))
+				cs_helpers.sayNumber(call,str(calltime[2]),curr_user,config)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"..la"),1)
+				cs_helpers.sayNumber(call,str(calltime[1]),curr_user,config)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"..la"),1)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"um.la"),1)
+				cs_helpers.sayNumber(call,str(calltime[3]),curr_user,config)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"uhr.la"),1)
+				cs_helpers.sayNumber(call,str(calltime[4]),curr_user,config)
+				capisuite.audio_send(call,filename,1)
+				cmd=""
+				while (cmd not in ("1","4","5","6")):
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"erklaerung.la"),1)
+					cmd=capisuite.read_DTMF(call,0,1)
+				if (cmd=="1"):
+					os.remove(filename)
+					os.remove(filename[:-2]+"txt")
+					del curr_msgs[i]
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht-gelöscht.la"))
+				elif (cmd=="4"):
+					if (curr_msgs[i]>lastinquiry):
+						lastinquiry=curr_msgs[i]
+						lastfile=open(userdir+"received/last_inquiry","w")
+						lastfile.write(str(curr_msgs[i])+"\n")
+						lastfile.close()
+					i+=1
+				elif (cmd=="5"):
+					i-=1
+		capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"keine-weiteren-nachrichten.la"))
+
 	finally:
 		# unlock
 		fcntl.lockf(lockfile,fcntl.LOCK_UN)
@@ -353,6 +358,12 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.4  2003/03/13 11:08:06  gernot
+# - fix remote inquiry locking (should fix bug #534, but doesn't - anyway,
+#   this fix is definitely necessary)
+# - stricter permissions of saved files and created dirs, fixes #544
+# - add "file://" prefix to the path shown in the mails to the user
+#
 # Revision 1.3  2003/02/21 13:13:34  gernot
 # - removed some debug output (oops...)
 #
