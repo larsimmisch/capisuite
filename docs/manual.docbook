@@ -1549,7 +1549,7 @@ cp /usr/local/share/capisuite/beep.la .</screen>
 			<para>Perhaps you must change the path in the last line to reflect your installation.</para>
 
 			<para>Now copy and paste the example shown here to a file called <filename>example.py</filename>
-			in this directory. Don't forget to change the third line.</para>
+			in this directory. Don't forget to change the <literal>my_path</literal>-setting.</para>
 
 			<example><title>example.py</title>
 			<programlisting>import capisuite<co id="incoming_ex1_1"/>
