@@ -6,6 +6,7 @@
 	* docs/manual.docbook: restructure to also create five man pages:
 	  (capisuite.8, capisuite.conf.5, fax.conf.5, answering_machine.conf.5,
 	  capisuitefax.1)
+	* docs/manual-de.docbook: Likewise.
 
 2004-02-20  Gernot Hillier  <gernot@hillier.de>
 	* src/application/capisuite.cpp: changed include order to get rid of
