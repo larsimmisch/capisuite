@@ -76,7 +76,7 @@ def convert2Fax(filenames, faxname):
 		if not checkFile(fname, fname_):
 			return 0
 		files.append(fname_)
-	command = "gs -dNOPAUSE -dQUIET -dBATCH -aPAPERSIZE=a4 -sDEVICE=cfax " \
+	command = "gs -dNOPAUSE -dQUIET -dBATCH -sPAPERSIZE=a4 -sDEVICE=cfax " \
 		  "-sOutputFile=%s %s" % (faxname, ' '.join(files))
 	ret = os.system(command) >> 8
 	if ret:
