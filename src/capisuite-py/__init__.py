@@ -22,3 +22,9 @@ __author__    = "Hartmut Goebel <h.goebel@crazy-compilers.com>"
 __copyright__ = "Copyright (c) 2004 by Hartmut Goebel"
 __version__   = "$Revision: 0.0 $"
 __credits__   = "This file is part of www.capisuite.de; thanks to Gernot Hillier"
+__license__ = """
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+"""

@@ -1,4 +1,8 @@
 # -*- mode: python ; coding: latin-1 -*-
+#
+# This file and all modifications and additions to the pristine
+# package are under the same license as the package itself.
+#
 """
 Main SCons build script for CapiSuite
 
