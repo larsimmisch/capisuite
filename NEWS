@@ -9,7 +9,10 @@
 
         * scripts: added new non-error ISDN cause (0x349f) to fax send routine.
           It was understood as error by CapiSuite but means "normal call
-          clearing, unspecified"
+          clearing, unspecified" (thx to Stefan Brandner for reporting)
+	
+	* Makefiles: moved a "mkdir" from the build ("make") to install stage 
+          ("make install") (thx to Steffen Barszus for reporting)
 
 0.4.3 (CVS tag CAPISUITE_043):
 ==============================
