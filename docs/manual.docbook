@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.4.2.cvs</title>
+<title>CapiSuite 0.4.3</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -225,6 +225,9 @@
 						be a very rare case), you'll need this package - unless you'll get a mail stating this error.
 						If your distribution doesn't have this packages, you can download it from
 						<ulink url="http://www.pdflib.com/jpeg2ps/"/>.</para>
+						<para>As the color fax protocol uses concatenated JPEG files for transferring multiple pages, you 
+						should also download and apply my multipleJPEG patch from 
+						<ulink url="http://www.hillier.de/linux/jpeg2ps-multi.php3"/></para>
 						</listitem>
 					</varlistentry>
 				</variablelist>
