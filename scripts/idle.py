@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.5 $
+#    version              : $Revision: 1.6 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -71,7 +71,9 @@ def idle(capi):
 				continue
 
 			control=cs_helpers.readConfig(sendq+job)
-			starttime=time.mktime(time.strptime(control.get("GLOBAL","starttime")))
+			# set DST value to -1 (unknown), as strptime sets it wrong for some reason
+			starttime=(time.strptime(control.get("GLOBAL","starttime")))[0:8]+(-1,)
+			starttime=time.mktime(starttime)
 			if (starttime>time.time()):
 				fcntl.lockf(lockfile,fcntl.LOCK_UN)
 				lockfile.close()
@@ -153,6 +155,9 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.6  2003/04/06 11:07:40  gernot
+# - fix for 1-hour-delayed sending of fax (DST problem)
+#
 # Revision 1.5  2003/03/20 09:12:42  gernot
 # - error checking for reading of configuration improved, many options got
 #   optional, others produce senseful error messages now if not found,
