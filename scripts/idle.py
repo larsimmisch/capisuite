@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.1 $
+#    version              : $Revision: 1.2 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ def idle(capi):
 				"Your fax job to "+dialstring+" was sent successfully.\n\n"
 				+"Filename: "+job_fax+"\nNeeded tries: "+str(tries)
 				+("\nLast result: 0x%x/0x%x" % (result,resultB3))
-				+"\n\nIt was moved to "+done+user+"-"+job_fax)
+				+"\n\nIt was moved to file://"+done+user+"-"+job_fax)
 			else:
 				max_tries=config.getint('GLOBAL','send_tries')
 				delays=config.get('GLOBAL','send_delays').split(",")
@@ -110,7 +110,7 @@ def idle(capi):
 					"I'm sorry, but your fax job to "+dialstring+" failed finally.\n\n"
 					+"Filename: "+job_fax+"\nTries: "+str(tries)
 					+"\nLast result: 0x%x/0x%x" % (result,resultB3)
-					+"\n\nIt was moved to "+failed+user+"-"+job_fax)
+					+"\n\nIt was moved to file://"+failed+user+"-"+job_fax)
 
 			fcntl.lockf(lockfile,fcntl.LOCK_UN)
 			lockfile.close()
@@ -139,8 +139,12 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
-# Revision 1.1  2003/02/19 08:19:54  gernot
-# Initial revision
+# Revision 1.2  2003/03/06 09:59:11  gernot
+# - added "file://" as prefix to filenames in sent mails, thx to
+#   Achim Bohnet for this suggestion
+#
+# Revision 1.1.1.1  2003/02/19 08:19:54  gernot
+# initial checkin of 0.4
 #
 # Revision 1.12  2003/02/18 09:54:22  ghillie
 # - added missing lockfile deletions, corrected locking protocol
