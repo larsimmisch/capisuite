@@ -1,3 +1,8 @@
+2004-06-10  Gernot Hillier  <gernot@hillier.de>
+	* src/backend/connection.cpp (info_ind_called_party_nr): prevent 
+	  CapiSuite from crashing when a too high DDIBaseLength was configured,
+	  thx to Michael Ressel for reporting and analyzing
+
 2004-05-18  Gernot Hillier  <gernot@hillier.de>
 	* docs/Makefile.am: remove PDF generation as it doesn't work currently;
 	  adapt Makefiles to only create man pages for "make dist"; break long 

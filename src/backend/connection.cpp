@@ -16,6 +16,7 @@
 
 #include "../../config.h"
 #include <fstream>
+#include <stdexcept> // for out_of_range
 #include <pthread.h>
 #include <errno.h> // for errno
 #include <iconv.h> // for iconv(), iconv_open(), iconv_close()
@@ -595,20 +596,30 @@ bool
 Connection::info_ind_called_party_nr(_cmsg &message) throw (CapiError,CapiWrongState)
 {
 	if (plci_state!=P2)
-		throw CapiWrongState("INFO_IND for CalledPartyNr received in wrong state","Connection::info_ind_called_party_nr()");
+		throw CapiWrongState("INFO_IND for CalledPartyNr received in wrong state",
+		  "Connection::info_ind_called_party_nr()");
 
 	if (plci!=INFO_IND_PLCI(&message))
-		throw CapiError("INFO_IND received with wrong PLCI","Connection::info_ind_called_party_nr()");
+		throw CapiError("INFO_IND received with wrong PLCI",
+		  "Connection::info_ind_called_party_nr()");
 	try {
 		capi->info_resp(message.Messagenumber,plci);
 	}
 	catch (CapiMsgError e) {
-		error << prefix() << "WARNING: Can't send info_resp. Message was: " << e << endl;
+		error << prefix() << "WARNING: Can't send info_resp. Message was: " << 
+		  e << endl;
 	}
 
 	call_to+=getNumber(INFO_IND_INFOELEMENT(&message),false);
 
-	string currDDI=call_to.substr(DDIBaseLength);
+	string currDDI;
+	try {
+		currDDI=call_to.substr(DDIBaseLength);
+	}
+	catch (std::out_of_range e) {
+		throw CapiError("DDIBaseLength too big - configuration error?",
+		  "Connection::info_ind_called_party_nr()");
+	}
 	for (int i=0;i<DDIStopNumbers.size();i++)
 	    if (DDIStopNumbers[i]==currDDI) {
 			if (debug_level >= 1)
