@@ -1,3 +1,14 @@
+2005-01-07  Hartmut Goebel  <h.goebel@crazy-compilers.com>
+	* scripts/waves/SConscript: wave-files are now installed into
+	  $pkgdatadir instead of $pkgdatadir/waves.
+	* SConstruct: Some pkgpython_* variables have not been set for
+	  non-building targets (eg. clean). This caused building errors.
+	  Fixed.
+	* SConstruct: define HAVE_CONFIG_H for compiler calls.
+	* SConstruct: .spec-files have moved, fixed pathes.
+	* SConscript: no longer install $sysconfdir/cron.daily/capisuite,
+	  $sysconfdir/init.d/capisuite and $pkgsysconfdir/cronjob.conf.
+
 2005-01-07  Gernot Hillier  <gernot@hillier.de>
 	* src/capisuite-py/Makefile.am: fix installation paths for capisuite-py
 	  files, fixes bug #108

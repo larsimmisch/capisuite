@@ -305,10 +305,12 @@ if not GetOption('clean') and not is_dist:
            or 'configure' in COMMAND_LINE_TARGETS:
         env.SConscript('SConscript-Config', build_dir=build_dir)
 
-    # get some build variables we always need to evaluate
-    GetPythonModuleSetup(env)
     GetPythonEmbeddedSetup(env)
     Get_sfftobmp_Version(env)
+
+# get some build variables we always need to evaluate,
+# even for non-building targets.
+GetPythonModuleSetup(env)
 
 ###---####---###---####---###---####---###---####---###---####---###---###
 
@@ -321,6 +323,7 @@ env.Append(
                 'PKGDATADIR'   : r'\"${pkgdatadir}\"',
                 'PKGSYSCONFDIR': r'\"${pkgsysconfdir}\"',
                 'PKGLIBDIR'    : r'\"${pkglibdir}\"',
+                'HAVE_CONFIG_H': 1, # we always have config.h
                 },
     )
 
@@ -342,7 +345,7 @@ env.SConscript(dirs=[Dir('.', build_dir),
                      Dir('scripts', build_dir),
                      Dir('scripts/waves', build_dir),
                      Dir('docs', build_dir),
-                     Dir('suse'),
+                     Dir('packages/rpm'),
                      ])
 
 #--- additional files to be distributed ---
@@ -359,7 +362,7 @@ env.ExtraDist(Split("""
     src/SConscript
     scripts/SConscript
     scripts/waves/SConscript
-    suse/SConscript
+    packages/rpm/SConscript
     docs/SConscript
     """))
 

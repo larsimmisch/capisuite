@@ -11,7 +11,7 @@ env.AddPostAction([cronfile, rcfile], Chmod('$TARGETS', 0755))
 
 env.Alias('install', [
     env.Install('$docdir', Split('COPYING NEWS README AUTHORS')),
-    env.InstallAs('$sysconfdir/init.d/capisuite', rcfile),
-    env.InstallAs('$sysconfdir/cron.daily/capisuite', cronfile),
-    env.InstallAs('$pkgsysconfdir/cronjob.conf','cronjob.conf'),
+    #env.InstallAs('$sysconfdir/init.d/capisuite', rcfile),
+    #env.InstallAs('$sysconfdir/cron.daily/capisuite', cronfile),
+    #env.InstallAs('$pkgsysconfdir/cronjob.conf','cronjob.conf'),
     ])
