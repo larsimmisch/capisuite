@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.4.1a</title>
+<title>CapiSuite 0.4.1a.cvs</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -598,7 +598,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/fax.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/fax.conf</filename> (depending on the installation).</para>
 
-				<variablelist id="options_fax_global"><title>The [GLOBAL] section</title>
+				<sect4 id="options_fax_global"><title>The [GLOBAL] section</title><variablelist>
 					<varlistentry id="fax_spool_dir">
 						<term><option>spool_dir="/path/to/spooldir/"</option></term>
 						<listitem><para>This directory is used to archive sent (or failed) jobs. It must exist and
@@ -719,8 +719,8 @@ make install</screen>
 							<para>This option is optional. If not given, it defaults to an empty headline.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
-				<variablelist id="options_fax_user"><title>The user sections</title>
+				</variablelist></sect4>
+				<sect4 id="options_fax_user"><title>The user sections</title><variablelist>
 					<varlistentry>
 						<term><option>outgoing_MSN</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
@@ -790,7 +790,7 @@ make install</screen>
 							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
+				</variablelist></sect4>
 			</sect3>
 			<sect3 id="script_config_voice"><title>Configuration for the answering machine</title>
 				<para>This file holds all available config options for the answering machine.</para>
@@ -798,7 +798,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/answering_machine.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (depending on the installation).</para>
 
-				<variablelist id="options_voice_global"><title>The [GLOBAL] section</title>
+				<sect4 id="options_voice_global"><title>The [GLOBAL] section</title><variablelist>
 					<varlistentry id="voice_audio_dir">
 						<term><option>audio_dir="/path/to/audiodir/"</option></term>
 						<listitem><para>The answering machine script uses several wave files, for example
@@ -874,8 +874,8 @@ make install</screen>
                                                         <para>This option is optional. If not set, it defaults to 5 seconds.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
-				<variablelist id="options_voice_user"><title>The user sections</title>
+				</variablelist></sect4>
+				<sect4 id="options_voice_user"><title>The user sections</title><variablelist>
 					<varlistentry>
 						<term><option>voice_delay</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
@@ -957,7 +957,7 @@ make install</screen>
 							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
+				</variablelist></sect4>
 			</sect3>
 		</sect2>
 		<sect2 id="deleteoldfiles"><title>Deleting old files</title>
@@ -1017,7 +1017,7 @@ make install</screen>
 			to setup your mail program to receive local mails. Enjoy! :-)</para>
 		</sect2>
 		<sect2 id="usingscripts_remoteinquiry"><title>Doing a remote inquiry</title>
-			<para>To do a remote inquiry, please enter your PIN (see <xref linkend="voice_pin"/>)
+			<para>To do a remote inquiry, please enter your PIN (see <xref linkend="options_voice_user"/>)
 			while the announcement of the answering machine is played. After some seconds
 			you will get a "voice menu" telling you how to record your own announcement
 			for your answering machine or how to playback the received calls.</para>
