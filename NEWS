@@ -1,5 +1,5 @@
-0.4.4 (CVS nn):
-===============
+0.5 (CVS nn):
+=============
 
         * scripts: fix a bug in faxIncoming which lead to a non-working
           fax reception after automatic switch from voice to fax mode
@@ -13,6 +13,10 @@
 	
 	* Makefiles: moved a "mkdir" from the build ("make") to install stage 
           ("make install") (thx to Steffen Barszus for reporting)
+
+	* scripts: added new options "fax_email_from" and "voice_email_from" to
+	  answering_machine.conf and fax.conf (thx to Achim Bohnet for submitting
+	  a patch with this feature!; closes bug #46) 
 
 0.4.3 (CVS tag CAPISUITE_043):
 ==============================

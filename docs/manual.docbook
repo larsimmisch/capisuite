@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.4.3</title>
+<title>CapiSuite 0.5.cvs</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -736,6 +736,14 @@ make install</screen>
 							<para>This option is optional. If not given, it defaults to an empty headline.</para>
 						</listitem>
 					</varlistentry>
+					<varlistentry id="fax_email_from">
+                                                <term><option>fax_email_from="&lt;mailaddress&gt;"</option></term>
+                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails CapiSuite sends
+						 	here.</para>
+							<para>This option is optional. If you set this to an empty string, the destinator is used as 
+							originator (i.e. if "gernot" receives a fax, the mail comes from "gernot" to "gernot").</para>
+                                                </listitem>
+                                        </varlistentry>
 				</variablelist></sect4>
 				<sect4 id="options_fax_user"><title>The user sections</title><variablelist>
 					<varlistentry>
@@ -754,6 +762,10 @@ make install</screen>
 						<term><option>fax_headline</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
 					</varlistentry>
+                                        <varlistentry>
+                                                <term><option>fax_email_from</option></term>
+                                                <listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
+                                        </varlistentry>
 					<varlistentry id="fax_numbers">
 						<term><option>fax_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
 						<listitem><para>A list containing the numbers on which this user wants to receive incoming fax calls.
@@ -891,6 +903,15 @@ make install</screen>
                                                         <para>This option is optional. If not set, it defaults to 5 seconds.</para>
 						</listitem>
 					</varlistentry>
+                                       <varlistentry id="voice_email_from">
+                                                <term><option>voice_email_from="&lt;mailaddress&gt;"</option></term>
+                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails CapiSuite sends
+                                                        here.</para>
+                                                        <para>This option is optional. If you set this to an empty string, the destinator is used 
+							as originator (i.e. if "gernot" receives a voice call, the mail comes from "gernot" to 
+							"gernot").</para>
+                                                </listitem>
+                                        </varlistentry>
 				</variablelist></sect4>
 				<sect4 id="options_voice_user"><title>The user sections</title><variablelist>
 					<varlistentry>
@@ -909,6 +930,10 @@ make install</screen>
 						<term><option>record_silence_timeout</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
 					</varlistentry>
+                                        <varlistentry>
+                                                <term><option>voice_email_from</option></term>
+                                                <listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
+                                        </varlistentry>
 					<varlistentry id="voice_numbers">
 						<term><option>voice_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
 						<listitem><para>A list containing the numbers on which this user wants to receive incoming voice calls.

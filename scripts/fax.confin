@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.8 2003/06/19 14:56:20 gernot Exp $
+# $Id: fax.confin,v 1.9 2003/10/03 13:42:09 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -108,6 +108,12 @@ fax_stationID="+49 000 0000"
 #
 fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 
+# fax_email_from (optional, default fax addressee) [New in 0.5]
+# When a received fax is distributed by e-mail this address
+# used in the 'From:' header field. Ditto from success/failed fax e-mail
+# messages.
+fax_email_from="capisuite daemon <root>"
+
 ###############################################################################
 ############################# user settings ###################################
 ###############################################################################
@@ -117,7 +123,7 @@ fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 #
 # Each user section can override the following default options given above:
 #
-# outgoing_MSN, outgoing_timeout, fax_stationID, fax_headline
+# outgoing_MSN, outgoing_timeout, fax_stationID, fax_headline, fax_email_from
 #
 # Additionally, the following options are possible:
 #

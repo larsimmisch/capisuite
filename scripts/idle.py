@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.9 $
+#    version              : $Revision: 1.10 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -92,6 +92,9 @@ def idle(capi):
 			mailaddress=cs_helpers.getOption(config,user,"fax_email","")
 			if (mailaddress==""):
 				mailaddress=user
+			fromaddress=cs_helpers.getOption(config,user,"fax_email_from","")
+			if (fromaddress==""):
+				fromaddress=user
 
 			capisuite.log("job "+job_fax+" from "+user+" to "+dialstring+" initiated",1)
 			result,resultB3 = sendfax(capi,sendq+job_fax,outgoing_nr,dialstring,user,config)
@@ -106,7 +109,7 @@ def idle(capi):
 				  +"\nNeeded tries: "+str(tries) \
 				  +("\nLast result: 0x%x/0x%x" % (result,resultB3)) \
 				  +"\n\nIt was moved to file://"+done+user+"-"+job_fax
-				cs_helpers.sendSimpleMail(user,mailaddress,
+				cs_helpers.sendSimpleMail(fromaddress,mailaddress,
 				  "Fax to "+addressee+" ("+dialstring+") sent successfully.",
 				  mailtext)
 			else:
@@ -130,7 +133,7 @@ def idle(capi):
 					  +"\nFilename: "+job_fax+"\nTries: "+str(tries) \
 					  +"\nLast result: 0x%x/0x%x" % (result,resultB3) \
 					  +"\n\nIt was moved to file://"+failed+user+"-"+job_fax
-					cs_helpers.sendSimpleMail(user,mailaddress,
+					cs_helpers.sendSimpleMail(fromaddress,mailaddress,
 					  "Fax to "+addressee+" ("+dialstring+") FAILED.",
 					  mailtext)
 
@@ -163,6 +166,9 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.10  2003/10/03 13:42:09  gernot
+# - added new options "fax_email_from" and "voice_email_from"
+#
 # Revision 1.9  2003/09/21 12:34:37  gernot
 # - add 0x349f to list of normal results
 #

@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="de">
-<title>CapiSuite 0.4.3</title>
+<title>CapiSuite 0.5.cvs</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -809,55 +809,70 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="fax_stationID">
 						<term><option>fax_stationID="&lt;Ihre faxID&gt;"</option></term>
-						<listitem><para>Absenderkennung, die beim Versenden eines Fax-Dokuments 
+						<listitem><para>Absenderkennung, die beim Versenden eines Fax-Dokuments
                             verwendet wird. Die Absenderkennung ist normalerweise Ihre Fax-Nummer im
 							internationalen Format, z.B. "+49 89 123456" für eine Nummer in München in
                             Deutschland. Absenderkennungen dürfen nur aus dem "+"-Zeichen, Leerzeichen und
-							den Ziffern 0-9 bestehen. Die maximale Länge ist 20. Dieser Wert kann in den 
+							den Ziffern 0-9 bestehen. Die maximale Länge ist 20. Dieser Wert kann in den
                             Benutzer-Abschnitten individuell überschrieben werden.</para>
 							<para>Diese Option ist zwingend erforderlich.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_headline">
 						<term><option>fax_headline="&lt;Ihre Fax-Kopfzeile&gt;"</option></term>
-						<listitem><para>Fax-Kopfzeile, die beim Versenden eines Fax-Dokuments 
-                            verwendet wird. Wo und ob diese Kopfzeile angezeigt wird, hängt von der 
+						<listitem><para>Fax-Kopfzeile, die beim Versenden eines Fax-Dokuments
+							verwendet wird. Wo und ob diese Kopfzeile angezeigt wird, hängt von der
 							Implementierung Ihres CAPI-Treibers ab. Die Kopfzeile sollte eine vernünftige
 							Länge haben, damit sie auf den oberen Rand einer Seite passt, aber es gibt
-                            keine bestimmte Begrenzung.</para>
-							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird 
-                            standardmäßig keine Kopfzeile verwendet.</para>
+							keine bestimmte Begrenzung.</para>
+							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird
+							standardmäßig keine Kopfzeile verwendet.</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry id="fax_email_from">
+						<term><option>fax_email_from="&lt;Mailadresse&gt;"</option></term>
+						<listitem><para>Hier kann die Mailadresse gesetzt werden, die CapiSuite
+							als Absender bei der Mailzustellung des Faxdokumentes angibt.</para>
+							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird
+							standardmäßig der Empfänger auch als Absender verwendet (wenn
+							also der User gernot ein Fax empfängt, dann ist der Absender und
+							Empfänger der versandten Mail "gernot".</para>
 						</listitem>
 					</varlistentry>
 				</variablelist></sect4>
 				<sect4 id="options_fax_user"><title>Die Benutzer-Abschnitte</title><variablelist>
 					<varlistentry>
 						<term><option>outgoing_MSN</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                             im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>outgoing_timeout</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                             im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>fax_stationID</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                             im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>fax_headline</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
-                            im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
+						im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><option>fax_email_from</option></term>
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
+                            			im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry id="fax_numbers">
 						<term><option>fax_numbers="&lt;Nummer1&gt;,&lt;Nummer2&gt;,..."</option></term>
 						<listitem><para>Eine Liste mit Nummern, auf denen dieser Benutzer eingehende
                             Fax-Anrufe empfangen möchte. Diese Nummern werden benutzt, um zwischen Benutzern
-                            zu unterscheiden - die selbe Nummer darf also nicht in mehr als einem 
-                            Benutzerabschnitt erscheinen! Die Nummern sind durch Kommas getrennt und 
-                            es sind <emphasis>keine Leerzeichen</emphasis> erlaubt. Die erste Nummer 
+                            zu unterscheiden - die selbe Nummer darf also nicht in mehr als einem
+                            Benutzerabschnitt erscheinen! Die Nummern sind durch Kommas getrennt und
+                            es sind <emphasis>keine Leerzeichen</emphasis> erlaubt. Die erste Nummer
                             der Liste dient auch als Ihre eigene Nummer für ausgehende Faxe, wenn
 							outgoing_MSN nicht angegeben wurde (siehe <option>outgoing_MSN</option>)
                             </para>
@@ -869,12 +884,12 @@ make install</screen>
                             eingebaute Fax-Erkennung und kann auch Faxe empfangen.</para>
 
 							<para>Wenn die Liste nur den <literal>*</literal> enthält, werden
-							<emphasis>alle</emphasis> eingehenden Anrufe für diesen Benutzer 
+							<emphasis>alle</emphasis> eingehenden Anrufe für diesen Benutzer
                             angenommen (bitte mit Vorsicht benutzen!). Dies ist nur sinnvoll bei einem
                             Setup mit nur einem Benutzer, der alle Anrufe als Fax empfangen möchte.
 							</para>
 
- 							<para>Wenn aus irgendeinem Grund für spezielle MSNs 
+ 							<para>Wenn aus irgendeinem Grund für spezielle MSNs
                             <emphasis>keine Zielnummer</emphasis> übertragen wird (die österreichische
                             Telekom macht das für die Haupt-MSN, die wird als "Global Call" bezeichnet),
 							können Sie das besondere Zeichen <literal>-</literal> benutzen. Dies
@@ -885,26 +900,26 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="fax_email">
 						<term><option>fax_email=""</option></term>
-						<listitem><para>Wenn hier etwas angegeben wird, werden die Strings als 
-                            E-Mail-Adressen interpretiert, an die empfangene Faxe geschickt werden. 
-                            Mehrere Adressen werden durch Kommas getrennt. Wenn der Eintrag leer ist, 
+						<listitem><para>Wenn hier etwas angegeben wird, werden die Strings als
+                            E-Mail-Adressen interpretiert, an die empfangene Faxe geschickt werden.
+                            Mehrere Adressen werden durch Kommas getrennt. Wenn der Eintrag leer ist,
                             werden sie an den System-Account auf dem System, auf dem &cs; läuft, geschickt.
                             Die Adresse wird auch für Status-Reports für versendete Fax-Aufträge benutzt.
 							Wenn Sie überhaupt nicht möchten, dass E-Mails verschickt werden, verwenden Sie
 							die action-Option (siehe <option>fax_action</option>).</para>
-							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird die Mail 
+							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird die Mail
                             an den System-Account geschickt.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_action">
 						<term><option>fax_action="MailAndSave"</option></term>
 						<listitem><para>Hier können Sie festlegen, welche Aktionen ausgeführt werden,
-                                wenn ein Anruf empfangen wurde. Momentan werden zwei mögliche Aktionen 
+                                wenn ein Anruf empfangen wurde. Momentan werden zwei mögliche Aktionen
                                 unterstützt:
 								<variablelist>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
-										<listitem><para>Der empfangene Anruf wird an die angegebene 
+										<listitem><para>Der empfangene Anruf wird an die angegebene
                                             Adresse (siehe <option>fax_email</option>) geschickt
                                             und im <option>fax_user_dir</option> (siehe <xref linkend="options_fax_global"/>)
                                             gespeichert.</para>
@@ -936,7 +951,7 @@ make install</screen>
 					<variablelist>
 					<varlistentry id="voice_audio_dir">
 						<term><option>audio_dir="/path/to/audiodir/"</option></term>
-						<listitem><para>Das Anrufbeantworter-Skript nutzt verschiedene WAV-Dateien, 
+						<listitem><para>Das Anrufbeantworter-Skript nutzt verschiedene WAV-Dateien,
 							z.B. eine globale Ansage, wenn der Benutzer keine eigene hat, sowie einige
 							gesprochene Worte für die Fernabfrage und das dabei verwendete Menü. Diese
 							Audio-Dateien werden in diesem Verzeichnis gesucht. Wenn user_audio_files
@@ -948,9 +963,9 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="voice_user_dir">
 						<term><option>voice_user_dir="/path/to/userdir/"</option></term>
-						<listitem><para>In diesem Verzeichnis werden benutzerspezifische Daten 
-                            gespeichert. Es muss existieren und der Benutzer, unter dem &cs; läuft, muss 
-                            dafür Schreibrechte besitzen. Es enthält für jeden konfigurierten Benutzer ein 
+						<listitem><para>In diesem Verzeichnis werden benutzerspezifische Daten
+                            gespeichert. Es muss existieren und der Benutzer, unter dem &cs; läuft, muss
+                            dafür Schreibrechte besitzen. Es enthält für jeden konfigurierten Benutzer ein
                             Unterverzeichnis (benannt nach seiner User-ID). Die folgenden Unterverzeichnisse
                             befinden sich unterhalb des benutzerspezifischen Verzeichnisses:</para>
 							<variablelist>
@@ -986,9 +1001,9 @@ make install</screen>
 					<varlistentry id="voice_delay">
 						<term><option>voice_delay="15"</option></term>
 						<listitem><para>Setzt den Standard-Wert für die Verzögerung, mit der eingehende
-                            Anrufe angenommen werden (in Sekunden). Ein Wert von <literal>10</literal> 
+                            Anrufe angenommen werden (in Sekunden). Ein Wert von <literal>10</literal>
                             bedeutet, dass der Anrufbeantworter einen eingehenden Anruf 10 Sekunden nach
-							der eingehenden Verbindungsanforderung annimmt. Dieser Wert kann in 
+							der eingehenden Verbindungsanforderung annimmt. Dieser Wert kann in
                             den Benutzer-Abschnitten individuell überschrieben werden.</para>
 							<para>Diese Option ist zwingend erforderlich.</para>
 						</listitem>
@@ -996,19 +1011,19 @@ make install</screen>
 					<varlistentry id="voice_announcement">
 						<term><option>announcement="announcement.la"</option></term>
 						<listitem><para>Setzt den Standard-Namen für die Benutzer-Ansage.
-							Die Ansagen werden dann in 
+							Die Ansagen werden dann in
                             <filename>user_dir/username/announcement</filename> gesucht. Wenn sie dort,
-                            nicht gefunden wird, wird eine globale Ansage, die die angerufene MSN 
-                            enthält, abgespielt. Dieser Wert kann in den Benutzer-Abschnitten individuell 
+                            nicht gefunden wird, wird eine globale Ansage, die die angerufene MSN
+                            enthält, abgespielt. Dieser Wert kann in den Benutzer-Abschnitten individuell
                             überschrieben werden.</para>
-							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird 
+							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird
                             "announcement.la" angenommen.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_record_length">
 						<term><option>record_length="60"</option></term>
-						<listitem><para>Einstellung für die maximale Aufnahmelänge in Sekunden. 
-                            Dieser Wert kann in den Benutzer-Abschnitten individuell überschrieben 
+						<listitem><para>Einstellung für die maximale Aufnahmelänge in Sekunden.
+                            Dieser Wert kann in den Benutzer-Abschnitten individuell überschrieben
                             werden.</para>
                             <para>Diese Option ist optional. Wenn nichts angegeben wird, beträgt die
                             maximale Aufnahmelänge 60 Sekunden.</para>
@@ -1016,52 +1031,68 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="voice_record_silence_timeout">
 						<term><option>record_silence_timeout="5"</option></term>
-						<listitem><para>Einstellung für den Stille-Timeout während der Aufnahme in 
+						<listitem><para>Einstellung für den Stille-Timeout während der Aufnahme in
                             Sekunden. Wenn dieser Wert größer als 0 ist, wird die Aufnahme beendet, wenn
-							für die angegebene Zeit Stille erkannt wird. Um den Timeout zu deaktivieren, 
+							für die angegebene Zeit Stille erkannt wird. Um den Timeout zu deaktivieren,
                             setzen Sie ihn auf 0. Dieser Wert kann in den Benutzer-Abschnitten individuell
-                            überschrieben werden.</para> 
+                            überschrieben werden.</para>
                             <para>Diese Option ist optional. Wenn nichts angegeben wird, beträgt der
                             Timeout 5 Sekunden.</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry id="voice_email_from">
+						<term><option>voice_email_from="&lt;Mailadresse&gt;"</option></term>
+						<listitem><para>Hier kann die Mailadresse gesetzt werden, die CapiSuite
+							als Absender bei der Mailzustellung der aufgezeichneten
+							Sprachnachricht angibt.</para>
+							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird
+							standardmäßig der Empfänger auch als Absender verwendet (wenn
+							also der User gernot eine Sprachnachricht empfängt, dann ist der
+							Absender und Empfänger der versandten Mail "gernot".</para>
 						</listitem>
 					</varlistentry>
 				</variablelist></sect4>
 				<sect4 id="options_voice_user"><title>Verfügbare Optionen für die Benutzer-Abschnitte in der Anrufbeantworter-Konfiguration</title>
 				  <variablelist><varlistentry>
 						<term><option>voice_delay</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                         im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>announcement</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                         im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>record_length</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                         im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>record_silence_timeout</option></term>
-						<listitem><para>Benutzerspezifischer Wert für die globale Option 
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
+                        im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
+					</varlistentry>
+					<varlistentry>
+						<term><option>voice_email_from</option></term>
+						<listitem><para>Benutzerspezifischer Wert für die globale Option
                         im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
 					</varlistentry>
 					<varlistentry id="voice_numbers">
 						<term><option>voice_numbers="&lt;Nummer1&gt;,&lt;Nummer2&gt;,..."</option></term>
 						<listitem><para>Eine Liste mit Nummern, auf denen dieser Benutzer eingehende
-                            Sprach-Anrufe empfangen möchte. Diese Nummern werden benutzt, um zwischen 
-                            Benutzern zu unterscheiden - die selbe Nummer darf also nicht in mehr als einem 
-                            Benutzerabschnitt erscheinen! Die Nummern sind durch Kommas getrennt und 
-                            es sind <emphasis>keine Leerzeichen</emphasis> erlaubt. Das 
+                            Sprach-Anrufe empfangen möchte. Diese Nummern werden benutzt, um zwischen
+                            Benutzern zu unterscheiden - die selbe Nummer darf also nicht in mehr als einem
+                            Benutzerabschnitt erscheinen! Die Nummern sind durch Kommas getrennt und
+                            es sind <emphasis>keine Leerzeichen</emphasis> erlaubt. Das
                             Anrufbeantworter-Skript macht auch eine automatische Fax-Erkennung, sodass ein
-							Fax an diese Nummer geschickt werden kann. Wenn die Liste nur den 
-                            <literal>*</literal> enthält, werden <emphasis>alle</emphasis> 
+							Fax an diese Nummer geschickt werden kann. Wenn die Liste nur den
+                            <literal>*</literal> enthält, werden <emphasis>alle</emphasis>
                             eingehenden Anrufe für diesen Benutzer angenommen (bitte mit Vorsicht benutzen!).
-                            Dies ist nur sinnvoll bei einem Setup mit nur einem Benutzer, der alle Anrufe 
+                            Dies ist nur sinnvoll bei einem Setup mit nur einem Benutzer, der alle Anrufe
                             empfangen möchte.</para>
 
- 							<para>Wenn aus irgendeinem Grund für spezielle MSNs 
+ 							<para>Wenn aus irgendeinem Grund für spezielle MSNs
                             <emphasis>keine Zielnummer</emphasis> übertragen wird (die österreichische
                             Telekom macht das für die Haupt-MSN, die wird als "Global Call" bezeichnet),
 							können Sie das besondere Zeichen <literal>-</literal> benutzen. Dies

@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.11 $
+#    version              : $Revision: 1.12 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -142,6 +142,9 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 		os.chmod(filename[:-3]+"txt",0600)
 		os.chown(filename[:-3]+"txt",userdata[2],userdata[3])
 
+		fromaddress=cs_helpers.getOption(config,curr_user,"fax_email_from","")
+		if (fromaddress==""):
+			fromaddress=curr_user
 		mailaddress=cs_helpers.getOption(config,curr_user,"fax_email","")
 		if (mailaddress==""):
 			mailaddress=curr_user
@@ -158,7 +161,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 				  +str(faxInfo[4])
 			mailText+="\n\nSee attached file.\nThe original file was saved to file://"+filename \
 			  +" on host \""+os.uname()[1]+"\""
-			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Fax received from "+call_from+" to "+call_to,
+			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Fax received from "+call_from+" to "+call_to,
 			  faxFormat, mailText, filename)
 
 # @brief called by callIncoming when an incoming voice call is received
@@ -247,11 +250,14 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		os.chmod(filename[:-2]+"txt",0600)
 		os.chown(filename[:-2]+"txt",userdata[2],userdata[3])
 
+		fromaddress=cs_helpers.getOption(config,curr_user,"voice_email_from","")
+		if (fromaddress==""):
+			fromaddress=curr_user
 		mailaddress=cs_helpers.getOption(config,curr_user,"voice_email","")
 		if (mailaddress==""):
 			mailaddress=curr_user
 		if (action=="mailandsave"):
-			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Voice call received from "+call_from+" to "+call_to, "la",
+			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Voice call received from "+call_from+" to "+call_to, "la",
 			  "You got a voice call from "+call_from+" to "+call_to+"\nDate: "+time.ctime()+"\n\n"
 			  +"See attached file.\nThe original file was saved to file://"+filename+"\n\n", filename)
 
@@ -413,6 +419,9 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.12  2003/10/03 13:42:09  gernot
+# - added new options "fax_email_from" and "voice_email_from"
+#
 # Revision 1.11  2003/08/24 12:47:50  gernot
 # - faxIncoming tried to reconnect when it was called after a switch from
 #   voice to fax mode, which lead to a call abort. Thx to Harald Jansen &

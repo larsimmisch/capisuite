@@ -1,4 +1,4 @@
-# $Id: answering_machine.confin,v 1.5 2003/04/10 21:29:51 gernot Exp $
+# $Id: answering_machine.confin,v 1.6 2003/10/03 13:42:09 gernot Exp $
 #
 # This is the configuration file for the answering machine scripts distributed
 # with CapiSuite
@@ -80,6 +80,11 @@ record_length="60"
 # finished by the answering machine
 record_silence_timeout="5"
 
+# voice_email_from (optional, default voice message addressee) [New in 0.5]
+# When voice messages are send by e-mail this address is used in the 'From:'
+# header field.
+voice_email_from="capisuite daemon <root>"
+
 ###############################################################################
 ############################# user settings ###################################
 ###############################################################################
@@ -89,7 +94,8 @@ record_silence_timeout="5"
 #
 # Each user section can override the following default options given above:
 #
-# voice_delay, announcement, record_length, record_silence_timeout
+# voice_delay, announcement, record_length, record_silence_timeout,
+# voice_email_from
 #
 # Additionally, the following options are possible:
 #
