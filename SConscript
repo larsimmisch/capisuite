@@ -7,11 +7,11 @@ Import('env')
 
 cronfile = env.FileSubst('capisuite.cron', 'capisuite.cronin')
 rcfile   = env.FileSubst('rc.capisuite', 'rc.capisuite.in')
-env.AddPostAction([cronfile, rcfile], 'chmod gu+x $TARGET')
+env.AddPostAction([cronfile, rcfile], Chmod('$TARGETS', 0755))
 
-Alias('install',
-      env.Install('$docdir', Split('COPYING NEWS README')),
-      env.Install('$sysconfdir/init.d/capisuite', rcfile),
-      env.InstallAs('$sysconfdir/cron.daily/capisuite', cronfile),
-      env.InstallAs('$pkgsysconfdir/cronjob.conf','cronjob.conf'),
-      )
+env.Alias('install', [
+    env.Install('$docdir', Split('COPYING NEWS README AUTHORS')),
+    env.InstallAs('$sysconfdir/init.d/capisuite', rcfile),
+    env.InstallAs('$sysconfdir/cron.daily/capisuite', cronfile),
+    env.InstallAs('$pkgsysconfdir/cronjob.conf','cronjob.conf'),
+    ])

@@ -1,10 +1,10 @@
-# -*- python -*-
+# -*- mode: python ; coding: latin-1 -*-
 """
 Main SCons build script for CapiSuite
 
 (c) Copyright 2004 by Hartmut Goebel <h.goebel@crazy-compilers.com>
 
-CapiSuite is (c) Copyright by Gernot Hiller <gernot@hiller.de>
+CapiSuite is (c) Copyright by Gernot Hillier <gernot@hillier.de>
 
 Use 'scons --help' for a list of available options.
 
@@ -17,123 +17,122 @@ Example:
   scons prefix=/     # build for prefix=/
   scons              # prefix=/ is taken from 'options.cache' 
   scons prefix=/usr/local  # build for prefix=/usr/local
-                     # since this is the default, the entry in options.cache
-                     # will be renmoved
+                     # since this is the default, the entry in
+                     # options.cache will be removed
   scons              # default prefix is used
   
-WARNING: This build method is not officially supported for CapiSuite. Please
-use the usual configure;make;make install triplet instead!
+WARNING: This build method is not yet officially supported for
+CapiSuite. Please use the usual 'configure; make; make install'
+triplet instead!
 """
 
 __targets__ = """
 Additional targets:
   configure : build the 'configure' script
-               (this is automatically done if 'config.h' is missing)
+              (this is automatically done if 'config.h' is missing)
   pycheck    : check Python sources with PyChecker (not yet implemented)
 
-  install    : install all files
+  install         : install all files
   install-pylib   : install only the python library
   install-scripts : install only the python scripts
   install-exec    : install only the executables
+  install-man     : install only the man pages
+  install-data-local: create spool- and state-dirs
 
-  For all install-targets base may be set with INSTALL_BASE=...
+  For all 'install'-targets the installation base may be set with
+  INSTALL_BASE=...
+
+  dist      : build distribution archive (.tar.gz)
+  distcheck : test whether distribution archive is slef-contained
+  rpms      : build source and binay rpms
+
 """
+## install-strip: strip the _installed_ binaries
+## all == .
+## clean == -c: clean all file that could be made by building
+## distclean: clean all file that are made by configuring and building
+##            config.h, .sconf.temp, ...
+## uninstall == -c install
+## mostlyclean: läßt selten gebaute File stehen
+## maintainer-clean: clean + bison-output, info-files, tag tables, etc.
+## check: perform self-test
+##
+## TAGS, info, dvi,
+## installcheck, installdirs
 
+###---####---###---####---###---####---###---####---###---####---###---###
 
-# File-Content Substitution will (hopefully ) be part of SCons 0.95
-def _file_subst(target, source, env):
-    import os, re
-    import SCons.Util
-
-    def _substitute(matchobj, env=env):
-        sym = matchobj.group(1)
-        try:
-            return env.subst(str(env[sym]))
-        except: # TypeError: # sym not a string
-            print 'Not substituting', sym
-            return matchobj.group(0) # matched 
-
-    delim = re.escape(env.get('SUBST_DELIM', '@'))
-    subst_pattern = re.compile('%s(.*?)%s' % (delim, delim))
-    for t, s in zip(target, source):
-        t = str(t)
-        s = s.rstr()
-        text = open(s, 'rb').read()
-        text = subst_pattern.sub(_substitute, text)
-        open(t, 'wb').write(text)
-        os.chmod(t, os.stat(s)[0])
-    return None
-
-def _fs_strfunc(target, source, env):
-    return "generating '%s' from '%s'" % (target[0], source[0])
-
-_fs_builder = Builder(action = Action(_file_subst, strfunction = _fs_strfunc))
-
-import sys, os, os.path
-import SCons.Util
+# some Pythonic setup
+import sys, os, os.path, glob
+import SCons.Util, SCons.Script
 import SCons.Node.FS
 
-EnsurePythonVersion(2,2) # capisuite requires this
-#EnsureSConsVersion(0,94)
-
-build_dir = Dir('#/build')
+# Store signatures in ".sconsign.dbmlite" in the top-level directory.
+SConsignFile()
 
 class InstallableEnv(Environment):
+    """Extended Environment which supports INSTALL_BASE and ExtraDist."""
+    def BasedFile(self, name):
+        if self.get('INSTALL_BASE'): name = ('$INSTALL_BASE/%s' % name)
+        return self.File(name)
+    def BasedDir(self, name):
+        if self.get('INSTALL_BASE'): name = ('$INSTALL_BASE/%s' % name)
+        return self.Dir(name)
+
     def Install(self, dir, source):
         """Install specified files in the given directory."""
-        if self.has_key('INSTALL_BASE'):
-            def _Dir(name):
-                return SCons.Node.FS.Dir(name, parent, self.fs)
-            parent = self['INSTALL_BASE']
-            dir = self.arg2nodes(dir, _Dir)
-        return Environment.Install(self, dir, source)
+        dir = self.arg2nodes(dir, self.BasedDir)
+        files = Environment.Install(self, dir, source)
+        env.ExtraDist(files)
+        #self.SourceDist(files)
+        return files
 
     def InstallAs(self, target, source):
         """Install sources as targets."""
-        def _File(name):
-            return SCons.Node.FS.File(name, dir, self.fs)
-            
-        if self.has_key('INSTALL_BASE'):
-            dir = self['INSTALL_BASE']
-            targets = self.arg2nodes(target, _File)
-        return Environment.InstallAs(self, target, source)
+        target = self.arg2nodes(target, self.BasedFile)
+        files = Environment.InstallAs(self, target, source)
+        self.ExtraDist(files)
+        return files
 
-env = InstallableEnv()
-env.Append(
-    BUILDERS={'FileSubst' : _fs_builder},
-    PACKAGE    = 'capisuite',
-    VERSION    = '0.5.cvs',
-    srcdir     = build_dir,
+    _valid_man_extensions = '0123456789ln' # from info automake
 
-    pkgdatadir    = '${datadir}/${PACKAGE}',
-    pkglibdir     = '${libdir}/${PACKAGE}',
-    pkgincludedir = '${includedir}/${PACKAGE}',
+    def mandir(self, section):
+        section = str(section)
+        assert section in self._valid_man_extensions, section # todo: error msg
+        return os.path.join('$mandir', 'man%s' % section)
 
-    pkgbindir     = '${bindir}',
-    pkgsbindir    = '${sbindir}',
-    pkgsysconfdir = '${sysconfdir}/${PACKAGE}',
-    #pkglibdir     = '${prefix}/lib',
-    spooldir      = '${localstatedir}/spool/${PACKAGE}',
-    docdir        = '${pkgdatadir}/doc/${PACKAGE}',
-    )
-env.SConscript('SConscript-Options', exports=['env', '__targets__'])
+    def InstallMan(self, source, section=None):
+        """
+        Install man pages.
+        If 'section' is given, file extensions are changed to 'section'.
+        Otherwise, the section is taken from file extension.
+        """
+        source = self.arg2nodes(source, self.File)
+        result = []
+        for man in source:
+            base = os.path.basename(man.name)
+            base, ext = os.path.splitext(base)
+            sect = section
+            if sect is None:
+                sect = ext[1] # determine section from name/extension
+            else:
+                ext = '.%s' % sect # overwrite extension
+            res = self.InstallAs(os.path.join(self.mandir(sect), base + ext),
+                                 man)
+            result.extend(res)
+        return result
 
-if env.has_key('INSTALL_BASE'):
-    env.Replace(INSTALL_BASE=env.Dir('$INSTALL_BASE'))
-Export('env')
+    def ExtraDist(self, files):
+        """Collect Additional files to be distributed."""
+        if SCons.Util.is_List(files):
+            files = map(File, files)
+        else:
+            files = File(files)
+        env.Append(__SOURCES=files)
 
-env.BuildDir(build_dir=build_dir, src_dir='.')
-
-
-###---####---###---####---###---####---###---####---###---####---###---###
-# call configure if required
-
-# if config.h does not exist, build it using Scons' conftest
-if not os.path.exists(str(File('config.h', build_dir))) \
-   or 'configure' in COMMAND_LINE_TARGETS:
-    env.SConscript('SConscript-Config', build_dir=build_dir)
-
-###---####---###---####---###---####---###---####---###---####---###---###
+#
+# Support functions for linking with Python
+#
 
 def GetPythonModuleSetup(env):
     """
@@ -190,11 +189,129 @@ def GetPythonEmbeddedSetup(env):
     print ' '.join(python_libspec)
     #print '>>>', env['LIBS']
 
-GetPythonModuleSetup(env)
-GetPythonEmbeddedSetup(env)
+def Get_sfftobmp_Version(context):
+    """
+    Test for the sfftobmp version installed as different versions
+    need different parameters. :-(
+    """
+    import commands, re
+    print 'Checking for sfftobmp version ...',
+    status, text = commands.getstatusoutput('sfftobmp -v')
+    if status:
+        print 'failed'
+        print text
+        Exit(1)
+    res = re.search(r'Version ([0-9,.]+)', text, re.M) or 0
+    if not res:
+        print 'failed'
+        print
+        print '** It seams like the output of sfftobmp has changed. Please'
+        print '** contact the authors of capisuite to fix this.'
+        Exit(10)
+    res = res.group(1)
+    env.Replace(sfftobmp_major_version = res.split('.')[0])
+    print res
+
+
+# A Shortcut
+is_dist = ('dist' in COMMAND_LINE_TARGETS or
+           'distcheck' in COMMAND_LINE_TARGETS)
+
+###---####---###---####---###---####---###---####---###---####---###---###
+
+# capisuite requires Python 2.2
+EnsurePythonVersion(2,2)
+if is_dist:
+    # 'dist' target requires module tarfile which is new in Python 2.3
+    EnsurePythonVersion(2,3) 
+EnsureSConsVersion(0,96)
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# Setting up build-environment
+#
+
+# Build all files in this subdir
+build_dir = Dir('#/build')
+
+env = InstallableEnv(tools=Split('default sourcetar filesubst'),
+                     toolpath=['scons-tools'],
+
+    # set some build variables
+    PACKAGE    = 'capisuite',
+    VERSION    = '0.5.cvs',
+    RELEASE    = '1',
+
+    # required for some building the docs (doxygen)
+    srcdir     = build_dir, 
+
+    # default pathes
+    pkgdatadir    = '${datadir}/${PACKAGE}',
+    pkglibdir     = '${libdir}/${PACKAGE}',
+    pkgincludedir = '${includedir}/${PACKAGE}',
+    pkgbindir     = '${bindir}',
+    pkgsbindir    = '${sbindir}',
+    pkgsysconfdir = '${sysconfdir}/${PACKAGE}',
+    #pkglibdir     = '${prefix}/lib',
+    spooldir      = '${localstatedir}/spool/${PACKAGE}',
+    docdir        = '${pkgdatadir}/doc/${PACKAGE}',
+
+    # required for ExtraDist 
+    __SOURCES     = [],
+
+    # used for distcheck
+    SCONS         = 'scons',
+    DISTCHECK_DIR = Dir('#/dist/check'),
+    )
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# Handling of command line options
+#
+
+# Some commonly used make targets have to be done another way.
+# Inform the used if he tries to use such a target:
+for ct, t in (
+    ('clean', '-c'),
+    ('uninstall', '-c install'),
+    ('distclean', '-c dist'),
+    ):
+    if ct in COMMAND_LINE_TARGETS:
+        print 
+        print "Please use 'scons %s' instead of the pseudo-target '%s'." \
+              % (t, ct)
+        print
+        Exit(1)
+
+# Handle options
+env.SConscript('SConscript-Options', exports=['env', '__targets__'])
+
+### Some more setup
+env.BuildDir(build_dir=build_dir, src_dir='.')
+
+Export('env', 'is_dist')
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# Configure build (only if neither cleaning nor 'dist'-ing)
+# 
+if not GetOption('clean') and not is_dist:
+    # "configure" only if necessary or requested
+    if not File('config.h', build_dir).exists() \
+           or 'configure' in COMMAND_LINE_TARGETS:
+        env.SConscript('SConscript-Config')#, build_dir=build_dir)
+
+    # get some build variables we always need to evaluate
+    GetPythonModuleSetup(env)
+    GetPythonEmbeddedSetup(env)
+    Get_sfftobmp_Version(env)
+
+###---####---###---####---###---####---###---####---###---####---###---###
 
 env.Append(
     CCFLAGS = Split('-g -O2'),
+
+    # these should go into src/SConscript:
     LIBS      = Split('pthread capi20'),
     CPPDEFINES={'LOCALSTATEDIR': r'\"${localstatedir}\"',
                 'PKGDATADIR'   : r'\"${pkgdatadir}\"',
@@ -212,23 +329,71 @@ env.Append(
 ## if env['CXX'] in ('g++', 'c++'):
 ##     env.Append(CXXFLAGS = ['-Wall', '-Wno-non-virtual-dtor'])
 
-
 ###---####---###---####---###---####---###---####---###---####---###---###
-
-# snippet for unittest
-#mytest = env.program(...)
-#Alias( 'unittest', mytest )
-#Alias( 'all', 'unittest' )
-#unittetsInstall = env.Install(...)
-#Alias('unittest', unitteststInstall)
-
-# now build the subdirectories' stuff
+#
+# Build everything defined in the 'Sconscript' files.
+# 
 env.SConscript(dirs=[Dir('.', build_dir),
                      Dir('src', build_dir),
                      Dir('scripts', build_dir),
                      Dir('scripts/waves', build_dir),
                      Dir('docs', build_dir),
+                     Dir('suse'),
                      ])
+
+#--- additional files to be distributed ---
+env.ExtraDist(Split("""
+    ChangeLog TODO
+    SConstruct
+    SConscript-Config
+    SConscript-Options
+    scons-tools/sourcetar.py
+    scons-tools/filesubst.py
+    scons-tools/textfile.py
+
+    SConscript
+    src/SConscript
+    scripts/SConscript
+    scripts/waves/SConscript
+    suse/SConscript
+    docs/SConscript
+    """))
+
+
+#--- additional files to be distributed (automake/autoconf stuff) ---
+# only add these files if they exist
+for f in Split("""
+    INSTALL
+    acinclude.m4
+    aclocal.m4
+    config.h.in
+    configure
+    configure.in
+    depcomp
+    install-sh
+    missing
+    mkinstalldirs
+    Makefile.am
+    Makefile.in
+    docs/Makefile.am
+    docs/Makefile.in
+    scripts/Makefile.am
+    scripts/Makefile.in
+    scripts/waves/Makefile.am
+    scripts/waves/Makefile.in
+    src/Makefile.am
+    src/Makefile.in
+    src/application/Makefile.am
+    src/application/Makefile.in
+    src/backend/Makefile.am
+    src/backend/Makefile.in
+    src/capisuite-py/Makefile.am
+    src/capisuite-py/Makefile.in
+    src/modules/Makefile.am
+    src/modules/Makefile.in
+    """):
+    if os.path.exists(f):
+        env.ExtraDist(f)
 
 #env.SourceCode('.',
 #      env.CVS('pserver:anonymous@cvs.capisuite.berlios.de:/cvsroot/capisuite',
@@ -240,10 +405,73 @@ mkdir -p $RPM_BUILD_ROOT/usr/sbin
 
 ln -sf ../../etc/init.d/capisuite $RPM_BUILD_ROOT/usr/sbin/rccapisuite
 """
-#EXTRA_DIST = rc.capisuite.in capisuite.cronin cronjob.conf
-#install-data-local:
-#	mkdir -p $(DESTDIR)$(localstatedir)/log
-#	$(mkinstalldirs) $(DESTDIR)$(spooldir)/sendq
-#	$(mkinstalldirs) $(DESTDIR)$(spooldir)/done
-#	$(mkinstalldirs) $(DESTDIR)$(spooldir)/failed
-#	$(mkinstalldirs) $(DESTDIR)$(spooldir)/users
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# Install targets
+#
+
+for d in (
+    '${DESTDIR}${localstatedir}/log',
+    '${DESTDIR}${spooldir}/sendq',
+    '${DESTDIR}${spooldir}/done',
+    '${DESTDIR}${spooldir}/failed',
+    '${DESTDIR}${spooldir}/users',
+    ):
+    if not os.path.exists(env.subst(d)):
+        d = env.Command(env.BasedDir(d), None, Mkdir('$TARGET'))
+        env.Alias('install-data-local', d)
+
+# 'install' includes the other parts, too
+env.Alias('install', env.Alias('install-pylib'))
+env.Alias('install', env.Alias('install-scripts'))
+env.Alias('install', env.Alias('install-exec'))
+env.Alias('install', env.Alias('install-data-local'))
+env.Alias('install', env.Alias('install-man'))
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# 'Dist' target
+#
+if is_dist or 'rpms' in COMMAND_LINE_TARGETS:
+    dist = env.DistTar('#/dist/${PACKAGE}-${VERSION}.tar.gz', env['__SOURCES'],
+                       TARFLAGS='-c -z')[0]
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# 'Dist' target
+#
+if 'distcheck' in COMMAND_LINE_TARGETS:
+    distcheck = env.Command('distcheck',
+                env.Dir('$DISTCHECK_DIR/${PACKAGE}-${VERSION}'),
+                [Delete('$SOURCE'),
+                 Mkdir('$SOURCE'),
+                 '$TAR xz -C ${SOURCE.dir} -f ' + dist.abspath,
+                 '$SCONS -C $SOURCE .',
+                 '$SCONS -C $SOURCE dist',
+                 'echo ; echo checkdist passed ; echo'
+                 ])
+    env.Clean(distcheck, env['DISTCHECK_DIR'])
+    env.Depends(distcheck, dist)
+
+###---####---###---####---###---####---###---####---###---####---###---###
+#
+# 'rpm' target
+#
+if 'rpms' in COMMAND_LINE_TARGETS:
+    _builddir = build_dir
+    _distdir = dist.dir
+    _arch = 'i586'
+    _rpmbasename = env.subst('capisuite-$VERSION-$RELEASE')
+    env.Alias('rpms', 
+      env.Command([File('%s.%s.rpm' % (_rpmbasename, _arch), _distdir),
+                   File('%s.%s.rpm' % (_rpmbasename, 'src'), _distdir)],
+                  ['suse/capisuite-mdk-9.2.spec', dist], [ \
+                  ['rpmbuild',
+                   '--define', '_builddir %s'  % _builddir.abspath,
+                   '--define', '_sourcedir %s' % _distdir.abspath,
+                   '--define', '_srcrpmdir %s' % _distdir.abspath,
+                   '--define', '_rpmdir %s'    % _distdir.abspath,
+                   '--define', '_rpmfilename $TARGET.name',
+                   '-ba', '$SOURCE'],
+                   ]))

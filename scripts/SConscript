@@ -12,13 +12,13 @@ def py_compile(target, source, env):
                                             env.subst('$SOURCE.file')),  
                        )
 
-# these ar meant to be used by users
+# these are meant to be used by users
 user_scripts = [env.FileSubst('capisuitefax', 'capisuitefax.in'),]
-env.AddPostAction(user_scripts, 'chmod 755 $TARGETS')
+env.AddPostAction(user_scripts, Chmod('$TARGETS',  0755))
 
 # these are meant to be used by the admin
 sbin_scripts = [File('capisuite-checkconfig'),]
-#env.AddPostAction(sbin_scripts, 'chmod 755 $TARGETS')
+#env.AddPostAction(sbin_scripts, Chmod('$TARGETS',  0755))
 
 # config files
 configs = [
@@ -26,8 +26,7 @@ configs = [
     env.FileSubst('answering_machine.conf', 'answering_machine.confin')
     ]
 
-# this is no longer needed
-# todo: check cs_helper.py into cvs instead of cs_helper.pyin
+# file subst. is required because of sfftobmp_major_version
 env.FileSubst('cs_helpers.py', 'cs_helpers.pyin')
 
 pymodules = []
@@ -37,17 +36,20 @@ for mod in Split('cs_helpers'):
 
 #--- install ---
 
-install_pylib = env.Install('$python_moduledir', pymodules)
-Alias('install-pylib',install_pylib)
+env.Alias('install-pylib', env.Install('$python_moduledir', pymodules))
 
-for i in [env.Install('$pkgbindir',  user_scripts),
-          env.Install('$pkgsbindir', sbin_scripts),
-          env.Install('$pkglibdir',  Split('idle.py incoming.py'))]:
-    Alias('install-scripts', i)
-    Alias('install', i)
-
-Alias('install',
-      env.Install('$python_moduledir', pymodules),
-      env.Install('$pkgsysconfdir', configs),
-      env.Install('$pkglibdir', 'README'),
-      )
+for i in (
+    env.Install('$pkgbindir',  user_scripts),
+    env.Install('$pkgsbindir', sbin_scripts),
+    env.Install('$pkglibdir',  Split('idle.py incoming.py'))
+    ):
+    env.Alias('install-scripts', i)
+    
+for i in (
+    env.Install('$python_moduledir', pymodules),
+    env.Install('$pkgsysconfdir', configs),
+    env.Install('$pkglibdir', 'README'),
+    ):
+    env.Alias('install', i)
+    # this also includes 'install-pylib' and 'install-scripts'
+    # (set in #/SConstruct)

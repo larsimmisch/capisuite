@@ -1,3 +1,27 @@
+2005-01-02  Hartmut Goebel  <h.goebel@crazy-compilers.com>
+	* SConstruct: enhanced for supporting SCons 0.96's 'toolpath'
+	  feature
+	* scons-tools/filesubst.py: likewise
+	* scons-tools/sourcetar.py: likewise
+	* SConstruct: Added traget 'dist' and 'distcheck' for creating and
+	  testing a distribution archive (.tar.gz)
+	* SConstruct: env.InstallMan() for easy installation of man pages.
+	* SConstruct: made 'install-*' targets sub-aliases of 'install';
+	  this allowed some cleaning up in SConscripts.
+	* SConscript: likewise
+	* src/SConscript: likewise
+	* src/capisuite-py/SConscript: likewise
+	* scripts/SConscript: likewise
+	* docs/SConscript: changed to use prebuild man pages from SVN
+	  repository. Building from docbook is still to do.
+	* suse/SConscript: New SConscript for building .spec files.
+	* suse/capisuite-mdk-9.2.spec.in: Added .spec for Mandrake 9.2
+	* SConstruct: Added target 'rpms' for build source and binary RPMs
+	  (currently the .spec file is hardcoded).
+	* SConstruct: updated tests to status of current ./configure script
+	* SConstruct-Config: likewise
+	* Changelog, TODO: Updated
+
 2004-12-30  Hartmut Goebel  <h.goebel@crazy-compilers.com>
 	* scripts/cs_helpers.pyin: Changed sfftotiff to be defined
 	  depending on @sfftobmp_major_version@ during runtime. This

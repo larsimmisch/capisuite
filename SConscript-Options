@@ -30,14 +30,18 @@ opts.AddOptions(
   ('mandir',        'man documentation',              '$prefix/man'),
 
   # install into another filesystem base
-  ('INSTALL_BASE',   'base dir for installation (userfull for RPMs)',
-                     '#/dist'),
+  ('INSTALL_BASE',   'base dir for installation (usefull for RPMs)', '/'),
+  #('KEEP_CONFIG',    'Do not install config files (usefull for development)',
+  #                   0),
 
-  # this is a capisuite-special
+  # this is a capisuite-special (CS_SET_DOCDIR)
   ('docdir',        'other documentation',         '$datadir/doc/capisuite'),
   )
 
 Import(['env', '__targets__'])
 opts.Update(env)
 Help(opts.GenerateHelpText(env) + __targets__)
+if env.has_key('INSTALL_BASE'):
+    if str(env['INSTALL_BASE']) in ('/', ''):
+        del env['INSTALL_BASE']
 opts.Save('options.cache', env)

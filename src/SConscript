@@ -8,16 +8,19 @@ libmodule = SConscript('modules/SConscript')
 libappl   = SConscript('application/SConscript')
 libback   = SConscript('backend/SConscript')
 
+env.ExtraDist(Split("""
+    capisuite-py/SConscript
+    modules/SConscript
+    application/SConscript
+    backend/SConscript
+    """))
+
 capisuite = env.Program('capisuite',
-                  ['main.cpp', libappl, libmodule, libback, ])
-env.AddPostAction(capisuite, 'strip $TARGET')
+                        ['main.cpp', libappl, libmodule, libback])
+#env.AddPostAction(capisuite, 'strip $TARGET')
 
 capisuite_conf = env.FileSubst('capisuite.conf', 'capisuite.conf.in')
 
-install_exec = env.Install('$sbindir', capisuite)
-Alias('install-exec', install_exec)
-
-Alias('install',
-      env.Install('$pkgsysconfdir', capisuite_conf),
-      install_exec,
-      )
+# -- install --
+env.Alias('install-exec', env.Install('$sbindir', capisuite))
+env.Alias('install',      env.Install('$pkgsysconfdir', capisuite_conf))

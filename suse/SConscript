@@ -1,0 +1,11 @@
+# -*- python -*-
+
+Import('env')
+
+specs = []
+for f in Split('capisuite-mdk-9.2.spec'):
+    #env.ExtraDist(File(f, Dir('.')))
+    env.ExtraDist(f)
+    specs.append(env.FileSubst(f, '%s.in' % f))
+
+#env.ExtraDist(specs)

@@ -14,14 +14,11 @@ def py_compile(target, source, env):
 
 # substitute "pgksysconfdir"
 env.FileSubst('config.py', 'config.py.in')
-
+    
 modules = []
 for mod in Split('__init__ config consts fax fileutils voice exceptions '
                  'core'):
     modules.append(mod+'.py')
     modules.append(env.Command(mod + '.pyc', mod+'.py', py_compile))
 
-install_pylib = env.Install('$pkgpython_moduledir', modules)
-
-Alias('install-pylib',install_pylib)
-Alias('install', install_pylib)
+env.Alias('install-pylib', env.Install('$pkgpython_moduledir', modules))

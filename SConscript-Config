@@ -105,11 +105,26 @@ def CheckStringClear(context):
     context.did_show_result = 1
     return ret
 
+# capisuite special test
+def CheckCapiALERT_REQ(context):
+    context.Display('Checking for new ALERT_REQ signature in capiutils.h ... ')
+    text = """
+        #include <capiutils.h>
+        int main() {
+            ALERT_REQ (NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL);
+        }
+        \n"""
+    ret = context.CompileProg(text, '.cpp')
+    SCons.Conftest._YesNoResult(context, ret, "HAVE_NEW_CAPI4LINUX", text)
+    context.did_show_result = 1
+    return ret
+
 
 conf = Configure(env,
                  custom_tests = {'CheckHeadersStdC': CheckHeadersStdC,
                                  'CheckHeaderTime': CheckHeaderTime,
                                  'CheckStringClear': CheckStringClear,
+                                 'CheckCapiALERT_REQ': CheckCapiALERT_REQ,
                                  },
                  conf_dir = '.sconf_temp', # no '#' to build in build-dir
                  log_file = 'config.log'   # no '#' to build in build-dir
@@ -131,21 +146,24 @@ conf.CheckHeaderTime()
 
 ###--- CapiSuite specials ---###
 
+# CS_TEST_GCC3
 # new gcc3 feature: we can #include<ostream> instead of ostream.h
-conf.CheckHeader('ostream', language='C++')
+conf.CheckHeader('ostream', language='C++') 
 conf.CheckStringClear() # checking for string::clear method
 
+conf.CheckCapiALERT_REQ() # CS_TEST_CAPI4LINUX
+# CS_TEST_SFFTOBMP is implemented in SConstruct.Get_sfftobmp_Version
+# CS_SET_DOCDIR is implemented in SConscript-Options
 
 ###--- libs required by CapiSuite ---###
-
 # checking for capi20_register in -lcapi20... yes
 if not conf.CheckLib('capi20', 'capi20_register', language='C++'):
-    print 'libcapi not found - aborting'
+    print 'libcapi20 not found - aborting'
     Exit(5)
 
 # checking for pthread_create in -lpthread... yes
 if not conf.CheckLib('pthread', 'pthread_create', language='C++'):
-    print 'lipthread not found - aborting'
+    print 'libpthread not found - aborting'
     Exit(5)
 
 # todo

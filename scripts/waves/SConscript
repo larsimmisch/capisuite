@@ -7,8 +7,9 @@ def findFiles(pattern, subdir=''):
     files = []
     for file in os.listdir(os.path.join(Dir('.').srcnode().abspath, subdir)):
         if fnmatch.fnmatch(file, pattern):
-            files.append(os.path.join(subdir, file))
+            files.append(File(os.path.join(subdir, file), Dir('.')))
     return files
-    
-Alias('install', env.Install('$pkgdatadir/waves', 'README' ))
-Alias('install', env.Install('$pkgdatadir/waves', findFiles('*.la')))
+
+for n in (env.Install('$pkgdatadir/waves', 'README' ),
+          env.Install('$pkgdatadir/waves', findFiles('*.la'))):
+    env.Alias('install', n)
