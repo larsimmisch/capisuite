@@ -771,13 +771,14 @@ make install</screen>
 					<varlistentry id="fax_outgoing_MSN">
 						<term><option>outgoing_MSN="&lt;Ihre MSN&gt;"</option></term>
 						<listitem><para>Diese Nummer wird als Ihre eigene Nummer für ausgehende Rufe
-                            verwendet. Wenn Sie nicht angegeben wird, wird die erste Nummer von
-							fax_numbers verwendet (siehe <option>fax_numbers</option>). Bitte 
+							verwendet. Wenn Sie nicht angegeben wird, wird die erste Nummer von
+							fax_numbers verwendet (siehe <option>fax_numbers</option>). Ist diese
+							ebenfalls nicht gesetzt, so kann der Benutzer kein Fax verschicken. Bitte
 							ersetzten Sie den Eintrag mit einer gültigen MSN Ihres ISDN-Anschlusses oder
-                            lassen ihn leer. Dieser Wert kann in den Benutzer-Abschnitten individuell
+							lassen ihn leer. Dieser Wert kann in den Benutzer-Abschnitten individuell
 							überschrieben werden.</para>
 							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird 
-                            standardmäßig keine MSN verwendet.</para>
+							standardmäßig die erste MSN von <option>fax_numbers</option> verwendet.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_outgoing_timeout">
@@ -876,7 +877,7 @@ make install</screen>
 							können Sie das besondere Zeichen <literal>-</literal> benutzen. Dies
                             bedeutet "no destination number available".</para>
 							<para>Diese Option ist optional. Wenn nichts angegeben wird, kann der Benutzer
-                            Fax-Dokumente weder senden noch empfangen.</para>
+							keine Fax-Dokumente empfangen.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_email">

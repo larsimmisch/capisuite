@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.4.2</title>
+<title>CapiSuite 0.4.2.cvs</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -224,7 +224,7 @@
 						AVM cards due to a bug in the AVM CAPI driver. So if someone sends you a color fax (which seems to
 						be a very rare case), you'll need this package - unless you'll get a mail stating this error.
 						If your distribution doesn't have this packages, you can download it from
-						<ulink url="http://www.pdflib.com/jpeg2ps/"/>.
+						<ulink url="http://www.pdflib.com/jpeg2ps/"/>.</para>
 						</listitem>
 					</varlistentry>
 				</variablelist>
@@ -688,7 +688,8 @@ make install</screen>
 					<varlistentry id="fax_outgoing_MSN">
 						<term><option>outgoing_MSN="&lt;your MSN&gt;"</option></term>
 						<listitem><para>This number is used as our own number for outgoing calls. If it's not given,
-							the first number of fax_numbers is used (see <xref linkend="options_fax_user"/>). Please
+							the first number of fax_numbers is used (see <xref linkend="options_fax_user"/>). If
+							this one is also empty, the user can't send faxes. Please
 							replace with one valid MSN of your ISDN interface or leave empty. This value can be
 							overwritten in the user sections individually.</para>
 							<para>This option is optional. If not given, it defaults to empty.</para>
@@ -768,7 +769,7 @@ make install</screen>
  							<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special
 							MSNs (austrian telecom seems to do this for the main MSN, where it is called "Global Call"),
 							you can use the special sign <literal>-</literal> which means "no destination number available".</para>
-							<para>This option is optional. If not given, the user can't send or receive fax documents.</para>
+							<para>This option is optional. If not given, the user can't receive fax documents.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_email">
