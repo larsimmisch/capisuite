@@ -2,7 +2,7 @@
     @brief Contains DisconnectModule - Call Module for call clearing
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -15,7 +15,7 @@
  ***************************************************************************/
 
 #include "disconnectmodule.h"
- 
+
 DisconnectModule::DisconnectModule(Connection *conn, int reject_reason, bool quick_disconnect)
 :CallModule(conn,-1,false,false),reject_reason(reject_reason),quick_disconnect(quick_disconnect)
 {}
@@ -42,6 +42,11 @@ void DisconnectModule::callDisconnectedLogical()
 /*  History
 
 $Log: disconnectmodule.cpp,v $
+Revision 1.3  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
 Revision 1.2  2003/10/03 14:56:40  gernot
 - partly implementation of a bigger semantic change: don't throw
   call finished exceptions in normal operation any longer; i.e. we only

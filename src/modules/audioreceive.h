@@ -2,7 +2,7 @@
     @brief Contains AudioReceive - Call Module for receiving audio.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -26,16 +26,24 @@ using namespace std;
 
 /** @brief Call Module for receiving audio.
 
-    This module handles the reception of an audio wave file. It can recognize silence in the signal and timeout after
-    a given period of silence, after a general timeout or after the reception of a DTMF signal. 
-    
-    If DTMF abort is enabled, the module will abort immediately if the DTMF receiving buffer (see Connection::getDTMF)
-    isn't empty when it is created. That allows the user to abort subsequent audio receive and send commands with one
-    DTMF signal w/o needing to check for received DTMF after each command.
+    This module handles the reception of an audio wave file. It can recognize
+    silence in the signal and timeout after a given period of silence, after
+    a general timeout or after the reception of a DTMF signal.
 
-    The call must be in audio mode (by connecting with service VOICE), otherwise an exception will be caused.
+    If DTMF abort is enabled, the module will abort immediately if the DTMF
+    receiving buffer (see Connection::getDTMF) isn't empty when it is created.
+    That allows the user to abort subsequent audio receive and send commands
+    with one DTMF signal w/o needing to check for received DTMF after each
+    command.
 
-    The created file will be saved in the format given by Capi, that is bit-reversed A-Law (or u-Law), 8 kHz mono.
+    The call must be in audio mode (by connecting with service VOICE),
+    otherwise an exception will be caused.
+
+    CapiWrongState will only be thrown if connection is not up at startup,
+    not later on. We see a later disconnect as normal event, no error.
+
+    The created file will be saved in the format given by Capi, that is
+    bit-reversed A-Law (or u-Law), 8 kHz, mono.
 
     @author Gernot Hillier
 */
@@ -52,17 +60,18 @@ class AudioReceive: public CallModule
 		    @param silence_timeout duration of silence in seconds after which record is finished, 0=no silence detection
 		    @param DTMF_exit true: abort if we receive DTMF during mainLoop() or if DTMF was received before
 		    @throw CapiExternalError Thrown if connection is not in speech mode
-  		*/
-		AudioReceive(Connection *conn, string file, int timeout, int silence_timeout, bool DTMF_exit) throw (CapiExternalError);
+		    @throw CapiWrongState Thrown if connection is not up (thrown by base class constructor)
+		*/
+		AudioReceive(Connection *conn, string file, int timeout, int silence_timeout, bool DTMF_exit) throw (CapiWrongState,CapiExternalError);
 
- 		/** @brief Start file reception, wait for one of the timeouts or disconnection and stop the reception. 
-		
+ 		/** @brief Start file reception, wait for one of the timeouts or disconnection and stop the reception.
+
 		    If the recording was finished because of silence, the silence is truncated away from the recorded file
 
-		    @throw CapiWrongState Thrown if disconnect is recognized
 		    @throw CapiExternalError Thrown by Connection::start_file_reception().
+		    @throw CapiWrongState Thrown if connection is not up at start of transfer (thrown by Connection::start_file_reception)
   		*/
-		void mainLoop() throw (CapiWrongState, CapiExternalError);
+		void mainLoop() throw (CapiWrongState,CapiExternalError);
 
  		/** @brief Test all received audio packets for silence and count silent packets
 
@@ -93,8 +102,13 @@ class AudioReceive: public CallModule
 /* History
 
 $Log: audioreceive.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.14  2003/01/16 13:03:07  ghillie
 - added attribute end_time

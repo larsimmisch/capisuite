@@ -2,7 +2,7 @@
     @brief Contains ReadDTMF - Call Module for waiting for DTMF signals
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -23,11 +23,15 @@ class Connection;
 
 /** @brief Call Module for waiting for DTMF signals
 
-    This module allows the user to specify how much DTMF digits he wants to read and how long to
-    wait for them. It doesn't do the actual read, just waits for the given conditions to be fulfilled.
+    This module allows the user to specify how much DTMF digits he wants to
+    read and how long to wait for them. It doesn't do the actual read, just
+    waits for the given conditions to be fulfilled.
 
-    To use it, create an object and call mainLoop(). After mainLoop() finished, call
-    Connection::getDTMF() to read the received signals.
+    To use it, create an object and call mainLoop(). After mainLoop() finished,
+    call Connection::getDTMF() to read the received signals.
+
+    CapiWrongState will only be thrown if connection is not up at startup,
+    not later on. We see a later disconnect as normal event, no error.
 
     @author Gernot Hillier
 
@@ -35,25 +39,24 @@ class Connection;
 class ReadDTMF: public CallModule
 {
 	public:
- 		/** @brief Constructor. Create Object and read the current digit count from Connection.
+		/** @brief Constructor. Create Object and read the current digit count from Connection.
 
-   		    @param conn reference to Connection object
+		    @param conn reference to Connection object
 		    @param timeout timeout in seconds after which reading is terminated (only terminates when min_digits are reached!), restarts after each digit
 		    @param min_digits minimum number of digits which must be read in ANY case without respect to timout. Only set to value >0 if you're sure the user will input a digit.
 		    @param max_digits maximum number of digits to read, we abort immediately if this number is reached (0=infinite, only timeout counts)
+		    @throw CapiWrongState Thrown if connection not up (thrown by base class)
 		*/
-		ReadDTMF(Connection *conn, int timeout, int min_digits, int max_digits);
+		ReadDTMF(Connection *conn, int timeout, int min_digits, int max_digits) throw (CapiWrongState);
 
- 		/** @brief mainLoop: Waits until the given conditions (see constructor) have been fulfilled
+		/** @brief mainLoop: Waits until the given conditions (see constructor) have been fulfilled
 
 		    The module will finish if one of these conditions are true:
 
                     - max_digits is fulfilled
 		    - timeout was reached AND min_digits is fulfilled
-
-		    @throw CapiWrongState Thrown if disconnection is recognized
   		*/
-		void mainLoop() throw (CapiWrongState);
+		void mainLoop() throw ();
 
 		/** @brief finish if max_digits is reached, otherwise restart timeout when DTMF signal is received
   		*/
@@ -87,6 +90,11 @@ class ReadDTMF: public CallModule
 /* History
 
 $Log: readDTMF.h,v $
+Revision 1.3  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
 Revision 1.2  2003/10/03 14:56:40  gernot
 - partly implementation of a bigger semantic change: don't throw
   call finished exceptions in normal operation any longer; i.e. we only

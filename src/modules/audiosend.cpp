@@ -2,7 +2,7 @@
     @brief Contains AudioSend - Call Module for sending an A-Law file
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -17,7 +17,7 @@
 #include "../backend/connection.h"
 #include "audiosend.h"
 
-AudioSend::AudioSend(Connection *conn, string file, bool DTMF_exit) throw (CapiExternalError)
+AudioSend::AudioSend(Connection *conn, string file, bool DTMF_exit) throw (CapiWrongState,CapiExternalError)
 :CallModule(conn,-1,DTMF_exit),file(file)
 {
 	if (conn->getService()!=Connection::VOICE)
@@ -25,7 +25,7 @@ AudioSend::AudioSend(Connection *conn, string file, bool DTMF_exit) throw (CapiE
 }
 
 void
-AudioSend::mainLoop() throw (CapiWrongState, CapiExternalError, CapiMsgError)
+AudioSend::mainLoop() throw (CapiWrongState,CapiExternalError,CapiMsgError)
 {
 	start_time=getTime();
 	if (!(DTMF_exit && (!conn->getDTMF().empty()) ) ) {
@@ -51,8 +51,13 @@ AudioSend::duration()
 /*  History
 
 $Log: audiosend.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.14  2003/01/19 16:50:27  ghillie
 - removed severity in exceptions. No FATAL-automatic-exit any more.

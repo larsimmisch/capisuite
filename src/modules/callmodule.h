@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -60,8 +60,9 @@ class CallModule: public CallInterface
 		    @param timeout timeout for this module in seconds (only considered in mainLoop!), -1=infinite (default)
 		    @param DTMF_exit if this is set to true, then the current module is exited if we receive a DTMF tone
 		    @param assure connection is up at beginning
+		    @throw CapiWrongState thrown if connection checking was enabled and connection is not up
   		*/
-		CallModule(Connection* connection, int timeout=-1, bool DTMF_exit=false, bool checkConnection=true);
+		CallModule(Connection* connection, int timeout=-1, bool DTMF_exit=false, bool checkConnection=true) throw (CapiWrongState);
 
  		/** @brief Destructor. Deregister this module at the according Connection object.
 		*/
@@ -74,8 +75,9 @@ class CallModule: public CallInterface
 		    This method will likely be overwritten in each sub class. You can call CallModule::mainLoop() there to implement busy loops.
 		    @throw CapiMsgError A CAPI function hasn't succeeded for some reason (not thrown by CallModule, but may be thrown in subclasses).
 		    @throw CapiExternalError A given command didn't succeed for a reason not caused by the CAPI (not thrown by CallModule, but may be thrown in subclasses)
-  		*/
-		virtual void mainLoop() throw (CapiWrongState, CapiMsgError, CapiExternalError);
+		    @throw CapiWrongState Not thrown here, but sub classes may throw it
+		*/
+		virtual void mainLoop() throw (CapiWrongState,CapiMsgError,CapiExternalError);
 
  		/** @brief empty here.
 
@@ -140,6 +142,11 @@ class CallModule: public CallInterface
 /* History
 
 $Log: callmodule.h,v $
+Revision 1.5  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
 Revision 1.4  2003/10/03 14:56:40  gernot
 - partly implementation of a bigger semantic change: don't throw
   call finished exceptions in normal operation any longer; i.e. we only

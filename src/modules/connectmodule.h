@@ -2,7 +2,7 @@
     @brief Contains ConnectModule - Call Module for connection establishment at incoming connection
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -40,16 +40,17 @@ class ConnectModule: public CallModule
 		    @param service service to connect with as described in Connection::service_t
 		    @param faxStationID fax station ID, only necessary when connecting in FAXG3 mode
 		    @param faxHeadline fax headline, only necessary when connecting in FAXG3 mode
+		    @throw CapiExternalError Thrown if Connection not in waiting state
   		*/
-		ConnectModule(Connection *conn, Connection::service_t service, string faxStationID, string faxHeadline);
+		ConnectModule(Connection *conn, Connection::service_t service, string faxStationID, string faxHeadline) throw (CapiExternalError);
 
  		/** @brief Accept connection and wait for complete establishment
 
-		    @throw CapiWrongState Thrown by CallModule::mainLoop()
 		    @throw CapiExternalError Thrown by Connection::connectWaiting()
 		    @throw CapiMsgError Thrown by Connection::connectWaiting()
+		    @throw CapiWrongState Thrown by Connection::connectWaiting()
   		*/
-		void mainLoop() throw (CapiWrongState, CapiExternalError, CapiMsgError);
+		void mainLoop() throw (CapiWrongState,CapiExternalError, CapiMsgError);
 
  		/** @brief Finish mainLoop() if call is completely established
   		*/
@@ -66,8 +67,13 @@ class ConnectModule: public CallModule
 /* History
 
 $Log: connectmodule.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.7  2002/11/29 10:27:44  ghillie
 - updated comments, use doxygen format now

@@ -2,7 +2,7 @@
     @brief Contains AudioReceive - Call Module for receiving audio.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -50,7 +50,7 @@ unsigned char cswap[256] = {
 };
 
 
-AudioReceive::AudioReceive(Connection *conn, string file, int timeout, int silence_timeout, bool DTMF_exit) throw (CapiExternalError)
+AudioReceive::AudioReceive(Connection *conn, string file, int timeout, int silence_timeout, bool DTMF_exit) throw (CapiExternalError,CapiWrongState)
 	:CallModule(conn, timeout, DTMF_exit),silence_count(0),file(file),start_time(0),end_time(0),
 	silence_timeout(silence_timeout*8000) // ISDN audio sample rate = 8000Hz
 {
@@ -59,7 +59,7 @@ AudioReceive::AudioReceive(Connection *conn, string file, int timeout, int silen
 }
 
 void
-AudioReceive::mainLoop() throw (CapiWrongState, CapiExternalError)
+AudioReceive::mainLoop() throw (CapiWrongState,CapiExternalError)
 {
 	start_time=getTime();
 	if (!(DTMF_exit && (!conn->getDTMF().empty()) ) ) {
@@ -104,8 +104,13 @@ AudioReceive::duration()
 /*  History
 
 $Log: audioreceive.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.18  2003/01/19 16:50:27  ghillie
 - removed severity in exceptions. No FATAL-automatic-exit any more.

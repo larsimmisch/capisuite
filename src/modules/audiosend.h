@@ -2,7 +2,7 @@
     @brief Contains AudioSend - Call Module for sending an A-Law file
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -26,14 +26,21 @@ using namespace std;
 
 /** @brief Call Module for sending an A-Law file.
 
-    This module handles the sending of an audio file. The audio file must be in bit-inversed A-Law format. It can be created for example
-    with sox using the suffix ".la". It supports abortion if DTMF signal is received.
-    
-    If DTMF abort is enabled, the module will abort immediately if the DTMF receiving buffer (see Connection::getDTMF)
-    isn't empty when it is created. That allows the user to abort subsequent audio receive and send commands with one
-    DTMF signal w/o needing to check for received DTMF after each command.
+    This module handles the sending of an audio file. The audio file must be in
+    bit-inversed A-Law format. It can be created for example with sox using the
+    suffix ".la". It supports abortion if DTMF signal is received.
 
-    The connction must be in audio mode (by connecting with service VOICE), otherwise an exception will be caused.
+    If DTMF abort is enabled, the module will abort immediately if the DTMF
+    receiving buffer (see Connection::getDTMF) isn't empty when it is created.
+    That allows the user to abort subsequent audio receive and send commands
+    with one DTMF signal w/o needing to check for received DTMF after each
+    command.
+
+    The connction must be in audio mode (by connecting with service VOICE),
+    otherwise an exception will be caused.
+
+    CapiWrongState will only be thrown if connection is not up at startup,
+    not later on. We see a later disconnect as normal event, no error.
 
     @author Gernot Hillier
 */
@@ -46,26 +53,27 @@ class AudioSend: public CallModule
 		    @param file name of file to send
 		    @param DTMF_exit set to true, if you want to finish when DTMF signal is received
 		    @throw CapiExternalError Thrown if speech mode isn't established before.
-  		*/
-		AudioSend(Connection *conn, string file, bool DTMF_exit) throw (CapiExternalError);
+		    @throw CapiWrongState Thrown if connection is not up (thrown by base class constructor)
+		*/
+		AudioSend(Connection *conn, string file, bool DTMF_exit) throw (CapiWrongState,CapiExternalError);
 
- 		/** @brief Start file transmission, wait for the end of the file or the connection, stop file transmission
+		/** @brief Start file transmission, wait for the end of the file or the connection, stop file transmission
 
-		    @throw CapiWrongState Thrown when disconnection takes place.
 		    @throw CapiExternalError Thrown by Connection::start_file_transmission, see there for explanation.
 		    @throw CapiMsgError Thrown by Connection::start_file_transmission, see there for explanation.
-  		*/
-		void mainLoop() throw (CapiWrongState, CapiExternalError, CapiMsgError);
+		    @throw CapiWrongState Thrown if connection is not up at start of transfer (thrown by Connection::start_file_transmission)
+		*/
+		void mainLoop() throw (CapiWrongState,CapiExternalError,CapiMsgError);
 
- 		/** @brief finish main loop if file is completely received
+		/** @brief finish main loop if file is completely received
 
-  		*/
+		*/
 		void transmissionComplete();
 
- 		/** @brief Return the time in seconds since start of mainLoop()
+		/** @brief Return the time in seconds since start of mainLoop()
 
 		    @return time in seconds since start of mainLoop()
-  		*/
+		*/
 		long duration();
 
 	private:
@@ -78,8 +86,13 @@ class AudioSend: public CallModule
 /* History
 
 $Log: audiosend.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.13  2002/12/04 11:38:50  ghillie
 - added time measurement: save time in start_time at the begin of mainLoop() and return difference to getTime() in duration()

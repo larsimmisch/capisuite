@@ -2,7 +2,7 @@
     @brief Contains FaxReceive - Call Module for receiving an analog fax (group 3)
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -26,14 +26,20 @@ using namespace std;
 
 /** @brief Call Module for receiving an analog fax (group 3).
 
-    This module handles the reception of an analog fax (fax group 3). It starts the reception and waits for the end of the connection.
-    
+    This module handles the reception of an analog fax (fax group 3). It starts
+    the reception and waits for the end of the connection.
+
     Fax polling isn't supported yet.
 
-    Fax mode must have been established before using this (by connecting in fax mode or switching to fax with Switch2FaxG3),
-    otherwise an exception is caused.          
-    
-    The created file will be saved in the format received by Capi, i.e. as Structured Fax File (SFF).
+    Fax mode must have been established before using this (by connecting in fax
+    mode or switching to fax with Switch2FaxG3), otherwise an exception is
+    caused.
+
+    CapiWrongState will only be thrown if connection is not up at startup,
+    not later on. We see a later disconnect as normal event, no error.
+
+    The created file will be saved in the format received by Capi, i.e. as
+    Structured Fax File (SFF).
 
     @author Gernot Hillier
 */
@@ -44,16 +50,17 @@ class FaxReceive: public CallModule
 
       		    @param conn reference to Connection object
 		    @param file name of file to save recorded stream to
+		    @throw CapiWrongState Thrown if connection not up (thrown by base class)
 		    @throw CapiExternalError Thrown if we are not in fax mode.
   		*/
-		FaxReceive(Connection *conn, string file) throw (CapiExternalError);
+		FaxReceive(Connection *conn, string file) throw (CapiWrongState,CapiExternalError);
 
  		/** @brief Start file reception, wait for disconnect and stop the reception afterwards
 		
-		    @throw CapiWrongState Thrown when disconnection takes place.
 		    @throw CapiExternalError Thrown by Connection::start_file_reception. See there for explanation.
+		    @throw CapiWrongState Thrown if connection is not up at start of transfer (thrown by Connection::start_file_reception)
   		*/
-		void mainLoop() throw (CapiWrongState, CapiExternalError);
+		void mainLoop() throw (CapiWrongState,CapiExternalError);
 
  		/** @brief finish main loop if file is completely received
   		*/
@@ -68,8 +75,13 @@ class FaxReceive: public CallModule
 /* History
 
 $Log: faxreceive.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.11  2002/12/13 11:47:40  ghillie
 - added comment about fax polling

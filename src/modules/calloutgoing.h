@@ -2,7 +2,7 @@
     @brief Contains CallOutgoing - Call Module for establishment of an outgoing connection and wait for successful connect
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -34,7 +34,8 @@ using namespace std;
     The timeout will be counted from the moment the other party is alerted,
     not from the moment we initiate the call!
 
-    You can get the reason for exiting with getResult().
+    This call module does never throw CapiWrongState! see getResult() if you
+    need to know if conneciton succeeded.
 
     @author Gernot Hillier
 */
@@ -55,14 +56,12 @@ class CallOutgoing: public CallModule
 		*/
 		CallOutgoing(Capi *capi, _cdword controller, string call_from, string call_to, Connection::service_t service, int timeout, string faxStationID, string faxHeadline, bool clir);
 
-		/** @brief Initiate connection, wait for it to succeed  
-		
-		    This call module does never throw CapiWrongState! see getResult() if you need to know if conneciton succeeded.
+		/** @brief Initiate connection, wait for it to succeed
 
 		    @throw CapiExternalError Thrown by Connection::Connection(Capi*,_cdword,string,bool,string,service_t,string,string)
 		    @throw CapiMsgError Thrown by Connection::Connection(Capi*,_cdword,string,bool,string,service_t,string,string)
 		*/
-		void mainLoop() throw (CapiExternalError, CapiMsgError);
+		void mainLoop() throw (CapiExternalError,CapiMsgError);
 
 		/** @brief Finish if we got connection
 
@@ -107,6 +106,11 @@ class CallOutgoing: public CallModule
 /* History
 
 $Log: calloutgoing.h,v $
+Revision 1.3  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
 Revision 1.2  2003/04/17 10:52:12  gernot
 - timeout value is now measured beginning at the moment the other party is
   signalled

@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -19,7 +19,7 @@
 #include "../backend/connection.h"
 #include "callmodule.h"
 
-CallModule::CallModule(Connection *connection, int timeout, bool DTMF_exit, bool checkConnection)
+CallModule::CallModule(Connection *connection, int timeout, bool DTMF_exit, bool checkConnection) throw (CapiWrongState)
 :finish(false),timeout(timeout),conn(connection),DTMF_exit(DTMF_exit)
 {
 	if (conn)
@@ -47,7 +47,7 @@ CallModule::callDisconnectedLogical()
 }
 
 void
-CallModule::mainLoop() throw (CapiWrongState, CapiMsgError, CapiExternalError)
+CallModule::mainLoop() throw (CapiWrongState,CapiMsgError, CapiExternalError)
 {
 	if (! (DTMF_exit && (conn->getDTMF()!="") ) ) {
 		exit_time=getTime()+timeout;
@@ -105,6 +105,11 @@ CallModule::gotDTMF()
 /*  History
 
 $Log: callmodule.cpp,v $
+Revision 1.4  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
 Revision 1.3  2003/10/03 14:56:40  gernot
 - partly implementation of a bigger semantic change: don't throw
   call finished exceptions in normal operation any longer; i.e. we only

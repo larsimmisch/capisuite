@@ -2,7 +2,7 @@
    @brief Contains FaxReceive - Call Module for receiving an analog fax (group 3)
 
    @author Gernot Hillier <gernot@hillier.de>
-   $Revision: 1.1 $
+   $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -18,7 +18,7 @@
 #include "faxreceive.h"
 
 
-FaxReceive::FaxReceive(Connection *conn, string file) throw (CapiExternalError)
+FaxReceive::FaxReceive(Connection *conn, string file) throw (CapiWrongState,CapiExternalError)
 :CallModule(conn),file(file)
 {
 	if (conn->getService()!=Connection::FAXG3)
@@ -27,7 +27,7 @@ FaxReceive::FaxReceive(Connection *conn, string file) throw (CapiExternalError)
 
 
 void
-FaxReceive::mainLoop() throw (CapiWrongState, CapiExternalError)
+FaxReceive::mainLoop() throw (CapiWrongState,CapiExternalError)
 {
 	conn->start_file_reception(file);
 	CallModule::mainLoop();
@@ -43,8 +43,13 @@ FaxReceive::transmissionComplete()
 /*  History
 
 $Log: faxreceive.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.12  2003/01/19 16:50:27  ghillie
 - removed severity in exceptions. No FATAL-automatic-exit any more.

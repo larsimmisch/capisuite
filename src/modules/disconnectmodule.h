@@ -2,7 +2,7 @@
     @brief Contains DisconnectModule - Call Module for call clearing
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -29,6 +29,9 @@ using namespace std;
     waits until the physical connection is cleared completely. It's
     no problem to call it when the connection is already (partly or completely)
     cleared.
+
+    There exists nothing like a wrong connection state to disconnect, therefore
+    CapiWrongState is never thrown.
 
     @author Gernot Hillier
 */
@@ -65,6 +68,11 @@ class DisconnectModule: public CallModule
 /* History
 
 $Log: disconnectmodule.h,v $
+Revision 1.3  2003/12/28 15:00:35  gernot
+* rework of exception handling stuff; many modules were not
+  declaring thrown exceptions correctly any more after the
+  re-structuring to not throw exceptions on any disconnect
+
 Revision 1.2  2003/10/03 14:56:40  gernot
 - partly implementation of a bigger semantic change: don't throw
   call finished exceptions in normal operation any longer; i.e. we only
