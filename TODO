@@ -1,6 +1,3 @@
-CRITICAL:
-- finish manual.docbook, provide simple examples
-
 NICE:
 - ?valgrind-clean the used libs and Python?
 - support more than one send_controller
