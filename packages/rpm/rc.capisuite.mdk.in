@@ -63,7 +63,7 @@ restart() {
 }	
 
 reload() {
-	gprintf "Reloading cron daemon configuration: "
+	gprintf "Reloading $prog daemon configuration: "
 	killproc $prog -HUP
 	retval=$?
 	echo
