@@ -552,12 +552,12 @@ uninstall-info: uninstall-info-recursive
 
 capisuitefax: capisuitefax.in
 	rm -f $@
-	sed -e 's,@\PYTHON@,$(PYTHON),g' $< >$@
+	sed 's,@\PYTHON@,$(PYTHON),g' $< >$@
 	chmod 755 $@
 
 .pyin.py:
 	rm -f $@
-	sed 's,@sfftobmp_major_version@,$(sfftobmp_major_version),g' $< >$@
+	sed 's,@sfftobmp_major_version\@,$(sfftobmp_major_version),g' $< >$@
 
 .confin.conf: 
 	rm -f $@

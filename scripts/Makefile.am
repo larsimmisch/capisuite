@@ -18,7 +18,7 @@ capisuitefax: capisuitefax.in
 
 .pyin.py:
 	rm -f $@
-	sed 's,@sfftobmp_major_version@,$(sfftobmp_major_version),g' $< >$@
+	sed 's,@sfftobmp_major_version\@,$(sfftobmp_major_version),g' $< >$@
 
 .confin.conf: 
 	rm -f $@

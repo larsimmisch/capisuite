@@ -17,7 +17,8 @@ from capisuite.voice import sayNumber, getAudio
 # Convert sff files to tiff files. This is placed in an extra function
 # because the sfftobmp tool used for this conversion has changed its
 # parameters recently.
-if @sfftobmp_major_version@ <= 2:
+sfftobmp_major_version = @sfftobmp_major_version@
+if sfftobmp_major_version <= 2:
     def sff2tif(infile, outfile):
         __call('sff to tif', "sfftobmp", "-tif", infile, outfile)
 else:
