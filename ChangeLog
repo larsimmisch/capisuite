@@ -1,3 +1,6 @@
+2004-02-17  Hartmut Goebel  <h.goebel@goebel-consult.de>
+	* docs/manual.docbook: fixed some syntax errors
+
 2004-02-11  Gernot Hillier  <gernot@hillier.de>
 	* scripts/incoming.py (faxIncoming,CVS log): fixed two typos /
 	  removed not allowed german umlauts

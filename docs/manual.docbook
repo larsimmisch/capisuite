@@ -488,20 +488,20 @@ make install</screen>
 						DDI_length would be 3. If you set this to 0, DDI/PtP is disabled.</para>
 
 						<para>If you're not sure what all this should mean, then chances
-						are high you don't use DDI and can leave this option as it is.</para>
+						are high you don't use DDI and can leave this option as it is.</para></listitem>
 				</varlistentry>
 
 				<varlistentry>
 					<term><option>DDI_base_length="0"</option></term>
 					<listitem><para>This option is only used when DDI_length is not 0. This is the length
-					of your base number - in the example above it would be 4.</para>
+					of your base number - in the example above it would be 4.</para></listitem>
 				</varlistentry>
 
 				<varlistentry>
 					<term><option>DDI_stop_numbers=""</option></term>
 					<listitem><para>If you usually use extension numbers of a specified length, but also
 					want to use some shorter ones (e.g. the "-0" extension for you switchboard), then
-					you can list these shorter extensions here, separated by commas.</para>
+					you can list these shorter extensions here, separated by commas.</para></listitem>
 				</varlistentry>
 
 			</variablelist>
@@ -640,8 +640,8 @@ make install</screen>
 			while the options are <literal>key="value"</literal> lines.</para>
 
 			<para>Each file must have a special section called <literal>[GLOBAL]</literal> and one section
-			for each user called <literal>[&lt;username&gt;]</literal> <emphasize>with <literal>&lt;username&gt;</literal> being a
-			valid system user).</emphasize></para>
+			for each user called <literal>[&lt;username&gt;]</literal> <emphasis>with <literal>&lt;username&gt;</literal> being a
+			valid system user).</emphasis></para>
 
 			<para>The <literal>[GLOBAL]</literal>-section defines some global options like
 			pathnames and default settings for options that can be overridden in the user-sections. The user-sections
@@ -1566,7 +1566,7 @@ is not present, current time as returned by localtime() is used.
 				<para>If you used vbox in the past and want to convert your old message files, you can
 				use the following command:</para>
 
-				<screen><command>vboxtoau < infile.msg | sox -tau - outfile.la</command></screen>
+				<screen><command>vboxtoau &lt; infile.msg | sox -tau - outfile.la</command></screen>
 
 			</sect3>
 			<sect3 id="playing_alaw"><title>Playing A-Law files</title>
@@ -1807,8 +1807,8 @@ def callIncoming(call,service,call_from,call_to):
 					earlier if needed). This exception can be raised by any call to a &cs;
 					command which expects a connection like audio_send(). Since &cs; 0.5, it's
 					not raised at once on normal disconnects; for example if the caller hangs up
-					<emphasize>during</emphasize> audio_receive() the function will just finish.
-					An exception will not be raised until you call the <emphasize>next</emphasize>
+					<emphasis>during</emphasis> audio_receive() the function will just finish.
+					An exception will not be raised until you call the <emphasis>next</emphasis>
 					command which expects a connection. The reason for this change was to only
 					raise an exception on real errors and to make it possible to handle disconnects
 					in the normal flow of your scripts. On most scripts, this change shouldn't
