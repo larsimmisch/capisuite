@@ -124,12 +124,12 @@ fax_email_from="capisuite daemon <root>"
 #                          resolution color, numPages, filename, hostname
 
 [MailFaxReceived]
-subject = Received a fax from %(call_from)s to %(call_to)s
+subject = Received a fax from %(stationID)s (%(call_from)s) for %(call_to)s
 text =
   You got a fax from %(call_from)s to %(call_to)s
   Station ID: %(stationID)s
-  Transmission Details: bit rate %(bitRate)i %(resolution)s %(color)s
   Pages: %(numPages)i
+  Transmission Details: bit rate %(bitRate)i %(resolution)s %(color)s
 
   See attached file.
   The original file was saved to file://%(hostname)s/%(filename)s on host "%(hostname)s".
