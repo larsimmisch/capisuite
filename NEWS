@@ -1,3 +1,12 @@
+0.4.4 (CVS nn):
+===============
+
+        * scripts: fix a bug in faxIncoming which lead to a non-working
+          fax reception after automatic switch from voice to fax mode
+          (thx to Andreas Scholz and Harald Jansen)
+
+        * core: switch_to_faxG3 now also returns a faxInfo structure
+
 0.4.3 (CVS tag CAPISUITE_043):
 ==============================
 
