@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.4.1</title>
+<title>CapiSuite 0.4.1a</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -240,25 +240,60 @@
 			<sect3 id="install_bin"><title>Installation from binary packages</title>
 
 				<para>If you can get binary packages for your distribution and platform,
-				I would advise to use them. Currently, there are only RPM packages
-				for SuSE Linux available as this is the distribution I use (and BTW
-				the company which paid and supported me to write &cs; as diploma
-				thesis ;-) ).</para>
+				I would advise to use them. I'm building RPM packages for SuSE Linux
+				regularly, as this is the distribution I use (and BTW the company which
+				paid and supported me to write &cs; as diploma thesis ;-) ). Debian
+				packages are maintained by Achim Bohnet.</para>
 
-				<para>To install the &cs; RPM packages you can either use your favorite setup tool -
-				either provided by your distributor or the community - or you can do manually
-				(as root):</para>
-
-				<screen>rpm -Uvh capisuite-version.rpm</screen>
-
-				<para>To install binary packages not in the RPM format, please refer to the
-				documentation of your package manager.</para>
-
-				<para>If you managed to install &cs; on a system not mentioned above,
-				please tell me and I'll include the instructions here.</para>
+				<para>If you managed to install &cs; on a system not mentioned below,
+				please tell me and I'll include the instructions here. If you have created
+				binary packages for other distributions, I'll be also happy to point
+				to your download section or make them available on my page.</para>
 
 				<para>Now everything should be setup ready to run. So please read on in
 				<xref linkend="csglobal"/>.</para>
+
+				<sect4 id="install_bin_rpm"><title>Installation from RPM packages (SuSE)</title>
+					<para>To install the &cs; RPM packages you can either use your favorite setup tool -
+					either provided by your distributor or the community - or you can do manually
+					(as root):</para>
+
+					<screen>rpm -Uvh capisuite-version.rpm</screen>
+				</sect4>
+
+				<sect4 id="install_bin_debian"><title>Installation from Debian packages</title>
+					<para>Add the following lines to your <filename>/etc/apt/sources.list</filename>:</para>
+
+					<screen>deb     http://www.mpe.mpg.de/~ach/debian ./
+deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
+
+					<para>Now, issue the following commands:</para>
+
+					<screen>apt-get update                  # add Pkg list from Achim's repository
+apt-get install capisuite       # installs all necessary pkg dependencies + capisuite</screen>
+
+					<para>When a new package is available, <command>apt-get update</command> grabs the new
+					package listing and</para>
+
+        				<screen>apt-get -u (dist-)upgrade</screen>
+
+					<para>updates all out-of-date packages (and new additional package dependencies in the dist-upgrade version).</para>
+
+					<para>Similar procedures are valid for the menu/gui pkg installers <command>dselect</command>,
+					<command>aptitude</command>, <command>kpackage</command>, ...</para>
+
+					<para>For further details, please have a look at the Debian documentation, for example the APT HowTo on
+					<ulink url="http://www.debian.org/doc/manuals/apt-howto/index.en.html"/> (english) or
+					<ulink url="http://www.de.debian.org/doc/user-manuals#apt-howto"/> (german).</para>
+
+					<para>If you really want to build your own Debian package from the sources
+					(this is normally NOT necessary), do:</para>
+
+        				<screen>sudo apt-get build-dep capisuite        # get necessary pkgs to build pkg from source
+fakeroot apt-get --build source         # download and compile
+dpkg -i ../capisuite_0.x.y-u_i386.deb   # apt-get install &lt;missing-pkgs&gt;; dpkg is as dump as rpm ;)</screen>
+
+				</sect4>
 			</sect3>
 
 			<sect3 id="install_source"><title>Installation from the source packages</title>
@@ -938,18 +973,35 @@ make install</screen>
 			Just copy <filename>capisuite.cron</filename> to <filename>/etc/cron.daily/capisuite</filename>
 			and assure it has correct permissions (owner root, executable bit set).</para>
 
-			<para>Now create a file <filename>cronjob.conf</filename> holding a line like
+			<para>Now edit the file <filename>cronjob.conf</filename> and copy it to
+			your &cs; configuration directory (usually <filename>/etc/capisuite</filename>
+			or <filename>/usr/local/etc/capisuite</filename>). It tells the cron job how
+			long the files should be stored in the different dirs.</para>
 
-			<screen>MAX_DAYS=30</screen>
-
-			in your &cs; configuration directory (usually <filename>/etc/capisuite</filename>
-			or <filename>/usr/local/etc/capisuite</filename>). This tells the cron job how
-			long the files should be stored. Each file which wasn't accessed in the
-			last <literal>MAX_DAYS</literal> days will be deleted when 
-			<filename>/etc/cron.daily/capisuite</filename> is started. If 
-			<literal>MAX_DAYS</literal> is set to 0, no cleaning up is done. You can
-			also place a <filename>cronjob.conf</filename> file with an own value for
-			<literal>MAX_DAYS</literal> in each directory which is cleaned up.</para>
+			<para>The following options are available:</para>
+			<variablelist>
+				<varlistentry>
+					<term><option>MAX_DAYS_RCVD="&lt;value&gt;"</option></term>
+					<listitem><para>Files stored in the user receive directories
+					which weren't accessed in the last <option>&lt;value&gt;</option>
+					days are deleted. Set to <option>0</option> to disable this
+					automatic deletion.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>MAX_DAYS_DONE="&lt;value&gt;"</option></term>
+					<listitem><para>Files stored in the global done directory
+					which weren't accessed in the last <option>&lt;value&gt;</option>
+					days are deleted. Set to <option>0</option> to disable this
+					automatic deletion.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>MAX_DAYS_FAILED="&lt;value&gt;"</option></term>
+					<listitem><para>Files stored in the global failed directory
+					which weren't accessed in the last <option>&lt;value&gt;</option>
+					days are deleted. Set to <option>0</option> to disable this
+					automatic deletion.</para></listitem>
+				</varlistentry>
+			</variablelist>
 		</sect2>
 	</sect1>
 	<sect1 id="usingscripts"><title>Using &cs; together with the default scripts</title>
