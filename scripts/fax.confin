@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.5 2003/04/10 20:54:44 gernot Exp $
+# $Id: fax.confin,v 1.6 2003/04/10 21:29:51 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -126,7 +126,9 @@ fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 #   fax calls. The values are separated by commas. The first number is also
 #   used as our own number for outgoing calls. This overrides outgoing_MSN.
 #   You can also use the special entry "*" which stands for accepting ALL
-#   incoming calls as fax (use with care!)
+#   incoming calls as fax (use with care!). The special character "-" stands for
+#   "no destination number available". That is necessary for example for the austrian
+#   "Global Call" where no number is signalled when the main MSN is called (sic).
 #
 # fax_email="<mailaddress1>,<mailaddress2>,..." (optional, defaults to empty string)
 #   If given, this string indicates email-addresses where the received faxes

@@ -8,6 +8,13 @@
 	* scripts: the *_email settings from fax.conf and answering_machine.conf
 	  now allow to set multiple addresses to send the mails to
 
+	* scripts: the "*_numbers" settings from fax.conf and answering_machine.conf
+	  now support the special sign "-" for "no destination number available"
+	  (e.g. needed for the austrian "Global Call")
+
+	* core: use "-" instead of "??" for "no number available", e.g. important
+	  for the call_from and call_to parameters of scripts
+
 0.4.1a (tag CAPISUITE_041a):
 ============================
 	* fixed a bug in the rc-script of CapiSuite which made 

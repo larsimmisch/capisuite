@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.5 $
+#    version              : $Revision: 1.6 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -183,8 +183,9 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		if (os.access(userannouncement,os.R_OK)):
 			capisuite.audio_send(call,userannouncement,1)
 		else:
-			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"anrufbeantworter-von.la"),1)
-			cs_helpers.sayNumber(call,call_to,curr_user,config)
+			if (call_to!="-"):
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"anrufbeantworter-von.la"),1)
+				cs_helpers.sayNumber(call,call_to,curr_user,config)
 			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"bitte-nachricht.la"),1)
 
 		if (action!="none"):
@@ -330,12 +331,10 @@ def remoteInquiry(call,userdir,curr_user,config):
 				descr=cs_helpers.readConfig(filename[:-2]+"txt")
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht.la"),1)
 				cs_helpers.sayNumber(call,str(i+1),curr_user,config)
-				if (descr.get('GLOBAL','call_from')!="??"):
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"von.la"),1)
-					cs_helpers.sayNumber(call,descr.get('GLOBAL','call_from'),curr_user,config)
-				if (descr.get('GLOBAL','call_to')!="??"):
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fuer.la"),1)
-					cs_helpers.sayNumber(call,descr.get('GLOBAL','call_to'),curr_user,config)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"von.la"),1)
+				cs_helpers.sayNumber(call,descr.get('GLOBAL','call_from'),curr_user,config)
+				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"fuer.la"),1)
+				cs_helpers.sayNumber(call,descr.get('GLOBAL','call_to'),curr_user,config)
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"am.la"),1)
 				calltime=time.strptime(descr.get('GLOBAL','time'))
 				cs_helpers.sayNumber(call,str(calltime[2]),curr_user,config)
@@ -403,6 +402,13 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.6  2003/04/10 21:29:51  gernot
+# - support empty destination number for incoming calls correctly (austrian
+#   telecom does this (sic))
+# - core now returns "-" instead of "??" for "no number available" (much nicer
+#   in my eyes)
+# - new wave file used in remote inquiry for "unknown number"
+#
 # Revision 1.5  2003/03/20 09:12:42  gernot
 # - error checking for reading of configuration improved, many options got
 #   optional, others produce senseful error messages now if not found,

@@ -1,4 +1,4 @@
-# $Id: answering_machine.confin,v 1.4 2003/04/10 20:54:44 gernot Exp $
+# $Id: answering_machine.confin,v 1.5 2003/04/10 21:29:51 gernot Exp $
 #
 # This is the configuration file for the answering machine scripts distributed
 # with CapiSuite
@@ -98,6 +98,9 @@ record_silence_timeout="5"
 #   This list contains the numbers on which this user wants to receive incoming
 #   voice calls. The values are separated by commas. You can also use the special 
 #   entry "*" which stands for accepting ALL incoming calls (use with care!).
+#   The special character "-" stands for "no destination number available". That
+#   is necessary for example for the austrian "Global Call" where no number is
+#   signalled when the main MSN is called (sic).
 #
 # voice_email="<mailaddress1>,<mailaddress2>,..." (optional, defaults to empty string)
 #

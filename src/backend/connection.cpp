@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -61,15 +61,15 @@ Connection::Connection (_cmsg& message, Capi* capi_in):
 
 Connection::Connection (Capi* capi, _cdword controller, string call_from_in, bool clir, string call_to_in, service_t service, string faxStationID, string faxHeadline)  throw (CapiExternalError, CapiMsgError)
 	:call_if(NULL),capi(capi),plci_state(P01),ncci_state(N0),plci(0),service(service),  buffer_start(0), buffers_used(0),
-	file_for_reception(NULL), file_to_send(NULL), call_from(call_from_in), call_to(call_to_in), connect_ind_msg_nr(0), 
-	disconnect_cause(0), debug(capi->debug), debug_level(capi->debug_level), error(capi->error), keepPhysicalConnection(false), 
+	file_for_reception(NULL), file_to_send(NULL), call_from(call_from_in), call_to(call_to_in), connect_ind_msg_nr(0),
+	disconnect_cause(0), debug(capi->debug), debug_level(capi->debug_level), error(capi->error), keepPhysicalConnection(false),
 	our_call(true), disconnect_cause_b3(0)
 {
 	pthread_mutex_init(&send_mutex, NULL);
 	pthread_mutex_init(&receive_mutex, NULL);
-	
+
 	if (debug_level >= 1) {
-		debug << prefix() << "Connection object created for outgoing call from " << call_from << " to " << call_to 
+		debug << prefix() << "Connection object created for outgoing call from " << call_from << " to " << call_to
 		  << " service " << dec << service << endl;
 	}
 	if (debug_level >= 2) {
@@ -903,7 +903,7 @@ Connection::getNumber(_cstruct capi_input, bool isCallingNr)
 	int length=capi_input[0];
 
 	if (!length) // no info element given
-		return "??";
+		return "-";
 
 	char *nr=new char[length];
 	memcpy (nr,&capi_input[2],length-1); // copy only number
@@ -916,7 +916,7 @@ Connection::getNumber(_cstruct capi_input, bool isCallingNr)
 	// (see ETS 300 102-1, chapter 4.5), we'll add the prefix "0" or "+"
 
 	if (a.empty()) {
-		a="??";
+		a="-";
 	} else if (isCallingNr && ((capi_input[1] & 0x70) == 0x20)) {  //  national number
 		a='0'+a;
 	} else if (isCallingNr && ((capi_input[1] & 0x70) == 0x10)) { // international number
@@ -979,6 +979,13 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.5  2003/04/10 21:29:51  gernot
+- support empty destination number for incoming calls correctly (austrian
+  telecom does this (sic))
+- core now returns "-" instead of "??" for "no number available" (much nicer
+  in my eyes)
+- new wave file used in remote inquiry for "unknown number"
+
 Revision 1.4  2003/04/04 09:17:59  gernot
 - buildBconfiguration() now checks the abilities of the given controller
   and throws an error if it doesn't support the service

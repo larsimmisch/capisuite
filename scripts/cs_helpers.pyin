@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.5 $
+#    version              : $Revision: 1.6 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -263,7 +263,8 @@ def writeDescription(filename,content):
 # @brief say a german number
 #
 # All numbers from 0 to 99 are said correctly, while all larger ones are
-# split into numbers and only the numbers are said one after another
+# split into numbers and only the numbers are said one after another.
+# An input of "-" produces the word "unbekannt" (unknown)
 #
 # @param call reference to the call
 # @param number the number to say
@@ -271,7 +272,9 @@ def writeDescription(filename,content):
 # @param config the ConfigParser instance holding the configuration info
 def sayNumber(call,number,curr_user,config):
 	import capisuite
-	if (len(number)==2 and number[0]!="0"):
+	if (number=="-" or number=="??"): # "??" is needed for backward compatibility to versions <= 0.4.1a
+		capisuite.audio_send(call,getAudio(config,curr_user,"unbekannt.la"),1)
+	elif (len(number)==2 and number[0]!="0"):
 		if (number[0]=="1"):
 			if (number[1]=="0"):
 				capisuite.audio_send(call,getAudio(config,curr_user,"10.la"),1)
@@ -309,6 +312,13 @@ def sayNumber(call,number,curr_user,config):
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
 # $Log: cs_helpers.pyin,v $
+# Revision 1.6  2003/04/10 21:29:51  gernot
+# - support empty destination number for incoming calls correctly (austrian
+#   telecom does this (sic))
+# - core now returns "-" instead of "??" for "no number available" (much nicer
+#   in my eyes)
+# - new wave file used in remote inquiry for "unknown number"
+#
 # Revision 1.5  2003/04/10 20:54:44  gernot
 # - allow multiple mail addresses to be set as fax_email or voice_email
 #

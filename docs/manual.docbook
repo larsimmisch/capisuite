@@ -754,7 +754,10 @@ make install</screen>
 							<para>When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
 							This is only useful for a setup with only one user which wants to receive any call as fax.
-							</para> 
+							</para>
+ 							<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special
+							MSNs (austrian telecom seems to do this for the main MSN, where it is called "Global Call"),
+							you can use the special sign <literal>-</literal> which means "no destination number available".</para>
 							<para>This option is optional. If not given, the user can't send or receive fax documents.</para>
 						</listitem>
 					</varlistentry>
@@ -900,7 +903,12 @@ make install</screen>
 							are allowed. The answering machine script does also automatic fax detection, so a fax can
 							be sent to this number. When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
-							This is only useful for a setup with only one user which wants to receive any call.</para>
+							This is only useful for a setup with only one user which wants to receive any call.
+
+							<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special MSNs
+							(austrian telecom seems to do this for the main MSN, where it is called "Global Call"), you can
+							use the special sign <literal>-</literal> which means "no destination number available".</para>
+
 							<para>This option is optional. If not set, the user won't receive voice calls.</para>
 						</listitem>
 					</varlistentry>
