@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.5 $
+    $Revision: 1.6 $
 */
 
 /***************************************************************************
@@ -690,7 +690,7 @@ capisuite_call(Capi *capi, unsigned short controller, string call_from, string c
 
     @param args Contains the python parameters. These are:
 	- <b>capi</b> reference to object of Capi to use (given to the idle function as parameter)
-    	- <b>controller (int)</b> ISDN controller ID to use
+    	- <b>controller (int)</b> ISDN controller ID to use (1=first controller)
     	- <b>call_from (string)</b>own number to use
     	- <b>call_to (string)</b>the number to call
     	- <b>timeout (int)</b>timeout to wait for connection establishment in seconds
@@ -731,7 +731,7 @@ capisuite_call_voice(PyObject *, PyObject *args)
 
     @param args Contains the python parameters. These are:
 	- <b>capi</b> reference to object of Capi to use (given to the idle function as parameter)
-    	- <b>controller (int)</b> ISDN controller ID to use
+    	- <b>controller (int)</b> ISDN controller ID to use (1=first controller)
     	- <b>call_from (string)</b>own number to use
     	- <b>call_to (string)</b>the number to call
     	- <b>timeout (int)</b>timeout to wait for connection establishment in seconds
@@ -978,6 +978,9 @@ capisuitemodule_init () throw (ApplicationError)
 /* History
 
 $Log: capisuitemodule.cpp,v $
+Revision 1.6  2003/08/10 12:00:57  gernot
+- added better description for controller ID
+
 Revision 1.5  2003/07/20 10:31:52  gernot
 - return information about transfers in fax receive/send, audio receive
 
