@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!@PYTHON@
 #
 #             capisuitefax - capisuite tool for enqueuing faxes
 #            ---------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.4 $
+#    version              : $Revision: 1.1 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

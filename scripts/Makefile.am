@@ -3,13 +3,18 @@ pkgsysconfdir = @sysconfdir@/capisuite
 
 dist_pkglib_DATA = idle.py incoming.py README
 python_module_DATA = cs_helpers.py
-EXTRA_DIST = cs_helpers.pyin fax.confin answering_machine.confin
+EXTRA_DIST = cs_helpers.pyin fax.confin answering_machine.confin capisuitefax.in
 
 pkgsysconf_DATA = fax.conf answering_machine.conf
 
-dist_bin_SCRIPTS = capisuitefax
+bin_SCRIPTS = capisuitefax
 
 SUBDIRS = waves
+
+capisuitefax: capisuitefax.in
+	rm -f $@
+	sed -e 's,@\PYTHON@,$(PYTHON),g' $< >$@
+	chmod 755 $@
 
 .pyin.py:
 	rm -f $@
