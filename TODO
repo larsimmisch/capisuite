@@ -2,12 +2,9 @@ NICE:
 - ?valgrind-clean the used libs and Python?
 - support more than one send_controller
 - don't use 34xx codes, define constants instead and print meaningful messages
-- include email account check in idly.py
 
 FUTURE PLANS:
 - setuid away from root (problem: chown of recorded file to user)
-- log syntax errors in scripts, too
-	- PyRun_SimpleFile must be replaced by PyRun_File for this IMHO
 - test-implement the whole application part in Python
 - rewrite capisuitefax and idle.py to use named socket communication
 
