@@ -581,7 +581,8 @@ make install</screen>
 									<term><filename>spooldir/failed/</filename></term>
 									<listitem><para>Job which have failed finally end up here.</para></listitem>
 								</varlistentry>
-							</variablelist>
+							</variablelist> 
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_user_dir">
@@ -600,14 +601,18 @@ make install</screen>
 									<term><filename>user_dir/username/sendq/</filename></term>
 									<listitem><para>Fax files to be sent are queued here by <command>capisuitefax</command>.</para></listitem>
 								</varlistentry>
-							</variablelist>
+							</variablelist> 
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_send_tries">
 						<term><option>send_tries="10"</option></term>
-						<listitem><para>When a fax can't be sent to the destination for any reason, it's tried for several times.
-						This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir 
-						(see <xref linkend="fax_spool_dir"/>) and the user will get a mail.</para>
+						<listitem>
+							<para>When a fax can't be sent to the destination for any reason, it's tried for several times.
+								This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir
+								(see <xref linkend="fax_spool_dir"/>) and the user will get a mail.
+							</para>
+							<para>This option is optional. If not given, it defaults to 10 tries.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_send_delays">
@@ -618,6 +623,7 @@ make install</screen>
 							(see <xref linkend="fax_send_tries"/>) values - if not, surplus entries are ignored and missing
 							entries are filled up with the last value. The default should just be ok giving you increasing
 							delays for up to 10 tries.</para>
+							<para>This option is optional. If not given, it defaults to the list shown above.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_send_controller">
@@ -631,6 +637,7 @@ make install</screen>
 							controllers will be listed then. Unfortunately, &cs; isn't able to use more than one controller
 							for sending faxes at the moment, so no list is allowed here. If you have only one controller,
 							just leave it at <literal>1</literal></para>
+							<para>This option is optional. If not given, it defaults controller 1.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_outgoing_MSN">
@@ -638,22 +645,27 @@ make install</screen>
 						<listitem><para>This number is used as our own number for outgoing calls. If it's not given,
 							the first number of fax_numbers is used (see <xref linkend="fax_numbers"/>). Please
 							replace with one valid MSN of your ISDN interface or leave empty. This value can be
-							overwritten in the user sections individually.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_dial_prefix">
-						<term><option>dial_prefix=""</option></term>
-						<listitem><para>If anything is entered here, it will be used as a prefix which is added to any
-						number given to <command>capisuitefax</command> as prefix. This is e.g. very helpful if your 
-						ISDN adapter is connected to a PBX which needs "0" for external calls. It's also possible to
-						disable its usage later for a certain fax document, so setting this will certainly not prevent
-						you from placing internal calls without prefix.</para>
+							overwritten in the user sections individually.</para> 
+							<para>This option is optional. If not given, it defaults to empty.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_outgoing_timeout">
 						<term><option>outgoing_timeout="60"</option></term>
 						<listitem><para>Default setting which defines how many seconds we will wait for a successful connection after
 							dialing the number. This value can be overwritten in the user sections individually.</para>
+							<para>This option is optional. If not given, it defaults to 60 seconds.</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry id="fax_dial_prefix">
+						<term><option>dial_prefix=""</option></term>
+						<listitem>
+							<para>If anything is entered here, it will be used as a prefix which is added to any
+								number given to <command>capisuitefax</command> as prefix. This is e.g. very helpful if your
+								ISDN adapter is connected to a PBX which needs "0" for external calls. It's also possible to
+								disable its usage later for a certain fax document, so setting this will certainly not prevent
+								you from placing internal calls without prefix.
+							</para>
+							<para>This option is optional. If not given, it defaults to an empty prefix.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_stationID">
@@ -663,6 +675,7 @@ make install</screen>
 							"+49 89 123456" for a number in Munich, Germany. Station IDs may only consist of the "+"-sign,
 							spaces and the digits 0-9. The maximal length is 20. This value can be overwritten in the user
 							sections individually.</para>
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_headline">
@@ -671,6 +684,7 @@ make install</screen>
 							headline will be presented depends on the implementation of your CAPI driver. The headline
 							should have a reasonable length to fit on the top of a page, but there's no definite limit
 							given.</para>
+							<para>This option is optional. If not given, it defaults to an empty headline.</para>
 						</listitem>
 					</varlistentry>
 				</variablelist>
@@ -705,7 +719,8 @@ make install</screen>
 							<para>When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
 							This is only useful for a setup with only one user which wants to receive any call as fax.
-							</para>
+							</para> 
+							<para>This option is optional. If not given, the user can't send or receive fax documents.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_email">
@@ -715,6 +730,7 @@ make install</screen>
 							system &cs; is running on. The address is also used to send status reports
 							for sent fax jobs to. If you don't want emails to be sent at all, use the
 							action option (see <xref linkend="fax_action"/>).</para>
+							<para>This option is optional. If not given, the mail is sent to the system account.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_action">
@@ -736,6 +752,7 @@ make install</screen>
 									</varlistentry>
 								</variablelist>
 							</para>
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 				</variablelist>
@@ -753,7 +770,9 @@ make install</screen>
 							a global announcement if the user hasn't set his own and some spoken word fragments
 							for the remote inquiry and the menu presented there. These audio files are searched
 							in this directory. If user_audio_files is enabled (see <xref linkend="voice_user_audio_files"/>), each user can also
-							provide his own audio snippets in his user_dir (see <xref linkend="voice_user_dir"/>).</para></listitem>
+							provide his own audio snippets in his user_dir (see <xref linkend="voice_user_dir"/>).</para>
+						 <para>This option is mandatory.</para>
+						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_user_dir">
 						<term><option>voice_user_dir="/path/to/userdir/"</option></term>
@@ -773,14 +792,16 @@ make install</screen>
 									<listitem><para>Received voice calls are saved here.</para></listitem>
 								</varlistentry>
 							</variablelist>
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_user_audio_files">
-						<term><option>user_audio_files="1"</option></term>
+						<term><option>user_audio_files="0"</option></term>
 						<listitem><para>If set to <literal>1</literal>, each user may provide his own audio files
 						in his user directory (see <xref linkend="voice_user_dir"/>). If set to <literal>0</literal>,
 						only the audio_dir (see <xref linkend="voice_audio_dir"/>) will be searched.</para>
 						</listitem>
+                                                <para>This option is optional. If not set, it defaults to not reading own user audio files (0).</para>
 					</varlistentry>
 					<varlistentry id="voice_delay">
 						<term><option>voice_delay="15"</option></term>
@@ -788,6 +809,7 @@ make install</screen>
 							call in (in seconds). A value of <literal>10</literal> means that the answering
 							machine accepts incoming calls 10 seconds after the incoming connection request.
 							This value can be overwritten in the user sections individually.</para>
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_announcement">
@@ -796,12 +818,14 @@ make install</screen>
 							The announcements are searched in <filename>user_dir/username/announcement</filename> 
 							then. If not found, a global announcement containing the called MSN will be played. 
 							This value can be overwritten in the user sections individually.</para>
+							<para>This option is optional. If not set, it defaults to "announcement.la".</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_record_length">
 						<term><option>record_length="60"</option></term>
 						<listitem><para>Default setting for the maximum record length in seconds. This value can
 							be overwritten in the user sections individually.</para>
+                                                        <para>This option is optional. If not set, it defaults to 60 seconds.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_record_silence_timeout">
@@ -809,7 +833,8 @@ make install</screen>
 						<listitem><para>Default setting for the record silence timeout in seconds. When set to a value
 							greater than 0, the recording will be aborted if silence is detected for the given
 							amount of seconds. Set this to 0 to disable it. This value can
-							be overwritten in the user sections individually.</para>
+							be overwritten in the user sections individually.</para> 
+                                                        <para>This option is optional. If not set, it defaults to 5 seconds.</para>
 						</listitem>
 					</varlistentry>
 				</variablelist>
@@ -839,6 +864,7 @@ make install</screen>
 							be sent to this number. When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
 							This is only useful for a setup with only one user which wants to receive any call.</para>
+							<para>This option is optional. If not set, the user won't receive voice calls.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_email">
@@ -848,6 +874,7 @@ make install</screen>
 							system &cs; is running on. The address is also used to send status reports
 							for sent fax jobs to. If you don't want emails to be sent at all, use the
 							action option (see <xref linkend="voice_action"/>).</para>
+							<para>This option is optional. If not set, the calls are mailed to the system account.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_pin">
@@ -858,6 +885,7 @@ make install</screen>
 							If you don't want to use the remote inquiry function, just use an empty
 							PIN setting. The PIN doesn't have a maximal length - but perhaps you should
 							not use 200 digits or you perhaps won't be able to remember them (I won't at least). ;-)</para>
+                                                        <para>This option is optional. If not set, remote inquiry is disabled.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_action">
@@ -885,6 +913,7 @@ make install</screen>
 									</varlistentry>
 								</variablelist>
 							</para>
+							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
 				</variablelist>
