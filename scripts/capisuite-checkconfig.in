@@ -63,16 +63,16 @@ def test_nextfile(user, path, queue, prefix):
     print "Trying to read file:", file
     num = None
     try:
-        num = capisuite.fileutils.readCounter(file, default=None)
+        num = capisuite.fileutils.readCounter(0, file)
     except IOError, err:
         print >>sys.stderr, "****Failed to read/parse the *nextnr file:", err
     except ValueError:
         print >>sys.stderr, "****Failed to convert file content to int number"
     else:
         if num is None:
-            print "   ", file, 'is unset'
+            print '   is unset'
         else:
-            print "   ", file, 'contains number', num
+            print '   contains number', num
 
 
 def checkQdirs(user, basedir, queuedir):
@@ -218,7 +218,7 @@ else:
             print option, '=', config.get(section, option)
         print
     print 'known users:',
-    print config.listUsers()
+    print ', '.join(map(repr, config.listUsers()))
 
 # todo: these checks:
 # - are all users valid system users?
