@@ -1,7 +1,7 @@
 #
 # Autoconf macros for configuring the build of Python extension modules
 #
-# $Header: /root/cvs2svn/capisuite/capisuite/acinclude.m4,v 1.1 2003/02/19 08:19:52 gernot Exp $
+# $Header: /root/cvs2svn/capisuite/capisuite/acinclude.m4,v 1.2 2003/03/21 23:09:59 gernot Exp $
 #
 # taken out of Postgres CVS by Gernot Hillier 
 #
@@ -18,6 +18,26 @@ AC_DEFUN(CS_SET_DOCDIR,
 	docdir=$withval, docdir=$datadir/doc/capisuite)
 AC_SUBST(docdir)
 ])
+
+AC_DEFUN(CS_TEST_GCC3,
+[AC_MSG_CHECKING([for <ostream> header])
+AC_TRY_CPP([#include <ostream>],
+  [
+    AC_DEFINE([HAVE_OSTREAM],1,[we can #include<ostream> instead of ostream.h - new gcc3 feature])
+    AC_MSG_RESULT([yes])
+  ],
+  AC_MSG_RESULT([use ostream.h instead])
+)
+AC_MSG_CHECKING([for string::clear method])
+AC_TRY_COMPILE([#include <string>],
+  [std::string a; a.clear();],
+  [
+    AC_DEFINE([HAVE_STRING_CLEAR],1,[we have string::clear])
+    AC_MSG_RESULT([yes])
+  ],
+  AC_MSG_RESULT([use assignment of "" instead])
+)
+]) dnl CS_TEST_GCC
 
 # PGAC_CHECK_PYTHON_DIRS
 # -----------------------

@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -14,6 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <../../config.h>
 #include <fstream>
 #include <pthread.h>
 #include "capi.h"
@@ -888,7 +889,11 @@ Connection::getDTMF()
 void
 Connection::clearDTMF()
 {
+#ifdef HAVE_STRING_CLEAR
  	received_dtmf.clear();
+#else
+	received_dtmf="";
+#endif
 }
 
 string
@@ -967,6 +972,10 @@ Connection::buildBconfiguration(service_t service, string faxStationID, string f
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.3  2003/03/21 23:09:59  gernot
+- included autoconf tests for gcc-2.95 problems so that it will compile w/o
+  change for good old gcc-2.95 and gcc3
+
 Revision 1.2  2003/02/28 21:36:51  gernot
 - don't allocate new B3config in buildBconfiguration(), fixes bug 532
 - limit stationID to 20 characters

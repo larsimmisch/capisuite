@@ -2,7 +2,7 @@
     @brief Contains PythonScript - Read a python script and call a function in own thread
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -17,8 +17,13 @@
 #ifndef PYTHONSCRIPT_H
 #define PYTHONSCRIPT_H
 
+#include <../../config.h>
 #include <Python.h>
-#include <ostream>
+#ifdef HAVE_OSTREAM
+  #include <ostream>
+#else
+  #include <ostream.h>
+#endif
 #include "applicationexception.h"
 class PycStringIO_CAPI;
 
@@ -83,8 +88,12 @@ class PythonScript
 /* History
 
 $Log: pythonscript.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/03/21 23:09:59  gernot
+- included autoconf tests for gcc-2.95 problems so that it will compile w/o
+  change for good old gcc-2.95 and gcc3
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.6  2003/02/10 14:17:09  ghillie
 merged from NATIVE_PTHREADS to HEAD
