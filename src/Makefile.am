@@ -1,6 +1,6 @@
 pkgsysconfdir = @sysconfdir@/capisuite
 
-bin_PROGRAMS = capisuite
+sbin_PROGRAMS = capisuite
 capisuite_LDADD=application/libccapplication.a modules/libccmodules.a \
 		backend/libccbackend.a
 capisuite_SOURCES=main.cpp
