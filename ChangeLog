@@ -1,6 +1,8 @@
 2004-03-07  Gernot Hillier  <gernot@hillier.de>
 	* docs/manual.docbook: update links to new web site structure
 	* docs/manual-de.docbook: Likewise.
+	* docs/Makefile.am: tell DocBook HTML stylesheets to generate UTF-8
+	  and a valid DOCTYPE
 
 2004-02-25  Gernot Hillier  <gernot@hillier.de>
 	* docs/.cvsignore: add manpages/*

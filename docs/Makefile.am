@@ -18,8 +18,13 @@ manual-prepare:
 	xmllint --noout --valid manual.docbook
 
 manual-html: manual-prepare
-	xsltproc --stringparam profile.condition html -o manual-profiled.docbook /usr/share/sgml/docbook/docbook-xsl-stylesheets/profiling/profile.xsl manual.docbook
-	xsltproc -o manual/ /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.xsl manual-profiled.docbook
+	xsltproc --stringparam profile.condition html -o manual-profiled.docbook \
+	  /usr/share/sgml/docbook/docbook-xsl-stylesheets/profiling/profile.xsl \
+	   manual.docbook
+	xsltproc --stringparam chunker.output.encoding UTF-8 \
+	  --stringparam chunker.output.doctype-public "-//W3C//DTD XHTML 1.0 Transitional//EN" \
+	  --stringparam chunker.output.doctype-system "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" \
+	  -o manual/ /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.xsl manual-profiled.docbook
 	rm manual-profiled.docbook
 	cp -r /usr/share/sgml/docbook/docbook-xsl-stylesheets/images/ manual/ # missing images...
 	if test ! -d manual/images/callouts; then \
