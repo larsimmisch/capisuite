@@ -13,7 +13,7 @@ License:      GPL
 Group:        Communications/ISDN
 Version:      @VERSION@
 Release:      @RELEASE@
-Requires:     python>=2.2 sox>=12.17.3 sfftobmp libtiff3-progs ghostscript
+Requires:     python >= 2.2 sox >= 12.17.3 sfftobmp libtiff3-progs ghostscript
 #Requires:     libisdn4k-utils2-devel libpython2.3-devel
 Requires:     jpeg2ps
 Summary:      ISDN telecommunication suite providing fax and voice services
@@ -93,9 +93,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_defaultdocdir}/%name-%version
 %doc %{_mandir}/*/*
 %{_datadir}/capisuite
-%{_datadir}/capisuite/README
-%{_datadir}/capisuite/..la
-%{_datadir}/capisuite/*.la
 %{_libdir}/capisuite
 %dir %{_var}/spool/capisuite
 %{_var}/spool/capisuite/*
