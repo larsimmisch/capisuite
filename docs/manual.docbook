@@ -20,7 +20,8 @@
 <preface id="intro"><title>Introduction</title>
 
 	<sect1 id="welcome"><title>Welcome to &cs;</title>
-		<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite. It uses the new CAPI interface for accessing
+		<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite. 
+		It uses the new CAPI interface for accessing
 		your ISDN-hardware - so you'll need a card for which a CAPI compatible
 		driver is available. Currently these are all cards manufactured by AVM
 		and some Eicon cards.
@@ -1998,17 +1999,19 @@ def idle(capi):<co id="idle_ex2_4"/>
 		<sect2 id="default_incoming"><title>incoming.py</title>
 			<para>The incoming script handles all incoming connections. It reads two configuration files containing all necessary
 			data which were described in detail in <xref linkend="script_config"/>. The overall structure will be described here
-			giving you an overview of how it is implemented. Firstly (after importing some necessary modules), it defines
-			the necessary function <function>callIncoming</function> which will call all other functions if needed.</para>
+			giving you an overview of how it is implemented.</para> 
+			
+			<para>Firstly (after importing some necessary modules), it defines the necessary function <function>callIncoming</function>
+			which will call all other functions if needed.</para>
 
 			<sect3 id="default_incoming_1"><title>function <function>callIncoming</function></title>
 				<para>This function starts with a call to <function>cs_helpers.readConfig</function>
-				to read the configuration. It then iterates through all sections representing the configured users (except GLOBAL) to see
-				if the called number belongs to any user. If a match is found, the user and the defined service are saved to
-				<literal>curr_user</literal> and <literal>curr_service</literal>.</para>
+				to read the configuration. It then iterates through all sections representing the configured users (except 
+				<literal>GLOBAL</literal>) to see if the called number belongs to any user. If a match is found, the user and 
+				the defined service are saved to <literal>curr_user</literal> and <literal>curr_service</literal>.</para>
 
-				<para>If no match has been found (<literal>curr_user</literal> is empty), the call is rejected and the function returns.
-				Otherwise the directory to use for incoming fax or voice data is determined and created if not there yet.</para>
+				<para>If no match was found (<literal>curr_user</literal> is empty), the call is rejected and the function returns.
+				Otherwise the directory to use for incoming fax or voice data is determined and created if not existing yet.</para>
 
 				<para>The last thing the function does, is to produce a log entry, accept the call with the right service (fax
 				or voice) and call either <function>faxIncoming</function> or <function>voiceIncoming</function>. It also defines
@@ -2017,93 +2020,96 @@ def idle(capi):<co id="idle_ex2_4"/>
 			<sect3 id="default_incoming_2"><title>function <function>faxIncoming</function></title>
 				<para><function>faxIncoming</function> is quite straight forward: it creates a uniqe filename, calls
 				<function>capisuite.fax_receive</function>, disconnects and logs the disconnection reasons. Then it checks if a fax
-				have been really received succesfully (i.e. if the file exists), if yes, creates a description file for it, chown's the
-				file to the right user and sends the file as mail.</para>
+				have been really received succesfully (i.e. if the file exists). If yes, it creates a description file for it, 
+				<command>chown</command>'s the file to the right user and sends the file as mail.</para>
 			</sect3>
 			<sect3 id="default_incoming_3"><title>function <function>voiceIncoming</function></title>
 				<para><function>voiceIncoming</function> has much more features to accomplish like fax recognition
 				and switching to fax mode, starting a remote inquiry etc.</para>
 
-				<para>It also starts by determining the directory to use and creating a unique filename. Also, the PIN for remote inquiry
+				<para>It starts by determining the directory to use and creating a unique filename. Also, the PIN for remote inquiry
 				is saved to a private variable. There are two possibilites now: the user has already an own announcement - in this case
 				it's played now. Otherwise, a predefined announcement containing of a general announcement and the number which was called
 				is played. If recording a message wasn't disabled (by setting <literal>voice_action</literal> to <literal>None</literal>),
-				the it starts now after a beep.</para>
+				it starts now after a beep.</para>
 
 				<para>All <function>audio_send</function> and <literal>audio_receive</literal> calls used so far had DTMF abortion enabled
 				and so the script "falls through" all these calls after a DTMF signal was recognized. After them,
-				<function>read_DTMF</function> is used to see if any such signal has been found. "X" represents the fax tone and so triggers
-				a switch to fax protocols and a call to <function>faxIncoming</function>. Any other received signals are interpreted to be
-				a part of the PIN for remote inquiry and so a loop which waits 3 seconds after each tone for the next one is entered. If
-				a valid PIN is entered, it starts the <function>remoteInquiry</function>. After three wrong attempts, it will disconnect.</para>
+				<function>read_DTMF</function> is used to see if any such signal have been found. "<literal>X</literal>" represents the fax
+				tone and triggers a switch to fax protocols and a call to <function>faxIncoming</function>. Any other received signals
+				are interpreted to be a part of the PIN for remote inquiry and so a loop which waits 3 seconds after each tone for the next
+				one is entered. If a valid PIN is entered, it starts the <function>remoteInquiry</function>. After three wrong attempts, it will disconnect.</para>
 
-				<para>After disconnecting, logging, a description file is written (if recorded file exists), both files will be chown'ed to
-				the right user and the recorded message will be mailed to him.</para>
+				<para>After disconnecting and logging, a description file is written (if the recorded file exists), both files will be 
+				<command>chown</command>'ed to the right user and the recorded message will be mailed to him.</para>
 			</sect3>
 			<sect3 id="default_incoming_4"><title>function <function>remoteInquiry</function></title>
 				<para>The <function>remoteInquiry</function> starts by creating a lock file and acquiring an exclusive
 				lock on it to prevent two parallel remote inquiries for the same user. If the lock can't be acquired, an error message is
-				played and the function returns. If locking has succeeded, a list of the voice call numbers in the user directory is compiled
-				by listing the directory, filtering and sorting it. Now, a file called <filename>last_inquiry</filename> is read when it exists.
+				played and the function returns. If locking has succeeded, a list of the recorded voice calls is compiled by listing the 
+				user directory, filtering and sorting it. Now, a file called <filename>last_inquiry</filename> is read when it exists.
 				It contains the number of the last heard message. With this information, the old messages can be filtered out to a seperate
-				list and thus the caller can listen only to the messages he doesn't know alredy.</para>
+				list and thus the caller can listen to messages he doesn't know alredy first.</para>
 
-				<para>The number of new messages is played, followed by a small menu where the caller can choose to either record an announcment
+				<para>The number of new messages is said, followed by a small menu where the caller can choose to either record an announcment
 				or hear the recorded messages. If he chooses announcement recording, the function <function>newAnnouncement</function> is called,
-				otherwise <function>remoteInquiry will continue. </function></para>
-				
+				otherwise <function>remoteInquiry</function> will continue.</para>
+
 				<para>Now, a loop will first iterate over the new and then the all old messages. It starts by telling the caller how much messages
 				have been found. Then all messages will be played, repeating the following steps for each one:</para>
-				
+
 				<itemizedlist>
 					<listitem><para>read the description file of the current message</para></listitem>
-					<listitem><para>play an information block containing the current message number, source and destination of the call,
-						  date and time.</para></listitem>
+					<listitem><para>play an information block containing the current message number, source, destination, date and time of the 
+						  call.</para>
+					</listitem>
 					<listitem><para>play the message</para></listitem>
-					<listitem><para>provide a menu where the caller can go on to the next or last message, repeat the message or delete it</para></listitem>
+					<listitem><para>provide a menu where the caller can go on to the next or last message, repeat the current message or delete
+						  it</para>
+					</listitem>
 				</itemizedlist>
-				
+
 				<para>At the end, the caller will be informed that no more messages are available and the connection will be finished, followed
-				by releasing the lock acquired at the begin of this function and deleting the lock file.</para>
+				by releasing the lock file and deleting ir.</para>
 			</sect3>
 			<sect3 id="default_incoming_5"><title>function <function>newAnnouncement</function></title>
-				<para><function>newAnnouncement</function> presents the caller some instructions first. Then, the announcement will be recorded
-				to a temporary file. To give the user the ability to check it, it will be played, followed by a menu allowing to save it or to
-				repeat the recording. If the user has chosen to save it, it will be moved from the temporary file to
-				<filename>announcement.la</filename> in the users voice directory and chown'ed to him. The call will be finished with an approval
-				to the caller that it has been saved succesful.</para>
+				<para><function>newAnnouncement</function> presents some instructions to the caller first. Then, the new announcement will be 
+				recorded to a temporary file. To give the user the ability to check it, it will be played, followed by a menu allowing him to
+				save it or to repeat the recording. If the user has chosen to save it, it will be moved from the temporary file to
+				<filename>announcement.la</filename> in the users voice directory and <command>chown</command>'ed to him. The call will be
+				finished with an approval to the caller that it has been saved succesfully.</para>
 			</sect3>
 		</sect2>
 		<sect2 id="default_idle"><title>idle.py</title>
-			<para>The idle script is responsible for collecting jobs from the user directories where they're stored by <command>capisuitefax</command>
-			and sending them to the given destinations. It reads its configuration again from the config files presented in
-			<xref linkend="script_config"/>.</para>
+			<para>The idle script is responsible for collecting jobs from the send queues (where they're stored by <command>capisuitefax</command>)
+			and sending them to the given destinations. It reads its configuration from the files presented in <xref linkend="script_config"/>, too.
+			</para>
 
 			<sect3 id="default_idle_1"><title>function <function>idle</function></title>
 				<para>After reading the configuration by calling <function>cs_helpers.readConfig</function> and testing for the existence
-				of the directories needed, the userlist is compiled from the list of available sections.</para>
-				
-				<para>For each user who has a valid fax setup (otherwise this user will be skipped), the send queue will be looked at. If the necessary
-				directories don't exist, they'll be created. After that, the names of all files in the send queue are filtered to only contain fax
-				jobs and stored in a list called <literal>files</literal>.</para>
-				
-				<para>For each found job, a security check is done to see if it was created by the right user. If this check has been successful, a
+				of the archive directories needed, the userlist is compiled from the list of available sections.</para>
+
+				<para>For each user who has a valid fax setup (otherwise this user will be skipped), the send queue will be looked at. If the 
+				necessary queue directories don't exist, they'll be created. After that, a list called <literal>files</literal> with the names of
+				all files in the send queue is created and filtered to only contain fax jobs.</para>
+
+				<para>For each found job, a security check is done to see if it was created by the right user. If this check was successful, a
 				lock file is created and a lock on it is acquired. This prevents the <command>capisuitefax</command> command to abort a job while
-				it is in transfer. After the lock is acquired, the existence of the file is checked (perhaps it has been cancelled before we could 
-				acquire the lock?).</para>
-				
-				<para>Now, the description file for this job is read and the starttime is checked. If it's not reached, the script will go on with 
-				the next job. Some parameters are taken from the configuration and a log message is created. The file is transferred by calling 
-				<function>sendfax</function>. The results are stored and logged. If the job was successful, it is moved to the done dir and
+				it is in transfer. After that, the existence of the file is checked (perhaps the job has been cancelled before we could acquire 
+				the lock?).</para>
+
+				<para>Now, the description file for this job is read and the starttime is checked. If it's not reached, the script will go on with
+				the next job. Otherwise, some parameters are taken from the configuration and a log message is created. The file is transferred by 
+				calling <function>sendfax</function>. The results are stored and logged. If the job was successful, it is moved to the done dir and
 				an approval is mailed to the user. If it wasn't succesful, the delay interval will be determined from the configuration and the new
 				starttime is calculated by increasing the old starttime by this interval. A counter for the used tries is increased and the description
-				file is rewritten with the new values. If the number of tries exceeds a given maximum, the job is moved to the failed dir and the 
-				error is reported by mail to the user.</para>
-				
-				<para>Finally, the locked file will be unlocked and deleted.</para>
+				file is rewritten with the new values. If the number of tries exceeds a given maximum, the job is moved to the failed dir and the
+				error is reported to the user by mail.</para>
+
+				<para>Finally, the lock file will be unlocked and deleted.</para>
 			</sect3>
 			<sect3 id="default_idle_2"><title>function <function>sendfax</function></title>
-				<para>This function handles the actual send process. After determining the MSN to use from either the <literal>outgoing_MS</literal>
+				<para>This function handles the send process. After determining the MSN to use from either the <literal>outgoing_MSN</literal>
 				setting or from the <literal>fax_numbers</literal> list, a call to the destination is initiated. If it fails, the function returns;
 				otherwise the file will be sent and the connection finished.</para>
 			</sect3>
@@ -2113,23 +2119,25 @@ def idle(capi):<co id="idle_ex2_4"/>
 
 		</sect2>
 		<sect2 id="default_capisuitefax"><title>capisuitefax</title>
-			<para><command>capisuitefax</command> allows to enqueue fax jobs, list the current queue and abort jobs. It's not used by the
-			&cs; system - it's only a frontend for the users send queue directory. It has several commandline options - for an explanation
+			<para><command>capisuitefax</command> allows to enqueue fax jobs, list the current queue and abort jobs. It's not used directly by the
+			&cs; system - it's a frontend for the users send queue directory. It has several commandline options - for an explanation
 			of its usage, please refer to <xref linkend="usingscripts_send"/>.</para>
 
 			<para>There are three helper functions defined first. <emphasis><function>usage</function></emphasis> prints out a small help if
-			"--help" or "-h" was given as parameter or if a parameter isn't understood. <emphasis><function>showlist</function></emphasis>
-			gets a listing from the users send queue directory and prints it nicely formatted as table. <emphasis><function>abortjob</function>
-			</emphasis> removes a job from this queue. It does this safely to not interfere with the sending process by using a lock file.</para>
-			
+			"<option>--help</option>" or "<option>-h</option>" was given as parameter or if a parameter isn't understood. <emphasis><function
+			>showlist</function></emphasis> gets a listing from the users send queue directory and prints it nicely formatted as table. <emphasis>
+			<function>abortjob</function></emphasis> removes a job from the queue. It does this safely by using a lock file to not interfere with
+			the sending process.</para>
+
 			<para>The main code of this script checks the given commandline options first. It sets several variables to the given values.
-			After some checks of the validity of the options, the rights of the user to send faxes and the existence of the necessary 
+			After some checks of the validity of the options, the rights of the user to send faxes and the existence of the necessary
 			directories, it will fulfill the requested task. Either, <function>listqueue</function> will be called to show a listing of
-			active jobs, <function>abortjob</function> will be called to abort a job or the given files are processed and put to the queue.</para>
-			
-			<para>To process a job, the existence of it and its format will be checked. Currently, only PostScript is allowed. But as &cs; 
-			itself only supports the SFF format, the files will be transferred from PostScript to it by calling <command>ghostscript</command>.
-			Finally, the description file for this job is created containing the given parameters like the destination number.</para>
+			active jobs, <function>abortjob</function> to abort a job or the given files are processed and put to the queue.</para>
+
+			<para>To process a job, the existence of it and its format will be checked. Currently, only PostScript is allowed. The &cs; core
+			itself only supports the SF format. Therefore, the files are coverted from PostScript to it by calling
+			<command>ghostscript</command>. Finally, the description file for this job is created containing the given parameters like the 
+			destination number.</para>
 		</sect2>
 		<sect2 id="default_helpers"><title>cs_helpers.py</title>
 			<para>The <filename>cs_helpers.py</filename> script contains many small helper functions used in the other scripts. These are:</para>
@@ -2138,7 +2146,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 				<varlistentry>
 					<term><function>readConfig</function></term>
 					<listitem><para>Reads either the configuration files described in <xref linkend="script_config"/> or an arbitrary
-					config file. Used e.g. for the description files accompanying each received file or job to send.</para></listitem>
+					config file like the description files accompanying each received file or job to send.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><function>getOption</function></term>
@@ -2155,12 +2163,12 @@ def idle(capi):<co id="idle_ex2_4"/>
 				</varlistentry>
 				<varlistentry>
 					<term><function>sendMIMEMail</function></term>
-					<listitem><para>Send a E-Mail with attachment to a given user. Supports also automatic format conversion SFF -> PDF and
+					<listitem><para>Send an e-mail with attachment to a given user. Supports also automatic format conversion SFF -> PDF and
 					inversed A-Law -> WAV.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><function>sendSimpleMail</function></term>
-					<listitem><para>Send a normal E-Mail without attachment to a given user.</para></listitem>
+					<listitem><para>Send a normal e-mail without attachment to a given user.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><function>writeDescription</function></term>
@@ -2178,19 +2186,19 @@ def idle(capi):<co id="idle_ex2_4"/>
 	</sect1>
 
 	<sect1 id="command_reference"><title>&cs; command reference</title>
-		<para>&cs; provides an internal Python module called <literal>capisuite</literal> which is imported as usual by <literal>import capisuite</literal>.
+		<para>&cs; provides an internal Python module called <literal>capisuite</literal> which can be imported as usual by <literal>import capisuite</literal>.
 		Internal means, it's compiled in the &cs; binary and will only be found if &cs; interpretes the script.</para>
-		
+
 		<para>A complete reference of all functions of this module is auto-generated from the &cs; sources and so you'll find it in the reference
 		manual available locally on <ulink url="../reference/group__python.html"/> or online on
 		<ulink url="http://www.capisuite.de/capisuite/reference/group__python.html"/>.</para>
-		
+
 		<para>As it doesn't make sense to duplicate the information here, please refer to it.</para>
-		
+
 		<note><para>These functions are implemented in C internally and so the reference document shows the C function header instead
-		of the header as you would define it in Python. So please ignore the function header shown there and only have a look at the
-		parameters given under <emphasis>args</emphasis>. I hope this isn't too confusing. Perhaps I'll find a better way to auto-create
-		this document sometimes...</para></note>
+		of the header how it would be defined in Python. So please ignore the function header shown there and only have a look at the
+		description and the parameters given under <emphasis>args</emphasis>. If this is too confusing, please tell me and perhaps I'll 
+		find a better way to auto-create this document someday then...</para></note>
 	</sect1>
 
 </chapter>
@@ -2222,24 +2230,23 @@ def idle(capi):<co id="idle_ex2_4"/>
  error codes. Most of the errors described in <xref linkend="capicodes_general"/>
  are only important for developers of the &cs; core. As user, you only need
  to know the codes shown in <xref linkend="capicodes_connection"/>
- as they'll be used in the &cs; Python functions like disconnect (@ref).</para>
+ as they'll be used in the &cs; Python functions like <function>capisuite.disconnect</function>.</para>
 
- <para>In the next two sections, you'll find a list of all codes and a short description.
- A detailled description of the CAPI codes can be found in the CAPI specification available at
+ <para>You'll find a list of all the codes and a short description below. A detailled description of 
+ the CAPI codes can be found in the CAPI specification available at
  <ulink url="http://www.capi.org"/>.</para>
 
  <para>All numbers are given <emphasis>hexadecimal</emphasis>!</para>
 
  <section id="capicodes_connection"><title>CAPI errors describing connection problems</title>
 
- 	<para>All errors described here indicate some problem with the connection.
-	These errors are also important for script writers as they're returned by
-	some CapiSuite Python functions like capisuite.disconnect() (@ref).</para>
+ 	<para>All errors described here indicate some problem with the connection. These errors
+	are also important for script writers as they're returned by some CapiSuite Python functions.
+	See <xref linkend="command_reference"/> for further details.</para>
 
 	<section id="capicodes_protocol"><title>Protocol errors</title>
 		<para>Protocol errors indicate some problem during data transfer. Only messages for
-		voice (transparent) and fax are shown here as these are the only protocols spoken
-		by &cs;.</para>
+		the transparent (voice) and fax protocols spoken by &cs; are shown here.</para>
 
 		<itemizedlist>
 			<listitem><para><literal>0</literal> - Normal call clearing, no error</para></listitem>
@@ -2260,7 +2267,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 	</section>
 	<section id="capicodes_isdn"><title>ISDN error codes</title>
 
-	<para>The codes shown here are ISDN error codes which are described by the
+	<para>These codes are ISDN error codes which are described by the
 	ETS 300 102-01 standard in more detail. It's currently available for private use at
 	<ulink url="http://www.etsi.org"/> without fee. For details how the ISDN codes
 	are mapped to the CAPI numbers see the CAPI specification, parameter "Info".</para>
@@ -2325,11 +2332,11 @@ def idle(capi):<co id="idle_ex2_4"/>
  </section>
 
  <section id="capicodes_general"><title>Internal CAPI errors</title>
- 	<para>These errors are mainly of interest for developers of the CapiSuite core. If you're just a user, you
-	won't need most of them.</para>
+ 	<para>These errors are mainly of interest for developers of the CapiSuite core. If you're a user, you normally
+	won't need them.</para>
 
 	<section id="capicodes_info"><title>Informative values (no error)</title>
-	<para>These values are only warnings and may appear in the extensive CapiSuite log only in CAPI messages.</para>
+	<para>These values are only warnings and may appear in the extensive CapiSuite log in messages from the CAPI.</para>
 	<itemizedlist>
 		<listitem><para><literal>0000</literal> - No error, request accepted</para></listitem>
 		<listitem><para><literal>0001</literal> - NCPI not supported by current protocol, NCPI ignored</para></listitem>
@@ -2357,8 +2364,8 @@ def idle(capi):<co id="idle_ex2_4"/>
 	<section id="capicodes_messages"><title>Message exchange errors</title>
 		<para>These errors are really internal: they're raised if the application calls
 		CAPI in a wrong way. If they occur, it's usually a bug which you should tell
-		the &cs; team.</para>  
-		
+		the &cs; developers.</para>
+
 		<itemizedlist>
 			<listitem><para><literal>1101</literal> - Illegal application number.</para></listitem>
 			<listitem><para><literal>1102</literal> - Illegal command or subcommand, or message length less than 12 octets.</para></listitem>
@@ -2387,8 +2394,8 @@ def idle(capi):<co id="idle_ex2_4"/>
 		</itemizedlist>
 	</section>
 	<section id="capicodes_service"><title>Errors concerning requested services</title>
-		<para>The errors described here are issued when the application tries to request a service wrong.
-		Again these are mostly bugs you should tell us.</para>
+		<para>The errors described here are issued when the application tries to request a service in a wrong way.
+		Again, these are mostly bugs you should tell us.</para>
 
 		<itemizedlist>
 			<listitem><para><literal>3001</literal> - B1 protocol not supported</para></listitem>
