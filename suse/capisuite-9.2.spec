@@ -1,27 +1,26 @@
 #
-# spec file for package capisuite 
+# spec file for package capisuite
 #
-# Copyright (c) 2003 Gernot Hillier <gernot@hillier.de>
-# Parts Copyright (c) SuSE Linux AG, Nuernberg, Germany.
-#
+# Copyright (c) 2004 SUSE LINUX AG, Nuernberg, Germany.
 # This file and all modifications and additions to the pristine
 # package are under the same license as the package itself.
 #
-# This spec file was developed for the use with SuSE Linux.  But it
-# should also work for any other distribution with slight changes.
-# If you created your own RPM, please tell me and I'll happily include
-# the spec or a link to your RPM on the homepage.
+# Please submit bugfixes or comments via http://www.suse.de/feedback/
 #
-# neededforbuild  capi4linux gcc-c++ libstdc++-devel libxml2-devel python python-devel
-# usedforbuild    aaa_base aaa_version acl attr bash bind9-utils bison cpio cpp cyrus-sasl db devs diffutils e2fsprogs file filesystem fileutils fillup findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm grep groff gzip kbd less libgcc libstdc++ libxcrypt m4 make man mktemp modutils ncurses ncurses-devel net-tools netcfg pam pam-devel pam-modules patch permissions ps rcs readline sed sendmail sh-utils shadow strace syslogd sysvinit tar texinfo textutils timezone unzip util-linux vim zlib-devel autoconf automake binutils bzip2 capi4linux cracklib gcc gcc-c++ gdbm gettext libstdc++-devel libtool libxml2-devel perl python python-devel rpm zlib
+
+# norootforbuild
+# neededforbuild  capi4linux gcc-c++ libstdc++-devel libxml2-devel python python-devel sfftobmp
+
+BuildRequires: aaa_base acl attr bash bind-utils bison bzip2 coreutils cpio cpp cracklib cvs cyrus-sasl db devs diffutils e2fsprogs file filesystem fillup findutils flex gawk gdbm-devel glibc glibc-devel glibc-locale gpm grep groff gzip info insserv less libacl libattr libgcc libnscd libselinux libstdc++ libxcrypt libzio m4 make man mktemp module-init-tools ncurses ncurses-devel net-tools netcfg openldap2-client openssl pam pam-modules patch permissions popt procinfo procps psmisc pwdutils rcs readline sed strace syslogd sysvinit tar tcpd texinfo timezone unzip util-linux vim zlib zlib-devel binutils capi4linux gcc gcc-c++ gdbm gettext libstdc++-devel libtool libxml2-devel perl python python-devel rpm sfftobmp libjpeg libtiff
 
 Name:         capisuite
 License:      GPL
 Group:        Hardware/ISDN
 Autoreqprov:  on
-Version:      0.4.4  
+Version:      0.4.5
 Release:      0
-Requires:     sfftobmp sox tiff ghostscript-library glibc-locale
+%define pyver %(python -c 'import sys; print sys.version[:3]')
+Requires:     sfftobmp sox tiff ghostscript-library python >= %pyver, python < %{pyver}.99
 Summary:      ISDN telecommunication suite providing fax and voice services
 Source0:      capisuite-%{version}.tar.gz
 URL:          http://www.capisuite.de
@@ -30,13 +29,17 @@ PreReq:       %insserv_prereq
 
 %description
 CapiSuite is an ISDN telecommunication suite providing easy to use
-telecommunication functions which can be controlled from Python scripts.
+telecommunication functions which can be controlled from Python
+scripts.
 
-It uses a CAPI-compatible driver for accessing the ISDN-hardware, so you'll
-need an AVM card with the according driver.
+It uses a CAPI-compatible driver for accessing the ISDN-hardware, so
+you'll need an AVM card with the according driver.
 
-CapiSuite is distributed with two example scripts for call incoming handling
-and fax sending. See /usr/share/doc/packages/capisuite for further information.
+CapiSuite is distributed with two example scripts for call incoming
+handling and fax sending. See /usr/share/doc/packages/capisuite for
+further information.
+
+
 
 Authors:
 --------
@@ -44,39 +47,41 @@ Authors:
 
 %prep
 %setup  
-./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-docdir=/usr/share/doc/packages/capisuite --mandir=/usr/share/man 
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-docdir=%{_defaultdocdir}/capisuite --mandir=/usr/share/man
 
 %build
 make 
-strip src/capisuite
 
 %install
 make DESTDIR=$RPM_BUILD_ROOT install
 mkdir -p $RPM_BUILD_ROOT/etc/init.d
 mkdir -p $RPM_BUILD_ROOT/usr/sbin
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
-install -g root -m 644 -o root cronjob.conf $RPM_BUILD_ROOT/etc/capisuite/cronjob.conf
-install -g root -m 755 -o root rc.capisuite $RPM_BUILD_ROOT/etc/init.d/capisuite
-install -g root -m 755 -o root capisuite.cron $RPM_BUILD_ROOT/etc/cron.daily/capisuite
+install -m 644 cronjob.conf $RPM_BUILD_ROOT/etc/capisuite/cronjob.conf
+install -m 755 rc.capisuite $RPM_BUILD_ROOT/etc/init.d/capisuite
+install -m 755 capisuite.cron $RPM_BUILD_ROOT/etc/cron.daily/capisuite
 ln -sf ../../etc/init.d/capisuite $RPM_BUILD_ROOT/usr/sbin/rccapisuite
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-%{insserv_force_if_yast etc/init.d/capisuite }
+%preun
+%{stop_on_removal capisuite}
 
 %postun
+%{restart_on_update capisuite}
 %{insserv_cleanup}
 
 %files
+%defattr(-,root,root)
+%dir /etc/capisuite
 %config /etc/capisuite/cronjob.conf
 %config /etc/capisuite/capisuite.conf
 %config /etc/capisuite/fax.conf
 %config /etc/capisuite/answering_machine.conf
 /usr/sbin/capisuite
 /usr/bin/capisuitefax
-%doc /usr/share/doc/packages/capisuite
+%doc %{_defaultdocdir}/capisuite
 /usr/share/capisuite
 /usr/lib/capisuite
 /var/spool/capisuite
@@ -84,18 +89,53 @@ rm -rf $RPM_BUILD_ROOT
 /etc/init.d/capisuite
 /etc/cron.daily/capisuite
 /usr/sbin/rccapisuite
+%{_mandir}/man1/capisuitefax.1.gz
+%{_mandir}/man5/answering_machine.conf.5.gz
+%{_mandir}/man5/capisuite.conf.5.gz
+%{_mandir}/man5/fax.conf.5.gz
+%{_mandir}/man8/capisuite.8.gz
 
 %changelog -n capisuite
-* Wed Mar 24 2004 - gernot@hillier.de
-- add correct --mandir
-* Sun Jan 18 2004 - gernot@hillier.de
-- updated to 0.4.4
-* Sun Jul 20 2003 - gernot@hillier.de
-- updated to 0.4.3
-* Sun Apr 27 2003 - gernot@hillier.de
-- updated to 0.4.2
-* Sat Apr 05 2003 - gernot@hillier.de
-- updated to 0.4.1a (SECURITY FIX for cronjob, ...)
+* Sun Nov 28 2004 - gernot@hillier.de
+- update to 0.4.5
+* Tue Aug 31 2004 - kkeil@suse.de
+- fix compile error with new capi4linux package ALERT_REQ now
+  has one more parameter SENDING_COMPLETE
+* Mon Mar 08 2004 - kkeil@suse.de
+- update to 0.4.4
+* Sun Jan 11 2004 - kkeil@suse.de
+- fix install -o (typo)
+* Sun Jan 11 2004 - adrian@suse.de
+- add %%defattr
+* Tue Sep 02 2003 - ro@suse.de
+- fix specfile typo
+* Mon Sep 01 2003 - kkeil@suse.de
+- fix automatic voice-->fax switching (#29703)
+* Fri Aug 29 2003 - mcihar@suse.cz
+- require same python version as it was built with
+* Mon Jul 28 2003 - kkeil@suse.de
+- update to 0.4.3
+  * support color fax reception
+  * fax headline is now converted to the right charset internally
+  * scripts: capisuitefax now handles filenames and dialstrings
+  with special chars (spaces etc.) correctly
+  * lot of fixes; see file NEWS in the package doc dir
+* Thu Jun 12 2003 - kkeil@suse.de
+- fix filelist
+* Tue Apr 08 2003 - kkeil@suse.de
+- update to 0.4.1a because bug 26169 and 25838
+  * fixed a bug in the rc-script of CapiSuite which made
+  "capisuite start" unfunctional in 0.4.1 (path of executable changed)
+  * included tests and changes for gcc-2.95, no patch necessary
+  any more to build CapiSuite with it
+  * CapiSuite now checks controller abilities and respects them
+  when connecting (e.g. use extended fax protocols if available)
+-> this also works around a severe crash with AVM drivers when
+  transmitting a fax to/from some analog devices
+  * fixed SECURITY bug in cronjob which allowed every CapiSuite user
+  to become root. Sorry... :-((
+* Wed Apr 02 2003 - ro@suse.de
+- use wildcard in filelist for python-dir
 * Thu Mar 20 2003 - ghillie@suse.de
 - updated to 0.4.1, thrown away all patches which are already
   included in this release
