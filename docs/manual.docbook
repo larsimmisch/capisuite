@@ -1412,20 +1412,20 @@ not present, current time as returned by localtime() is used.
 			somewhere which must be writable to <literal>root</literal>. We also need some test audio
 			file for sending it. Let's take the beep which is distributed with &cs;.</para>
 
-			<screen>mkdir incoming-examples
-chown 777 incoming-examples
-cd incoming-examples
+			<screen>mkdir capisuite-examples
+chmod 777 capisuite-examples # make it world-writeable
+cd capisuite-examples
 cp /usr/local/share/capisuite/beep.la .</screen>
 
 			<para>Perhaps you must change the path in the last line to reflect your installation.</para>
 
 			<para>Now copy and paste the example shown here to a file called <filename>example.py</filename>
-			in this directory.</para>
+			in this directory. Don't forget to change the third line.</para>
 
 			<example><title>example.py</title>
 			<programlisting>import capisuite<co id="incoming_ex1_1"/>
 
-my_path="/path/to/the/just/created/incoming-examples/"<co id="incoming_ex1_2"/>
+my_path="/path/to/the/just/created/capisuite-examples/"<co id="incoming_ex1_2"/>
 
 def callIncoming(call,service,call_from,call_to):<co id="incoming_ex1_3"/>
 	capisuite.connect_voice(call,10)<co id="incoming_ex1_4"/>
@@ -1535,7 +1535,7 @@ ImportError: No module named capisuite</screen>
 			<example><title>example.py, improved</title>
 			<programlisting>import capisuite
 
-my_path="/path/to/the/just/created/incoming-examples/"
+my_path="/path/to/the/just/created/capisuite-examples/"
 
 def callIncoming(call,service,call_from,call_to):
 	try:<co id="incoming_ex2_1"/>
@@ -1547,8 +1547,9 @@ def callIncoming(call,service,call_from,call_to):
 			capisuite.disconnect(call)
 		else:
 			capisuite.reject(call,1)<co id="incoming_ex2_3"/>
+			capisuite.disconnect(call)<co id="incoming_ex2_3a"/>
 	except capisuite.CallGoneError:
-		pass <co id="incoming_ex2_4"/></programlisting></example>
+		capisuite.disconnect(call)<co id="incoming_ex2_4"/></programlisting></example>
 
 			<calloutlist>
 				<callout arearefs="incoming_ex2_1">
@@ -1563,8 +1564,13 @@ def callIncoming(call,service,call_from,call_to):
 					<para>Have a look at the called number (please replace <literal>123</literal>
 					with the number &cs; should accept)...</para>
 				</callout>
+				<callout arearefs="incoming_ex2_2a">
+					<para>Play the announcement we recorded in the last section. If you don't
+					like it, simply record a new one and move the <filename>recorded.la</filename>
+					again to <filename>announce.la</filename>.</para>
+				</callout>
 				<callout arearefs="incoming_ex2_3">
-					<para>... and ignore the call if it isn't what we want to accept.
+					<para>Ignore the call if it isn't what we want to accept.
 					The second parameter tells the exact reason for the reject - you can
 					ignore a call (any other ISDN device or phone will still be ringing for
 					that number) by using <literal>1</literal>, actively disconnect by
@@ -1572,18 +1578,18 @@ def callIncoming(call,service,call_from,call_to):
 					available in the ISDN specification (see <xref linkend="capicodes_isdn"/>
 					for available codes).</para>
 				</callout>
-				<callout arearefs="incoming_ex2_2a">
-					<para>Play the announcement we recorded in the last section. If you don't
-					like it, simply record a new one and move the <filename>recorded.la</filename>
-					again to <filename>announce.la</filename>.</para>
+				<callout arearefs="incoming_ex2_3a">
+					<para>You always have to call <literal>disconnect</literal> at the end of your script,
+					as this will wait for the end of the call, while <literal>reject</literal> only initiates
+					the call reject. Otherwise you'll get a warning in the error log stating that you script
+					didn't disconnect completely.</para>
 				</callout>
 				<callout arearefs="incoming_ex2_4">
 					<para>This is the block handling <literal>CallGoneError</literal> - the
 					exception &cs; raises when the call is disconnected by the other party.
-					This time, we just define it and do nothing (<literal>pass</literal>
-					is the keyword for <emphasis>do nothing</emphasis> in Python). In normal
-					scripts, you'll perhaps log the end of the call or free any ressources
-					you allocated earlier here.</para>
+					You should also call <literal>disconnect</literal> here, because it
+					can take some time from the disconnection signal to the completion
+					of the process.</para>
 				</callout>
 			</calloutlist>
 
@@ -1610,20 +1616,21 @@ def callIncoming(call,service,call_from,call_to):
 
 			<para>The function will find a new unique filename in the given <literal>directory</literal>.
 			The created filename will be "<filename>prefix-XXX.suffix</filename>" where <literal>XXX</literal>
-			is the next free number started at 0. The file is created with a size of 0 bytes and the name is
-			returned as <literal>filename</literal>.</para>
+			is the next free number started at 0. The next free number is remembered in a file
+			<filename>prefix-nextnr</filename> and the created name is returned as 
+			<literal>filename</literal>.</para>
 
 			<para>Now we can simply add this call to our script:</para>
 
 			<example><title>using unique filenames</title>
 			<programlisting>import capisuite<emphasis>,cs_helpers</emphasis>
 
-my_path="/path/to/the/just/created/incoming-examples/"
+my_path="/path/to/the/just/created/capisuite-examples/"
 
 def callIncoming(call,service,call_from,call_to):
 	try:
-		<emphasis>filename=cs_helpers.uniqueName(my_path,"voice","la")</emphasis>
 		if (call_to=="123"):
+			<emphasis>filename=cs_helpers.uniqueName(my_path,"voice","la")</emphasis>
 			capisuite.connect_voice(call,10)
 			capisuite.audio_send(call,my_path+"announce.la")
 			capisuite.audio_send(call,my_path+"beep.la")
@@ -1632,8 +1639,7 @@ def callIncoming(call,service,call_from,call_to):
 		else:
 			capisuite.reject(call,1)
 	except capisuite.CallGoneError:
-		pass</programlisting></example>
-
+		capisuite.disconnect(call)</programlisting></example>
 			<para>If you're interested in other functions which <literal>cs_helpers.py</literal>
 			defines, just have a look at the reference at @ref.</para>
 		</sect2>
@@ -1652,7 +1658,7 @@ def callIncoming(call,service,call_from,call_to):
 			<example><title>Adding fax functions</title>
 			<programlisting>import capisuite,cs_helpers,os<co id="incoming_ex4_0"/>
 
-my_path="/path/to/the/just/created/incoming-examples/"
+my_path="/path/to/the/just/created/capisuite-examples/"
 
 def callIncoming(call,service,call_from,call_to):
 	try:
@@ -1665,13 +1671,14 @@ def callIncoming(call,service,call_from,call_to):
 			capisuite.audio_receive(call,filename,20,3,1)
 			dtmf=capisuite.read_DTMF(call,0)<co id="incoming_ex4_3"/>
 			if (dtmf=="X"):<co id="incoming_ex4_4"/>
-				os.unlink(filename)<co id="incoming_ex4_5"/>
+				if (os.access(filename,os.R_OK)):<co id="incoming_ex4_5"/>
+					os.unlink(filename)
 				faxIncoming(call)<co id="incoming_ex4_6"/>
 			capisuite.disconnect(call)
 		else:
 			capisuite.reject(call,1)
 	except capisuite.CallGoneError:
-		pass
+		capisuite.disconnect(call)
 
 def faxIncoming(call):
 	capisuite.switch_to_faxG3(call,"+49 123 45678","Test headline")<co id="incoming_ex4_7"/>
@@ -1724,11 +1731,11 @@ def faxIncoming(call):
 					"X", a fax machine is calling and we should start our fax handling routines.</para>
 				</callout>
 				<callout arearefs="incoming_ex4_5">
-					<para>As we have created a file for storing the received voice call by
-					calling <literal>cs_helpers.uniqueName</literal> which we don't need any
-					more (as we'll create a new file named <filename>fax-XXX.sff</filename>),
-					we must delete it by calling <literal>os.unlink</literal>. There's a small
-					chance that </para>
+					<para>Possibly, the announcement was so short that the recording has started
+					already before the fax is recognized. We won't save an empty file containing
+					only the fax beep and so we test if it was created (<function>os.access</function>
+					checks for the existence of a file) and delete it if needed by calling
+					<literal>os.unlink</literal>.</para>
 				</callout>
 				<callout arearefs="incoming_ex4_6">
 					<para>Fax handling was realized in a seperate function which is called here.</para>
@@ -1757,10 +1764,10 @@ def faxIncoming(call):
 				</callout>
 			</calloutlist>
 
-			<para>Now we've finished our small tutorial. Now it's up to you - you can play with
+			<para>Congrats. You've finished my small tutorial. Now it's up to you - you can play with
 			the created script and try to make it more complete. There's still much to do -
 			sending received calls to a user via E-Mail, log connections, ... If you want to
-			complete this script, the <xref linkend="command_reference"/> will be helpful.
+			complete this script, <xref linkend="command_reference"/> will be helpful.
 			You can also read on here to have a short look on the idle scripts, followed by a
 			quick overview of the structure of the default scripts shipped with &cs;.</para>
 		</sect2>
@@ -1774,13 +1781,13 @@ def faxIncoming(call):
 		<para>As written before, the idle script will be called by &cs; in regular intervals
 		allowing you to look for stored jobs somewhere and sending them to the destinations.</para>
 
-		<para>The example shown here will look for a file <filename>fax-XXXX.sff</filename> in
-		the example directory. This file will be faxed to the destination indicated by
+		<para>The example shown here will look for a file <filename>job-XXXX.sff</filename> in
+		the example directory we created in the last section. This file will be faxed to the 
+		destination indicated by
 		<literal>XXXX</literal> if found. If you have no valid destination where you can
-		send test faxes to, how about using &cs; for receiving also? If you want to do this,
-		replace <literal>XXXX</literal> by the number our just created incoming script will
-		handle. In this case, replace <literal>XXXX</literal> by the number your incoming script
-		handles. This won't work if your ISDN card can't handle two fax transfers at the same time
+		send test faxes to, how about using &cs; for receiving also? In this case, replace 
+		<literal>XXXX</literal> by the number your incoming script handles. This won't work
+		 if your ISDN card can't handle two fax transfers at the same time
 		(some old AVM B1 cards have this limitation, for example).</para>
 
 		<para>We now need one or more fax files in the SFF format for our tests, so please
@@ -1792,13 +1799,13 @@ def faxIncoming(call):
 		which searches the files and extracts the destination numbers first. If this works,
 		we can continue by adding the &cs; specific calls later.</para>
 
-		<example><title>idle_test.py</title>
+		<example><title>idle_example.py</title>
 			<programlisting>import os,re<co id="idle_ex1_1"/>
 
-my_path="/path/to/your/example/dir/"
+my_path="/path/to/your/capisuite-examples/"
 
 files=os.listdir(my_path)<co id="idle_ex1_2"/>
-files=filter (lambda s: re.match("fax-.*\.sff",s),files)<co id="idle_ex1_3"/>
+files=filter (lambda s: re.match("job-.*\.sff",s),files)<co id="idle_ex1_3"/>
 
 for job in files:<co id="idle_ex1_4"/>
 	destination=job[4:-3]<co id="idle_ex1_5"/>
@@ -1820,7 +1827,7 @@ for job in files:<co id="idle_ex1_4"/>
 			</callout>
 			<callout arearefs="incoming_ex1_3">
 				<para>This line is a little bit more tricky. It filters out all filenames
-				which doesn't follow the rule <emphasis>starting with "fax-", then any
+				which doesn't follow the rule <emphasis>starting with "job-", then any
 				number of chars, ending with ".sff"</emphasis> from the list. This is
 				done by the <literal>filter</literal> function. The function expects the name
 				of a function which checks the rule as first parameter and the list to filter
@@ -1844,18 +1851,143 @@ for job in files:<co id="idle_ex1_4"/>
 			</callout>
 		</calloutlist>
 
-		<para>Now, save the script as <filename>idle_test.py</filename> in our example dir and run
-		it by calling <command>python idle_test.py</command>.</para>
+		<para>Now, save the script as <filename>idle_example.py</filename> in our example dir and run
+		it by calling <command>python idle_example.py</command>.</para>
 
 		<para>If you have provided SFF files with the right names they should be shown line by line
 		now. But... Obviously something doesn't work right here. The destination includes the
 		"<literal>.</literal>". Indeed, I've made a mistake when indexing the string. It should be
-		<literal>destination=job[4:-4]</literal> instead of <literal>[4:-3]</literal>. It was a good
-		idea that we didn't </para>
+		<literal>destination=job[4:-4]</literal> instead of <literal>[4:-3]</literal>. So let's change
+		that and test again. It should work now.</para>
+
+		<para>As we know now that the basic parts work, we can add the real communication functions.</para>
+		
+		<para>Please save this example to <filename>idle_example.py</filename> in your example directory, again.</para>
+
+		<example><title>idle_example.py, version for &cs;</title>
+			<programlisting>import os,re<emphasis>,capisuite</emphasis>
+
+my_path="/path/to/your/capisuite-examples/"
+my_number="678"<co id="idle_ex2_1"/>
+my_stationID="+49 123 45678"
+my_headline="example headline"
+
+def idle(capi):<co id="idle_ex2_4"/>
+	files=os.listdir(my_path)
+	files=filter (lambda s: re.match("job-.*\.sff",s),files)
+
+	for job in files:
+		destination=job[4:-4]
+		capisuite.log("sending "+job+" to destination "+destination,1)<co id="idle_ex2_5"/>
+		try:
+			(call,result)=capisuite.call_faxG3(capi,1,my_number,destination,60,my_stationID,my_headline)<co id="idle_ex2_6"/>
+			if (result!=0):<co id="idle_ex2_7"/>
+				capisuite.log("job "+job+" failed at call setup with reason "+str(hex(result)),1)
+				os.rename(my_path+job,my_path+"failed-"+job)<co id="idle_ex2_9"/>
+				return<co id="idle_ex2_10"/>
+			capisuite.fax_send(call,my_path+job)<co id="idle_ex2_11"/>
+			(result,resultB3)=capisuite.disconnect(call)<co id="idle_ex2_12"/>
+		except capisuite.CallGoneError:
+			(result,resultB3)=capisuite.disconnect(call)
+			
+		if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):<co id="idle_ex2_13"/>
+			capisuite.log("job "+job+" was successful",1)
+			os.rename(my_path+job,my_path+"done-"+job)
+			return
+		else:
+			capisuite.log("job "+job+" failed during send with reasons "+str(hex(result))+","+str(hex(resultB3)),1)
+			os.rename(my_path+job,my_path+"failed-"+job)</programlisting>
+		</example>
+
+		<calloutlist>
+			<callout arearefs="idle_ex2_1">
+				<para>Some parameters for sending the fax are set here. <literal>my_number</literal> is your own number
+				which is used for sending the fax. <literal>my_stationID</literal> is the fax station ID, which will 
+				be transmitted to the other fax machine and shown on the sent fax page. Only digits and "+" are allowed.
+				You can also define a short text which will show up in the fax headline in <literal>fax_headline</literal>.
+				</para>
+			</callout>
+			<callout arearefs="idle_ex2_4">
+				<para>As explained in <xref linkend="ug_scripts_idle"/>, you have to define a function called 
+				<literal>idle</literal> which will be executed in regular intervals by &cs; then. So all code
+				is moved to this function.</para>
+			</callout>
+			<callout arearefs="idle_ex2_5">
+				<para>We can't print messages to stdout as the script will be run in the context of a daemon. So &cs;
+				provides functions for creating entries in the &cs; log file. <function>log</function> expects at
+				least two parameters: the message and a log level. This level corresponds to the log level setting
+				in the global &cs; configuration (see <xref linkend="configcs"/>). If the level of the message is
+				<emphasis>less or equal</emphasis> the level set in the configuration, it is printed to the logs.
+				So you can insert messages for debug purposes which aren't printed to the logs in normal operation 
+				by using levels higher than 1.</para>
+			</callout>
+			<callout arearefs="idle_ex2_6">
+				<para>This function initiates an outgoing call using the fax service. The parameters are:</para>
+				<itemizedlist>
+					<listitem><para>reference to the Capi object you got from &cs; (parameter to <function>idle</function>).</para></listitem>
+					<listitem><para>the (number of the) controller to use for outgoing calls. The first controller has always number "1".</para></listitem>
+					<listitem><para>own number to use for the outgoing call</para></listitem>
+					<listitem><para>destination number to call</para></listitem>
+					<listitem><para>maximum time to wait for a successful connection in seconds</para></listitem>
+					<listitem><para>the fax station ID</para></listitem>
+					<listitem><para>fax headline</para></listitem>
+				</itemizedlist>
+				<para>The function returns a tuple containing of a reference to the created call and an error value.</para>
+			</callout>
+			<callout arearefs="idle_ex2_7">
+				<para>This block checks if the connection was successful. For a detailled description of possible error values, 
+				please see the <xref linkend="command_reference"/>. 0 means "everything was ok, call is established".</para>
+			</callout>
+			<callout arearefs="idle_ex2_9">
+				<para>If the call wasn't successful, rename the fax file to prevent the script from sending the same file
+				over and over.</para>
+			</callout>
+			<callout arearefs="idle_ex2_10">
+				<para>Don't forget to exit the <function>idle</function> function if the call couldn't be established!</para>
+			</callout>
+			<callout arearefs="idle_ex2_11">
+				<para>Another very simple &cs; command: send the given file as fax document.</para>
+			</callout>
+			<callout arearefs="idle_ex2_12">
+				<para>We previously ignored the reasons <emphasis>why</emphasis> a call was disconnected. Now we have to
+				analyze them because we need to know if the file was transferred succesful. Therefore, 
+				<function>disconnect</function> returns a tuple containing of the physical and logical error value. Every
+				ISDN connection contains a physical and (at least) a logical connection. One could imagine the physical 
+				connection as "the wire" connecting us to our destination, while the logical connection refers to 
+				the fax protocol which uses this "wire". You have to look on both values to see if everything was ok.</para>
+			</callout>
+			<callout arearefs="idle_ex2_13">
+				<para>Allowed values for the physical connection are 0,0x3400,0x3480 and 0x3490. These all mean "no error occured, 
+				call was disconnected normally". The logical may only be 0 if everything went ok. For further information 
+				of error values, refer to <xref linkend="command_reference"/>, please.</para>
+			</callout>
+		</calloutlist> 
+
+		<para>After you've saved the file and changed the default values to your own configuration, please alter the value of 
+		idle_script in the &cs; configuration to point to this script.</para>
+
+		<para>Restart &cs; and watch the logs. Some seconds later, the job-XXX.sff files should've been sent and renamed to either
+		done-job-XXX.sff or failed-job-XXX.sff. If the job failed, please consult the error log and the error values explained in
+		<xref linkend="command_reference"/> and <xref linkend="capicodes"/>.</para>
+
+		<para>Hopefully, this tutorial helped you in understanding how to code your own scripts. Please continue with changing the
+		examples or the files distributed with &cs; (read <xref linkend="default_script_overview"/> before). You will find a
+		complete reference of the available commands in <xref linkend="command_reference"/>.</para>
+
+		<para>If you have any trouble in getting your scripts up and running, please use the &cs; mailing lists.</para>
 	</sect1>
 
 	<sect1 id="default_script_overview"><title>Structural overview of the default scripts</title>
-		<para>jjj</para>
+		<sect2 id="default_incoming"><title>incoming.py</title>
+			<para></para>
+		</sect2>
+		<sect2 id="default_idle"><title>idle.py</title>
+			<para></para>
+		</sect2>
+		<sect2 id="default_helpers"><title>cs_helpers.py</title>
+			<para></para>
+		</sect2>
+
 	</sect1>
 
 	<sect1 id="command_reference"><title>&cs; command reference</title>
@@ -1891,6 +2023,7 @@ for job in files:<co id="idle_ex1_4"/>
 		by &cs;.</para>
 
 		<itemizedlist>
+			<listitem><para><literal>0</literal> - Normal call clearing, no error</para></listitem>
 			<listitem><para><literal>3301</literal> - Protocol error layer 1 (broken line or B-channel removed by signalling protocol)</para></listitem>
 			<listitem><para><literal>3302</literal> - Protocol error layer 2</para></listitem>
 			<listitem><para><literal>3303</literal> - Protocol error layer 3</para></listitem>
@@ -1914,6 +2047,7 @@ for job in files:<co id="idle_ex1_4"/>
 	are mapped to the CAPI numbers see the CAPI specification, parameter "Info".</para>
 
 	<itemizedlist>
+		<listitem><para><literal>3400</literal> - Normal termination, no reason available</para></listitem>
 		<listitem><para><literal>3480</literal> - Normal termination</para></listitem>
 		<listitem><para><literal>3481</literal> - Unallocated (unassigned) number</para></listitem>
 		<listitem><para><literal>3482</literal> - No route to specified transit network</para></listitem>
@@ -2050,62 +2184,10 @@ for job in files:<co id="idle_ex1_4"/>
 			<listitem><para><literal>300A</literal> - Flags not supported (reserved bits)</para></listitem>
 			<listitem><para><literal>300B</literal> - Facility not supported</para></listitem>
 			<listitem><para><literal>300C</literal> - Data length not supported by current protocol</para></listitem>
-			<listitem><para><literal>300D</literal> - Reset procedure not supported by current protocol</para></listitem> 
+			<listitem><para><literal>300D</literal> - Reset procedure not supported by current protocol</para></listitem>
 		</itemizedlist>
 	</section>
  </section>
 </appendix>
-
-<!--@section
-
-THIS SECTION ISN'T COMPLETED YET, SORRY. PLEASE WAIT FOR PREVIEW 2.
-
-
-@section sendfax Sending Faxes
-
-There is a command line tool called "capisuitefax" which enqueues PostScript
-documents to the send queue and converts them to the right format using the
-"cfax" device of GhostScript.
-
-Just call
-
-@code
-capisuitefax -d 935235 job.ps
-@endcode
-
-to send the file job.ps to the destination "935235". No special characters
-are allowed in the given number. Just enter it as you would on your telephone
-(with leading 0 if necessary for your PBX (Telefonanlage)).
-
-@section knownbugs Known Bugs
-
-There are currently no known major bugs. Some small pitfalls:
-
-Naturally, there are still many tasks on my TODO-list, so please don't swamp me
-with masses of feature requests. Anyway, if you have one of these easy-to-implement,
-but very useful ideas you think I'm not aware of please make
-a feature request for component ISDN in Bugzilla and
-start your Subject with something like "CapiSuite" or assign it directly
-to me (ghillie@suse.de).
-
-If you think you found a bug (i.e. some function which doesn't
-work, a SEGV, ...) please, please make an entry in Bugzilla, component ISDN.
-
-Ok, now have a lot of fun and happy testing!!
-
-If you have any questions or problems, please contact me!
-
-Thanks for your time...
-
-There are not that much ISDN features supported with this early version - but having all
-the nice Python features gives you the ability to code nice things with it already.
-Many additional features are possible and will be added over time and
-if I think they'll be useful for some people. So please tell me what you need and
-chances are you'll get it. Of course, as %CapiSuite is Open Source, you're very welcome
-to send me your own changes and scripts! 
-*/
-
--->
-
 
 </book>
