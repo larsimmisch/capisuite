@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -522,8 +522,13 @@ class Connection
 
 		/** @brief called to build the B Configuration info elements out of given service
 		
-		    This is a convenience functin to do the quite annoying enconding stuff for the 6 B configuration parameters.
+		    This is a convenience function to do the quite annoying enconding stuff for the
+		    6 B configuration parameters.
 
+		    It also checks if the requested controller really has this abilities and throws
+		    an exception otherwise.
+
+		    @param controller number of controller to use - necessary to check available services
 		    @param service value indicating service to be used as described in service_t
 		    @param faxStationID my fax station ID
 		    @param faxHeadline the fax headline
@@ -534,7 +539,7 @@ class Connection
 		    @param B2config return value: B2configuration element for CAPI, see CAPI spec
 		    @param B3config return value: B3configuration element for CAPI, see CAPI spec
 		*/
-		void buildBconfiguration(service_t service, string faxStationID, string faxHeadline, _cword& B1proto, _cword& B2proto, _cword& B3proto, _cstruct& B1config, _cstruct& B2config, _cstruct& B3config) throw (CapiExternalError);
+		void buildBconfiguration(_cdword controller, service_t service, string faxStationID, string faxHeadline, _cword& B1proto, _cword& B2proto, _cword& B3proto, _cstruct& B1config, _cstruct& B2config, _cstruct& B3config) throw (CapiExternalError);
 
 		/********************************************************************************/
     		/*	                       attributes					*/
@@ -622,8 +627,16 @@ class Connection
 /*  History
 
 $Log: connection.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/04/04 09:17:59  gernot
+- buildBconfiguration() now checks the abilities of the given controller
+  and throws an error if it doesn't support the service
+- it also sets the fax protocol setting now the highest available ability
+  (fax G3 or fax G3 extended) of the controller, thus preparing fax polling
+  and *working around a severe bug in the AVM drivers producing a kernel
+  oops* with some analog fax devices. AVM knows about this and analyzes it.
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.30  2003/02/10 14:20:52  ghillie
 merged from NATIVE_PTHREADS to HEAD

@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -24,7 +24,6 @@
 #define conf_send_buffers 4
 
 // TODO NCPI handling für Fax
-// TODO Bconfiguration für Fax überprüfen
 
 using namespace std;
 
@@ -93,7 +92,7 @@ Connection::Connection (Capi* capi, _cdword controller, string call_from_in, boo
 			break;
 		}
 
-		buildBconfiguration(service, faxStationID, faxHeadline, B1proto, B2proto, B3proto, B1config, B2config, B3config);
+		buildBconfiguration(controller, service, faxStationID, faxHeadline, B1proto, B2proto, B3proto, B1config, B2config, B3config);
 
 		if (!call_to.size())
 			throw CapiExternalError("calledPartyNumber is required","Connection::Connection()");
@@ -188,7 +187,7 @@ Connection::changeProtocol(service_t desired_service, string faxStationID, strin
 		_cword B1proto,B2proto,B3proto;
 
 		try {
-			buildBconfiguration(desired_service, faxStationID, faxHeadline, B1proto, B2proto, B3proto, B1config, B2config, B3config);
+			buildBconfiguration(plci & 0xff, desired_service, faxStationID, faxHeadline, B1proto, B2proto, B3proto, B1config, B2config, B3config);
 
 			capi->select_b_protocol_req(plci,B1proto,B2proto,B3proto,B1config, B2config, B3config);
 		} catch (...) {
@@ -230,7 +229,7 @@ Connection::connectWaiting(service_t desired_service, string faxStationID, strin
 	_cword B1proto,B2proto,B3proto;
 
 	try {
-		buildBconfiguration(desired_service, faxStationID, faxHeadline, B1proto, B2proto, B3proto, B1config, B2config, B3config);
+		buildBconfiguration(plci & 0xff, desired_service, faxStationID, faxHeadline, B1proto, B2proto, B3proto, B1config, B2config, B3config);
 
 		plci_state=P4;
 		capi->connect_resp(connect_ind_msg_nr,plci,0,B1proto,B2proto,B3proto,B1config, B2config, B3config);
@@ -927,10 +926,12 @@ Connection::getNumber(_cstruct capi_input, bool isCallingNr)
 }
 
 void
-Connection::buildBconfiguration(service_t service, string faxStationID, string faxHeadline, _cword& B1proto, _cword& B2proto, _cword& B3proto, _cstruct& B1config, _cstruct& B2config, _cstruct& B3config) throw (CapiExternalError)
+Connection::buildBconfiguration(_cdword controller, service_t service, string faxStationID, string faxHeadline, _cword& B1proto, _cword& B2proto, _cword& B3proto, _cstruct& B1config, _cstruct& B2config, _cstruct& B3config) throw (CapiExternalError)
 {
 	switch (service) {
 		case VOICE:
+			if (!capi->profiles[controller-1].transp)
+				throw (CapiExternalError("controller doesn't support voice (transparent) services","Connection::buildBconfiguration()"));
 			B1proto=1;  // bit-transparent
 			B2proto=1;  // Transparent
 			B3proto=0;  // Transparent
@@ -942,7 +943,13 @@ Connection::buildBconfiguration(service_t service, string faxStationID, string f
 		case FAXG3: {
 			B1proto=4; // T.30 modem for Fax G3
 			B2proto=4; // T.30 for Fax G3
-			B3proto=4; // T.30 for Fax G3 TODO: should be changed to 5 if necessary!!
+			if (capi->profiles[controller-1].faxExt)
+				B3proto=5; // T.30 for Fax G3 Extended
+			else if (capi->profiles[controller-1].fax)
+				B3proto=4; // T.30 for Fax G3
+			else
+				throw (CapiExternalError("controller doesn't support fax services","Connection::buildBconfiguration()"));
+
 			B1config=NULL; // default configuration (adaptive maximum baud rate, default transmit level)
 			B2config=NULL; // no configuration available
 
@@ -972,6 +979,14 @@ Connection::buildBconfiguration(service_t service, string faxStationID, string f
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.4  2003/04/04 09:17:59  gernot
+- buildBconfiguration() now checks the abilities of the given controller
+  and throws an error if it doesn't support the service
+- it also sets the fax protocol setting now the highest available ability
+  (fax G3 or fax G3 extended) of the controller, thus preparing fax polling
+  and *working around a severe bug in the AVM drivers producing a kernel
+  oops* with some analog fax devices. AVM knows about this and analyzes it.
+
 Revision 1.3  2003/03/21 23:09:59  gernot
 - included autoconf tests for gcc-2.95 problems so that it will compile w/o
   change for good old gcc-2.95 and gcc3
