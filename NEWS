@@ -105,14 +105,18 @@
 0.4.1 (tag NN):
 ===============
 	* cron script: redirect error output to /dev/null
-	* scripts: fixed a bug in incoming.py that lead to idle.py
-	  doing nothing after a while and so no faxes were sent any more
-          (bug #527)
-	* core: cosmetical code improvements to make old gcc-2.95 more happy
+
+        * core: cosmetical code improvements to make old gcc-2.95 more happy
+        * core: fixed quite some problems when doing "make install" to an arbitrary
+                prefix, thanks to Achim Bohnet for pointing me to these
+        * core: moved "capisuite" to <prefix>/sbin instead of bin
+
+	* scripts: fixed bug #527 in incoming.py that lead to idle.py doing
+	           nothing after a while and so no faxes were sent any more
 	* scripts: fixed remote inquiry: mixed new and old messages sometimes
-	* core: fixed quite some problems when doing "make install" to an arbitrary
-	  prefix, thanks to Achim Bohnet for pointing me to these
-	* core: moved "capisuite" to <prefix>/sbin instead of bin
-	* scripts: stricter permissions of received files and dirs, thx to Achim Bohnet
-	  this fixes bug #544
-	* scripts: dial_prefix implemented, closes bug #537	
+	* scripts: stricter permissions of received files and dirs, thx to 
+                   Achim Bohnet for reporting bug #544
+	* scripts: dial_prefix implemented, closes bug #537, reported by Achim 	
+	* scripts: better check for options read from config files, any missing
+                   option either has a default now or produces an error message
+		   -> fixes bug #531, thx to Dieter Pelzel(?) for reporting
