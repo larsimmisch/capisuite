@@ -1,3 +1,10 @@
+0.4.2 (NN):
+===========
+	* scripts: fixed a bug in idle.py which caused a fax send delay of one 
+	  hour when daylight saving time is in effect
+
+	* scripts: attachments to sent e-mails now get a valid filename 
+
 0.4.1a (tag CAPISUITE_041a):
 ============================
 	* fixed a bug in the rc-script of CapiSuite which made 
