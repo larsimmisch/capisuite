@@ -1,8 +1,22 @@
+capisuite (0.4.1-1) unstable; urgency=low
+
+  * fix changelog syntax
+  * sync with cvs head 24-03-2003
+  * fix Makefile.cvs: Autoreconf exists with error if required files
+    are missing. Ignore it and let automake create. Now pkg build with
+      cvs -d... co;
+      cd capisuite
+      make -f Makefile.cvs
+      debuild
+    works
+
+ -- Achim Bohnet <ach@mpe.mpg.de>  Mon, 24 Mar 2003 22:56:54 +0100
+
 capisuite (0.4.1-0) unstable; urgency=low
 
   * remove gcc-2.95 patch. Fixed upstream
 
- -- Gernot Hillier <gernot@hillier.de> Sat, 22 Mar 2003 00:31:05 +0100
+ -- Gernot Hillier <gernot@hillier.de>  Sat, 22 Mar 2003 00:31:05 +0100
 
 capisuite (0.4.1-0) unstable; urgency=low
 
