@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.2 $
+#    version              : $Revision: 1.3 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -47,9 +47,6 @@ def idle(capi):
 			real_user_j=os.stat(sendq+job_fax).st_uid
 			if (real_user_j!=pwd.getpwnam(user)[2] or real_user_c!=pwd.getpwnam(user)[2]):
 				capisuite.error("job "+sendq+job_fax+" seems to be manipulated (wrong uid)! Ignoring...")
-				fcntl.lockf(lockfile,fcntl.LOCK_UN)
-				lockfile.close()
-				os.unlink(sendq+job[:-3]+"lock")
 				continue
 
 			lockfile=open(sendq+job[:-3]+"lock","w")
@@ -139,6 +136,9 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.3  2003/03/09 11:48:10  gernot
+# - removed wrong unlock operation (lock not acquired at this moment!)
+#
 # Revision 1.2  2003/03/06 09:59:11  gernot
 # - added "file://" as prefix to filenames in sent mails, thx to
 #   Achim Bohnet for this suggestion
