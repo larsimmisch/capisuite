@@ -87,15 +87,31 @@ class InstallableEnv(Environment):
         """Install specified files in the given directory."""
         dir = self.arg2nodes(dir, self.BasedDir)
         files = Environment.Install(self, dir, source)
-        env.ExtraDist(files)
-        #self.SourceDist(files)
+        self.DistSourcesOf(files)
         return files
 
     def InstallAs(self, target, source):
         """Install sources as targets."""
         target = self.arg2nodes(target, self.BasedFile)
         files = Environment.InstallAs(self, target, source)
-        self.ExtraDist(files)
+        self.DistSourcesOf(files)
+        return files
+
+    def DistSourcesOf(self, files):
+        """
+        Add all sourcefiles of the given files to the distribution archive.
+        """
+        files = self.arg2nodes(files, self.File)
+        files = map(self.DistSourceOfFile, files)
+        #self.DistTar('$DIST_ARCHIVE', files)
+        self.Append(DIST_FILES=files)
+        return files
+
+    def ExtraDist(self, files):
+        """Additional files to be distributed."""
+        files = self.arg2nodes(files, self.File)
+        #self.DistTar('$DIST_ARCHIVE', files)
+        self.Append(DIST_FILES=files)
         return files
 
     _valid_man_extensions = '0123456789ln' # from info automake
@@ -125,11 +141,6 @@ class InstallableEnv(Environment):
                                  man)
             result.extend(res)
         return result
-
-    def ExtraDist(self, files):
-        """Collect Additional files to be distributed."""
-        files = self.arg2nodes(files, self.File)
-        env.Append(__SOURCES=files)
 
 #
 # Support functions for linking with Python
@@ -257,8 +268,9 @@ env = InstallableEnv(tools=Split('default sourcetar filesubst'),
     spooldir      = '${localstatedir}/spool/${PACKAGE}',
     docdir        = '${pkgdatadir}/doc/${PACKAGE}',
 
-    # required for ExtraDist 
-    __SOURCES     = [],
+    # Distribution of files and sources:
+    DIST_ARCHIVE  = '#/dist/${PACKAGE}-${VERSION}.tar.gz',
+    DIST_FILES    = [],
 
     # used for distcheck
     SCONS         = 'scons',
@@ -439,8 +451,7 @@ env.Alias('install', env.Alias('install-man'))
 # 'Dist' target
 #
 if is_dist or 'rpms' in COMMAND_LINE_TARGETS:
-    dist = env.DistTar('#/dist/${PACKAGE}-${VERSION}.tar.gz', env['__SOURCES'],
-                       TARFLAGS='-c -z')[0]
+    dist = env.DistTar('$DIST_ARCHIVE', env['DIST_FILES'])[0]
 
 ###---####---###---####---###---####---###---####---###---####---###---###
 #
