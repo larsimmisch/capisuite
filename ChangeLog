@@ -1,3 +1,8 @@
+2003-12-31  Gernot Hillier  <gernot@hillier.de>
+	* scripts/cs_helpers.pyin (sendMIMEMail): use 16 bit ouput when
+	  converting sound files from la to wav. Thx to Holger Krull for
+	  the fix (closes bug #51)!
+
 2003-12-28  Gernot Hillier  <gernot@hillier.de>
 	* nearly all files (history block): disabled the automatic
 	  adding of CVS log messages to source files as we now have
