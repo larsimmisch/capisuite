@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -100,7 +100,7 @@ class CallModule: public CallInterface
 
 		    empty function to overwrite if necessary
 		*/
-		virtual void dataIn (unsigned char* data, unsigned lentgh);
+		virtual void dataIn (unsigned char* data, unsigned length);
 
 	protected:
  		/** @brief get the current time in # of seconds sinc 1/1/1970
@@ -120,8 +120,11 @@ class CallModule: public CallInterface
 /* History
 
 $Log: callmodule.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/03/06 09:35:10  gernot
+- fixed typo
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.12  2002/12/06 13:08:30  ghillie
 minor doc change
