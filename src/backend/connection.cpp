@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.14 $
+    $Revision: 1.15 $
 */
 
 /***************************************************************************
@@ -27,18 +27,23 @@
 
 using namespace std;
 
-Connection::Connection (_cmsg& message, Capi* capi_in):
-	call_if(NULL),capi(capi_in),plci_state(P2),ncci_state(N0), buffer_start(0), buffers_used(0),
+Connection::Connection (_cmsg& message, Capi *capi, unsigned short DDILength, unsigned short DDIBaseLength, std::vector<std::string> DDIStopNumbers):
+	call_if(NULL),capi(capi),plci_state(P2),ncci_state(N0), buffer_start(0), buffers_used(0),
 	file_for_reception(NULL), file_to_send(NULL), received_dtmf(""), keepPhysicalConnection(false),
 	disconnect_cause(0),debug(capi->debug), debug_level(capi->debug_level), error(capi->error),
-	our_call(false), disconnect_cause_b3(0), fax_info(NULL)
+	our_call(false), disconnect_cause_b3(0), fax_info(NULL), DDILength(DDILength), 
+	DDIBaseLength(DDIBaseLength), DDIStopNumbers(DDIStopNumbers) 
 {
 	pthread_mutex_init(&send_mutex, NULL);
 	pthread_mutex_init(&receive_mutex, NULL);
 
 	plci=CONNECT_IND_PLCI(&message); // Physical Link Connection Identifier
 	call_from = getNumber(CONNECT_IND_CALLINGPARTYNUMBER(&message),true);
-  	call_to   = getNumber(CONNECT_IND_CALLEDPARTYNUMBER(&message),false);
+	if (DDILength)
+		call_to=""; // we enable the CalledParty InfoElement when using DDI and will get the number later again
+	else
+		call_to=getNumber(CONNECT_IND_CALLEDPARTYNUMBER(&message),false);
+
 	if (debug_level >= 1) {
 		debug << prefix() << "Connection object created for incoming call PLCI " << plci;
 		debug << " from " << call_from << " to " << call_to << " CIP 0x" << hex << CONNECT_IND_CIPVALUE(&message) << endl;
@@ -59,11 +64,12 @@ Connection::Connection (_cmsg& message, Capi* capi_in):
 	connect_ind_msg_nr=message.Messagenumber; // this is needed as connect_resp is given later
 }
 
-Connection::Connection (Capi* capi, _cdword controller, string call_from_in, bool clir, string call_to_in, service_t service, string faxStationID, string faxHeadline)  throw (CapiExternalError, CapiMsgError)
-	:call_if(NULL),capi(capi),plci_state(P01),ncci_state(N0),plci(0),service(service),  buffer_start(0), buffers_used(0),
-	file_for_reception(NULL), file_to_send(NULL), call_from(call_from_in), call_to(call_to_in), connect_ind_msg_nr(0),
-	disconnect_cause(0), debug(capi->debug), debug_level(capi->debug_level), error(capi->error), keepPhysicalConnection(false),
-	our_call(true), disconnect_cause_b3(0), fax_info(NULL)
+Connection::Connection (Capi* capi, _cdword controller, string call_from, bool clir, string call_to, service_t service, string faxStationID, string faxHeadline)  throw (CapiExternalError, CapiMsgError)
+	:call_if(NULL),capi(capi),plci_state(P01),ncci_state(N0),plci(0),service(service),  
+	buffer_start(0), buffers_used(0), file_for_reception(NULL), file_to_send(NULL), 
+	call_from(call_from), call_to(call_to), connect_ind_msg_nr(0), disconnect_cause(0), 
+	debug(capi->debug), debug_level(capi->debug_level), error(capi->error), keepPhysicalConnection(false),
+	our_call(true), disconnect_cause_b3(0), fax_info(NULL), DDILength(0), DDIBaseLength(0) 
 {
 	pthread_mutex_init(&send_mutex, NULL);
 	pthread_mutex_init(&receive_mutex, NULL);
@@ -585,6 +591,41 @@ Connection::info_ind_alerting(_cmsg &message) throw (CapiWrongState)
 		call_if->alerting();
 }
 
+bool
+Connection::info_ind_called_party_nr(_cmsg &message) throw (CapiWrongState)
+{
+	if (plci_state!=P2)
+		throw CapiWrongState("INFO_IND for CalledPartyNr received in wrong state","Connection::info_ind_called_party_nr()");
+
+	if (plci!=INFO_IND_PLCI(&message))
+		throw CapiError("INFO_IND received with wrong PLCI","Connection::info_ind_called_party_nr()");
+	try {
+		capi->info_resp(message.Messagenumber,plci);
+	}
+	catch (CapiMsgError e) {
+		error << prefix() << "WARNING: Can't send info_resp. Message was: " << e << endl;
+	}
+
+	call_to+=getNumber(INFO_IND_INFOELEMENT(&message),false);
+	
+	string currDDI=call_to.substr(DDIBaseLength);
+	for (int i=0;i<DDIStopNumbers.size();i++)
+	    if (DDIStopNumbers[i]==currDDI) {
+			if (debug_level >= 1)
+	    			debug << prefix() << "got DDI, nr is now " << call_to << " (complete,stop_nr)" << endl;
+			return true;
+	    }
+
+	if (call_to.length()>=DDIBaseLength+DDILength) {
+		if (debug_level >=1)
+                	debug << prefix() << "got DDI, nr is now " << call_to << " (complete)" << endl;
+		return true;
+	} else {
+		if (debug_level >=1)
+                        debug << prefix() << "got DDI, nr is now " << call_to << " (incomplete)" << endl;
+                return false;
+	}
+}
 
 void
 Connection::connect_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
@@ -1087,6 +1128,24 @@ Revision 1.13  2003/12/21 21:15:10  gernot
   color faxes now by setting bit 10 in B3configuration
 
 Revision 1.12  2003/07/20 19:08:19  gernot
+- added missing include of errno.h
+
+Revision 1.11.2.5  2003/11/06 18:32:15  gernot
+- implemented DDIStopNumbers
+
+Revision 1.11.2.4  2003/11/02 14:58:16  gernot
+- use DDI_base_length instead of DDI_base
+- added DDI_stop_numbers option
+- use DDI_* options in the Connection class
+- call the Python script if number is complete
+
+Revision 1.11.2.3  2003/11/01 22:59:33  gernot
+- read CalledPartyNr InfoElements
+
+Revision 1.11.2.2  2003/10/26 16:52:55  gernot
+- begin implementation of DDI; get DDI info elements
+
+Revision 1.11.2.1  2003/07/20 19:08:44  gernot
 - added missing include of errno.h
 
 Revision 1.11  2003/06/29 06:18:13  gernot

@@ -17,4 +17,4 @@ install-sh
 missing
 mkinstalldirs
 py-compile
-
+stamp-h*

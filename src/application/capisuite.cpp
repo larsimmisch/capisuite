@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.6 $
+    $Revision: 1.7 $
 */
 
 /***************************************************************************
@@ -72,8 +72,22 @@ CapiSuite::CapiSuite(int argc,char **argv)
 		(*debug) << prefix() << "CapiSuite " << VERSION << " started." << endl;
 		(*error) << prefix() << "CapiSuite " << VERSION << " started." << endl;
 
+		string DDIStopListS=config["DDI_stop_numbers"];
+		vector<string> DDIStopList;
+		DDIStopList.push_back("");
+
+		int j=0;		
+		for (int i=0;i<DDIStopListS.length();i++) {
+		    if (DDIStopListS[i]==',') {
+			DDIStopList.push_back("");
+			j++;
+		    } else {
+			DDIStopList[j]+=DDIStopListS[i];
+		    }
+		}
+
 		// backend init
-		capi=new Capi(*debug,debug_level,*error);
+		capi=new Capi(*debug,debug_level,*error,atoi(config["DDI_length"].c_str()),atoi(config["DDI_base_length"].c_str()),DDIStopList);
 		capi->registerApplicationInterface(this);
 
                 string info;
@@ -259,7 +273,7 @@ void
 CapiSuite::checkOption(string key, string value)
 {
 	if (!config.count(key)) {
-		cerr << "Warning: Can't find " << key << " variable. Using default (" << value << ")." << endl;
+		cerr << "Warning: Can't find " << key << " variable. Using default (\"" << value << "\")." << endl;
 		config[key]=value;
         }
 }
@@ -304,11 +318,14 @@ CapiSuite::readConfiguration()
 	checkOption("log_file",string(LOCALSTATEDIR)+"/log/capisuite.log");
 	checkOption("log_level","2");
 	checkOption("log_error",string(LOCALSTATEDIR)+"/log/capisuite.error");
+	checkOption("DDI_length","0");
+	checkOption("DDI_base_length","0");
+	checkOption("DDI_stop_numbers","");
 	
 	string t(config["idle_script_interval"]);
 	for (int i=0;i<t.size();i++)
 		if (t[i]<'0' || t[i]>'9')
-			throw ApplicationError("Invalid idle_script_interval given.","main()");
+			throw ApplicationError("Invalid idle_script_interval given.","readConfiguration()");
 
 	if (config["log_file"]!="" && config["log_file"]!="-") {
 		debug = new ofstream(config["log_file"].c_str(),ios::app);
@@ -334,6 +351,21 @@ CapiSuite::readConfiguration()
 	} else
 		error=&cerr;
 
+	t=config["DDI_length"];
+	for (int i=0;i<t.size();i++)
+                if (t[i]<'0' || t[i]>'9')
+                        throw ApplicationError("Invalid DDI_length given.","readConfiguration()");
+
+        t=config["DDI_base_length"];
+        for (int i=0;i<t.size();i++)
+                if (t[i]<'0' || t[i]>'9')
+                        throw ApplicationError("Invalid DDI_base_length given.","readConfiguration()");
+
+        t=config["DDI_stop_numbers"];
+	for (int i=0;i<t.size();i++)
+                if ((t[i]<'0' || t[i]>'9') && t[i]!=',')
+                        throw ApplicationError("Invalid DDI_stop_numbers given.","readConfiguration()");
+			
 	if (daemonmode) {
 		if (debug==&cout) {
 			cerr << "FATAL error: not allowed to write to stdout in daemon mode." << endl;
@@ -398,6 +430,19 @@ CapiSuite::help()
 /* History
 
 Old Log (for new changes see ChangeLog):
+
+Revision 1.5.2.3  2003/11/06 18:32:15  gernot
+- implemented DDIStopNumbers
+
+Revision 1.5.2.2  2003/11/02 14:58:16  gernot
+- use DDI_base_length instead of DDI_base
+- added DDI_stop_numbers option
+- use DDI_* options in the Connection class
+- call the Python script if number is complete
+
+Revision 1.5.2.1  2003/10/26 16:51:55  gernot
+- begin implementation of DDI, get DDI Info Elements
+
 Revision 1.5  2003/04/03 21:09:46  gernot
 - Capi::getInfo isn't static any longer
 

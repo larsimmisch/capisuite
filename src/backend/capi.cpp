@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.6 $
+    $Revision: 1.7 $
 */
 
 /***************************************************************************
@@ -31,8 +31,9 @@ void* capi_exec_handler(void* arg)
 	instance->run();
 }
 
-Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)
-:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0x10),usedCIPMask(0),numControllers(0)
+Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned short DDILength, unsigned short DDIBaseLength, vector<string> DDIStopNumbers, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)
+:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0x10),usedCIPMask(0),numControllers(0),
+DDILength(DDILength),DDIBaseLength(DDIBaseLength),DDIStopNumbers(DDIStopNumbers)
 {
 	if (debug_level >= 2)
 		debug << prefix() << "Capi object created" << endl;
@@ -44,6 +45,9 @@ Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned
 	unsigned info = capi20_register(maxLogicalConnection, maxBDataBlocks, maxBDataLen, &applId);
 	if (applId == 0 || info!=0)
         	throw (CapiMsgError(info,"Error while registering application: "+describeParamInfo(info),"Capi::Capi()"));
+
+	if (DDILength)
+		usedInfoMask|=0x80; // enable Called Party Number Info Element for PtP configuration
 
 	for (int i=1;i<=numControllers;i++)
 		listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
@@ -548,9 +552,10 @@ Capi::readMessage (void) throw (CapiMsgError, CapiError, CapiWrongState, CapiExt
 							if (connections.count(plci)>0)
 								throw(CapiError("PLCI used twice from CAPI in CONNECT_IND","Capi::readMessage()"));
 							else {
-								Connection *c=new Connection(nachricht,this);
+								Connection *c=new Connection(nachricht,this,DDILength,DDIBaseLength,DDIStopNumbers);
 								connections[plci]=c;
-								application->callWaiting(c);
+								if (!DDILength) // if we have PtP then wait until DDI is complete
+									application->callWaiting(c);
 							}
 						} break;
 
@@ -645,6 +650,21 @@ Capi::readMessage (void) throw (CapiMsgError, CapiError, CapiWrongState, CapiExt
 										throw(CapiError("PLCI unknown in INFO_IND","Capi::readMessage()"));
 									else
 										connections[plci]->info_ind_alerting(nachricht);
+								} break;
+
+								case 0x70: { // Called Party Number
+									_cdword plci=INFO_IND_PLCI(&nachricht);
+									if (debug_level >= 2)
+										debug << prefix() << "<INFO_IND: PLCI 0x" << hex << plci << ", InfoNumber CalledPartyNr " << endl;
+									
+									bool nrComplete;
+									if (connections.count(plci)==0)
+										throw(CapiError("PLCI unknown in INFO_IND","Capi::readMessage()"));
+									else {
+										nrComplete=connections[plci]->info_ind_called_party_nr(nachricht);
+										if (nrComplete && DDILength)
+											application->callWaiting(connections[plci]);
+									}
 								} break;
 
 								default:
@@ -951,6 +971,22 @@ Capi::getInfo(bool verbose)
 /* History
 
 Old Log (for new changes see ChangeLog):
+
+Revision 1.5.2.4  2003/11/06 18:32:15  gernot
+- implemented DDIStopNumbers
+
+Revision 1.5.2.3  2003/11/02 14:58:16  gernot
+- use DDI_base_length instead of DDI_base
+- added DDI_stop_numbers option
+- use DDI_* options in the Connection class
+- call the Python script if number is complete
+
+Revision 1.5.2.2  2003/11/01 22:59:33  gernot
+- read CalledPartyNr InfoElements
+
+Revision 1.5.2.1  2003/10/26 16:51:55  gernot
+- begin implementation of DDI, get DDI Info Elements
+
 Revision 1.5  2003/04/17 10:39:42  gernot
 - support ALERTING notification (to know when it's ringing on the other side)
 - cosmetical fixes in capi.cpp

@@ -1,4 +1,4 @@
-# $Id: capisuite.conf.in,v 1.2 2003/03/20 09:15:53 gernot Exp $
+# $Id: capisuite.conf.in,v 1.3 2004/01/10 14:16:40 gernot Exp $
 #
 # This is the global configuration file for CapiSuite
 #
@@ -68,3 +68,26 @@ log_level="1"
 #
 log_error="@localstatedir@/log/capisuite.error"
 
+# DDI_base, DDI_length and DDI_stop_numbers
+#
+# The following two options are only important if you've your ISDN card connected
+# to an ISDN interface which is configured in "Point to Point"-mode (in Germany
+# this is called "Anlagenanschluss"). This means you don't have several
+# specific numbers (so called MSNs) but only one base number and you can define
+# extensions as you like. As the length of these extensions is up to you, CapiSuite
+# can't know it. Therefore you must configure it here. Sometimes, there are also
+# shorter numbers you want to allow, for example the extension "0" instead of "000".
+# These extension numbers can be listed (separated by commas) in DDI_stop_numbers. 
+#
+# If you don't understand what this all means, then you most likely have no PtP 
+# interface and you can leave the default values.
+# 
+# As an example, if you've numbers like 12345-123 and 12345-111, then your 
+# DDI_base_length would be "5" and DDI_length would be 3. If you also want to
+# receive calls to 12345-0, you should set DDI_stop_numbers to "0".  
+#
+# A value of 0 for DDI_length disables this feature and the other settings are
+# ignored then (default).
+DDI_length="0"
+DDI_base_length="0" 
+DDI_stop_numbers=""
