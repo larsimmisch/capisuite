@@ -1,9 +1,9 @@
 0.4.2 (NN):
 ===========
-	* manual now available as PDF 
+	* manual now available as PDF  
 
 	* scripts: fixed an overflow in cs_helpery.py which caused hangs for
-          the receive of long (more than about 40 pages) fax documents
+          the receive of long (more than about 40 pages) fax documents 
 
 	* scripts: fixed a bug in idle.py which caused a fax send delay of one 
 	  hour when daylight saving time is in effect
@@ -17,8 +17,11 @@
 	  now support the special sign "-" for "no destination number available"
 	  (e.g. needed for the austrian "Global Call")
 
-	* scripts: capisuitefax now handles filenames with special chars (spaces
-	  etc.) correctly
+	* scripts: capisuitefax now handles filenames and dialstrings with 
+	  special chars (spaces etc.) correctly
+
+	* scripts: new parameter "--user" added to capisuitefax; thx to Wolfgang
+	  Eul for the patch!
 
 	* core: use "-" instead of "??" for "no number available", e.g. important
 	  for the call_from and call_to parameters of scripts
