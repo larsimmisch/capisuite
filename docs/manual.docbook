@@ -166,13 +166,15 @@
 						</listitem>
 					</varlistentry>
 					<varlistentry>
-						<term>sox</term>
+						<term>sox >= 12.17.3</term>
 						<listitem><para>This is the swiss-knife for converting audio formats. It's not required
 							by the &cs; core, but will be very helpful if you want to hear or record the
 							voice files used for calls on your machine. It's also required if you want to
 							use the default scripts of &cs;. I'll bet this is included in your distribution
 							and most likely already installed on your system. Just try to start <command>sox</command>
-							to get sure. You'll find more details on <ulink url="http://sox.sourceforge.net"/>
+							to get sure. As Helmut Gruber pointed out, you need at least version 12.17.3, as this
+							version started to handle inverse A-Law files. You'll find more details on
+							<ulink url="http://sox.sourceforge.net"/>
 						</para></listitem>
 					</varlistentry>
 					<varlistentry>
@@ -2123,8 +2125,8 @@ def idle(capi):<co id="idle_ex2_4"/>
 		<literal>idle_script</literal> in the &cs; configuration to point to this script as described in <xref linkend="configcs"/>.
 		</para>
 
-		<para>Restart &cs; and watch the logs. Some minutes later, the <filename>job-XXX.sff</filename> files should've been sent 
-		and renamed to either <filename>done-job-XXX.sff</filename> or <filename>failed-job-XXX.sff</filename>. If the job failed, 
+		<para>Restart &cs; and watch the logs. Some minutes later, the <filename>job-XXX.sff</filename> files should've been sent
+		and renamed to either <filename>done-job-XXX.sff</filename> or <filename>failed-job-XXX.sff</filename>. If the job failed,
 		please consult the error log and the error values explained in
 		<xref linkend="command_reference"/> and <xref linkend="capicodes"/>.</para>
 

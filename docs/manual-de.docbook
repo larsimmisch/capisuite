@@ -180,15 +180,17 @@
 						</listitem>
 					</varlistentry>
 					<varlistentry>
-						<term>sox</term>
+						<term>sox >= 12.17.3</term>
 						<listitem><para>Dies ist das Schweizer Offiziersmesser für die Konvertierung
-                            von Audio-Formaten. Es wird nicht vom &cs;-Kern benötigt, ist aber sehr nützlich,
-                            wenn Sie Sprachdateien für Anrufe auf Ihrer Maschine anhören oder aufnehmen
-                            möchten. Es wird auch benötigt, wenn Sie die Standard-Skripte von &cs; benutzen
+							von Audio-Formaten. Es wird nicht vom &cs;-Kern benötigt, ist aber sehr nützlich,
+							wenn Sie Sprachdateien für Anrufe auf Ihrer Maschine anhören oder aufnehmen
+							möchten. Es wird auch benötigt, wenn Sie die Standard-Skripte von &cs; benutzen
 							möchten. Ich möchte wetten, dass es in Ihrer Distribution dabei ist und sehr
 							wahrscheinlich ist es auf Ihrem System bereits installiert. Um sicher zu gehen,
-                            probieren Sie einfach mal aus, <command>sox</command> zu starten. Sie
-                            finden weitere Details unter <ulink url="http://sox.sourceforge.net"/>
+							probieren Sie einfach mal aus, <command>sox</command> zu starten. Wie mir Helmut
+							Gruber mitteilte, benötigen Sie mindestens Version 12.17.3, da erst diese die hier
+							genutzten Inversed-A-Law-Dateien unterstützt. Sie
+							finden weitere Details unter <ulink url="http://sox.sourceforge.net"/>
 						</para></listitem>
 					</varlistentry>
 					<varlistentry>
