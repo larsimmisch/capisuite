@@ -1,22 +1,5 @@
-0.5 (CVS nn):
-=============
-
-	* scripts: prevent cropping of fax pages by auto-scaling
-
-	* scripts: use a SMTP connection to localhost instead of calling the
-	  sendmail binary for sending mails. Many reports showed that calling
-	  sendmail manually doesn't work well on quite some systems
-
-	* core: fixed compile problem with new capi4linux library
-
-	* core: fixed a crash which could be caused by wrong DDI parameters
-	  in capisuite.conf
-	
-	* scripts: Adapted to work with the new parameters of sfftobmp 3.x.
-	  Normally, installed version will be detected automatically when 
-	  building CapiSuite. If you change your sfftobmp version later,  
-	  you'll have to adapt the function sfftotif at the beginning of
-	  cs_helpers.py manually.
+0.5
+===
 
 	* scripts: removed the special support for giving an empty voice_email/
 	  fax_email parameter. This is NOT allowed any more and will result in
@@ -30,10 +13,10 @@
 	  capisuitefax(1) (fixes bug #13, thx to Achim Bohnet for reporting)
 
 	* scripts: remote inquiry now uses correct female form ("eine Nachricht"
-	  instead of "eins Nachricht", thx to Eckhard Rüggeberg and Jörg Fester)
+	  instead of "eins Nachricht", thx to Eckhard Rggeberg and Jï¿½g Fester)
 
 	* scripts: capisuitefax now also accepts PDF files (thx to Jochen Meyer
-	  and Eckhard Rüggeberg for reporting)
+	  and Eckhard Rggeberg for reporting)
 
 	* scripts: capisuitefax now submits a single job if several
 	  files are given (implemented by Hartmut Goebel, fixes bug #38)
@@ -53,9 +36,6 @@
 
 	* core: fixed a bug which could lead to a crash when some unexpected
 	  CAPI messages arrived (thx to Karsten Keil for analyzing)
-
-	* core: behave correctly when DATA_B3_CONF messages come early (thx to
-	  Karsten Keil for analyzing and a nice fix!)
 
 	* scripts: the mails sent with received voice and fax calls will now
 	  contain some general information like length of calls, number of
@@ -79,6 +59,29 @@
 	* started a detailed ChangeLog file from 2003-10-05. From now on, NEWS
 	  should only contain important changes from a user's point of view, while
 	  ChangeLog records all changes in detail.
+
+0.4.5
+=====
+
+	* scripts: prevent cropping of fax pages by auto-scaling
+
+	* scripts: use a SMTP connection to localhost instead of calling the
+	  sendmail binary for sending mails. Many reports showed that calling
+	  sendmail manually doesn't work well on quite some systems
+
+	* core: behave correctly when DATA_B3_CONF messages come early (thx to
+	  Karsten Keil for analyzing and a nice fix!)
+
+	* core: fixed compile problem with new capi4linux library
+
+	* core: fixed a crash which could be caused by wrong DDI parameters
+	  in capisuite.conf
+	
+	* scripts: Adapted to work with the new parameters of sfftobmp 3.x.
+	  Normally, installed version will be detected automatically when 
+	  building CapiSuite. If you change your sfftobmp version later,  
+	  you'll have to adapt the function sfftotif at the beginning of
+	  cs_helpers.py manually.
 
 0.4.4
 =====
@@ -106,7 +109,7 @@
         * core: support for ISDN lines with DDI (means you only have one base
 	  number - not a list of MSNs - and can define extensions how you like;
 	  in Germany used in the "Anlagenanschluss"). We now have three new
-	  DDI_* options in capisuite.conf. Many thanks goes to Jörg Fester and
+	  DDI_* options in capisuite.conf. Many thanks goes to Jï¿½g Fester and
 	  the x-dot GmbH for paying and supporting me to develop this feature.
 	  They use CapiSuite in their product (see http://www.x-manage.de).
 
@@ -128,14 +131,14 @@
 	  (bug #23)
 
 	* scripts: number of needed tries reported after sending a fax was
-	  wrong (bug #29, thx to Eckhard Rüggeberg)
+	  wrong (bug #29, thx to Eckhard Rggeberg)
 
 	* scripts: fax jobs can be given a literal addressee and a subject
 	  for informational purposes now (bug #18 reported by Achim Bohnet)
 
 	* core: fax headline is now converted to the right charset internally,
 	  so that special characters like german umlauts are working now
-	  (thx to Eckhard Rüggeberg for reporting)
+	  (thx to Eckhard Rggeberg for reporting)
 
 	* scripts: Sander Roest found a workaround for the odd Python error
 	  "cannot unmarshal code objects in restricted execution mode" which
