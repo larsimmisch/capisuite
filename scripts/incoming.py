@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.2 $
+#    version              : $Revision: 1.3 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -227,7 +227,6 @@ def remoteInquiry(call,userdir,curr_user,config):
 				lastfile=open(userdir+"received/last_inquiry","r")
 				lastinquiry=int(lastfile.readline())
 				lastfile.close()
-			print lastinquiry
 
 			# sort out old messages
 			oldmessages=[]
@@ -238,8 +237,6 @@ def remoteInquiry(call,userdir,curr_user,config):
 					del messages[i]
 				else:
 					i+=1
-			print "messages",messages
-			print "oldmessages",oldmessages
 
 			cs_helpers.sayNumber(call,str(len(messages)),curr_user,config)
 			if (len(messages)==1):
@@ -356,6 +353,9 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.3  2003/02/21 13:13:34  gernot
+# - removed some debug output (oops...)
+#
 # Revision 1.2  2003/02/21 11:02:17  gernot
 # - removed os.setuid() from incoming script
 #   -> fixes Bug #527
