@@ -116,7 +116,7 @@
 		<sect2 id="requirements"><title>Requirements</title>
 			<sect3 id="require_hard"><title>Hardware and drivers</title>
 				<para>As &cs; uses the CAPI (Common ISDN Application Programming Interface)
-				for accessing your ISDN-hardware, you'll need a card for which a CAPI compatible 
+				for accessing your ISDN-hardware, you'll need a card for which a CAPI compatible
 				driver is available.</para>
 
 				<para>Currently these are all cards manufactured by AVM and some Eicon cards.
@@ -1158,7 +1158,7 @@ not present, current time as returned by localtime() is used.
 
 		</sect2>
 	</sect1>
-	<sect1 id="ug_writing_scripts"><title>Writing your own incoming and idle scripts</title>
+	<sect1 id="ug_writing_scripts"><title>A first look on the incoming and idle scripts</title>
 		<para>In <xref linkend="howwork"/> I already told you that there are two kinds
 		of scripts used in &cs;. Now let's have a closer look on them.</para>
 
@@ -1401,45 +1401,466 @@ not present, current time as returned by localtime() is used.
 		</sect2>
 	</sect1>
 
-	<sect1 id="incoming_examples"><title>Simple incoming script examples</title>
+	<sect1 id="incoming_tutorial"><title>Tutorial: writing an incoming script</title>
 		<para>In this section, I'll show you how to code your own incoming script step by step.
-		We begin with simply accepting every incoming call and playing a beep and go on until we
-		have a very simple multi-user answering machine with fax recognition and receiving.</para>
-		
-		<para>Let's start with a very simple case: accept all incoming calls, beep and record
-		something so we have a audio file to play with later. First of all, create a new directory
-		somewhere which must be writable to <literal>root</literal>. We also need some test audio
-		file for sending it. Let's take the beep which is distributed with &cs;.</para>
+		We begin with simply accepting every incoming call, playing a beep. The last example
+		is a very simple answering machine with fax recognition and receiving.</para>
 
-		<screen>mkdir incoming-examples
+		<sect2 id="incoming_tut_basics"><title>Basics and a really dumb answering machine.</title>
+			<para>Let's start with a very simple case: accept all incoming calls, beep and record
+			something so we have an audio file to play with later. First of all, create a new directory
+			somewhere which must be writable to <literal>root</literal>. We also need some test audio
+			file for sending it. Let's take the beep which is distributed with &cs;.</para>
+
+			<screen>mkdir incoming-examples
 chown 777 incoming-examples
 cd incoming-examples
-cp /usr/share/capisuite/beep.la .</screen>
+cp /usr/local/share/capisuite/beep.la .</screen>
 
-		<para>Now copy and paste the example shown here to a file called <filename>example1.py</filename>
-		in this directory.</para>
+			<para>Perhaps you must change the path in the last line to reflect your installation.</para>
 
-		<example><programlisting>import capisuite
-		
+			<para>Now copy and paste the example shown here to a file called <filename>example.py</filename>
+			in this directory.</para>
+
+			<example><title>example.py</title>
+			<programlisting>import capisuite<co id="incoming_ex1_1"/>
+
+my_path="/path/to/the/just/created/incoming-examples/"<co id="incoming_ex1_2"/>
+
+def callIncoming(call,service,call_from,call_to):<co id="incoming_ex1_3"/>
+	capisuite.connect_voice(call,10)<co id="incoming_ex1_4"/>
+	capisuite.audio_send(call,my_path+"beep.la")<co id="incoming_ex1_5"/>
+	capisuite.audio_receive(call,my_path+"recorded.la",20,3)<co id="incoming_ex1_6"/>
+	capisuite.disconnect(call)<co id="incoming_ex1_7"/></programlisting></example>
+
+			<para>&cs; configuration must be changed now to use the just created script.
+			Do this by editing your <filename>capisuite.conf</filename> and replacing the
+			<literal>incoming_script</literal> value by the path to the file you just
+			created (see <xref linkend="configcs"/>) and restart &cs;.</para>
+
+			<para>Let's walk through the script line by line now:</para>
+
+			<calloutlist>
+				<callout arearefs="incoming_ex1_1">
+					<para>Import the capisuite module which holds all &cs; specific functions.
+					All &cs; objects (functions, constants) in this module can be referenced by
+					<literal>capisuite.objectname</literal> now. You could also do a
+					"<literal>from capisuite import *</literal>", which will insert all objects in the
+					current namespace - but this isn't recommended as they may collide with other
+					global objects.</para>
+
+					<note><para>The imported module <literal>capisuite</literal> isn't available
+					as extra module, so you can't do this in an interactive Python session.
+					It's included in the &cs; binary and only available in scripts interpreted
+					by &cs;.</para></note>
+				</callout>
+				<callout arearefs="incoming_ex1_2">
+					<para>Please change this to the real path you use for running these examples.</para>
+				</callout>
+				<callout arearefs="incoming_ex1_3">
+					<para>Define the necessary function as explained in
+					<xref linkend="ug_scripts_incoming"/></para>
+				</callout>
+				<callout arearefs="incoming_ex1_4">
+					<para>That's the first &cs; function we use: it accepts the pending call. The
+					first parameter tells &cs; which call you mean. This parameter is necessary
+					for nearly all &cs; functions. Ok, we only have one call now - but please
+					think about an incoming script which also wants to place an outgoing call at
+					the same time (for example to transfer a call). In this case &cs; wouldn't know
+					which call you mean - so you must pass the reference you got to all connection
+					related functions.</para>
+
+					<para>You can also tell &cs; to wait for an arbitrary time before accepting a
+					call - that's what the second parameter is used for. So this script will wait
+					10 seconds before connecting with the caller. Don't think this parameter is
+					useless and you could call a Python function (like <literal>time.sleep()</literal>)
+					to wait instead. This won't work for any delay longer than 4 (or 8, depending
+					on your ISDN setup) seconds as the call will timeout if an ISDN device doesn't
+					"pre-accept" it by telling your network provider that it's ringing. &cs; will
+					do so if necessary - so please just use this parameter.</para>
+				</callout>
+				<callout arearefs="incoming_ex1_5">
+					<para>This call should be fairly self-explainig. Send the audio file stored in
+					<filename>beep.la</filename>.</para>
+				</callout>
+				<callout arearefs="incoming_ex1_6">
+					<para>Record an audio file for maximal 20 seconds - stopping earlier if more than
+					3 seconds of silence are recognized.</para>
+				</callout>
+				<callout arearefs="incoming_ex1_7">
+					<para>Last, but not least - disconnect. Hang up. Finish. It's over.</para>
+				</callout>
+			</calloutlist>
+
+			<para>Now test it: call any number which ends up at your ISDN card - if you have
+			connected it to your ISDN interface, than any number (MSN) will do - if it's connected
+			to a PBX, then you must call a number which was configured for the card in your PBX.</para>
+
+			<para>You should hear a beep and then you can speak something into this primitive answering
+			machine. Please don't hangup before the script does as this case isn't handled yet. Just
+			wait 3 seconds after saying something - it should disconnect after this period of silence.</para>
+
+			<para>If it doesn't work, you perhaps made an error when copying the script. In this case,
+			please have a look at the &cs; log and error log, which you'll find in
+			<filename>/var/log/capisuite</filename> or <filename>/usr/local/var/log/capisuite</filename>
+			if you haven't changed the path.</para>
+
+			<para>A good trick to check for syntax errors is also to run your script through
+			the normal Python interpreter. Do this by calling <command>python /path/to/your/example.py</command>.
+			Naturally, it will complain about the <literal>import capisuite</literal> as this is no standard
+			Python module. But before it does this, it will check the syntax of your script - so if you get
+			any <emphasis>other</emphasis> error, please fix it and try again. If you only get
+
+			<screen>Traceback (most recent call last):
+  File "../scripts/incoming.py", line 16, in ?
+    import capisuite,cs_helpers
+ImportError: No module named capisuite</screen>
+
+			then your script has a correct syntax.</para>
+
+			<para>I hope you got your script working by now - if not, don't hesitate to ask on the
+			&cs; mailing lists <emphasis>if</emphasis> you have read a Python tutorial before.</para>
+
+			<para>In the next section we want to use an announcement, so please record some words
+			with this simple script and move the created file <filename>recorded.la</filename> to
+			<filename>announce.la</filename>.</para>
+		</sect2>
+		<sect2 id="incoming_tut_improving"><title>Improving it to a useful (?) state</title>
+			<para>Well, it's really not nice that the caller mustn't hangup - and it's even worse
+			that we do accept all incoming calls - perhaps by taking away your mothers important
+			calls?</para>
+
+			<para>Let's quickly improve this.</para>
+
+			<example><title>example.py, improved</title>
+			<programlisting>import capisuite
+
 my_path="/path/to/the/just/created/incoming-examples/"
 
 def callIncoming(call,service,call_from,call_to):
-	capisuite.connect_voice(call,10)
-	capisuite.audio_send(call,my_path+"beep.la")
-	capisuite.audio_receive(call,my_path+"recorded.la",20,3)
-	capisuite.disconnect(call)</programlisting></example>
+	try:<co id="incoming_ex2_1"/>
+		if (call_to=="123"):<co id="incoming_ex2_2"/>
+			capisuite.connect_voice(call,10)
+			capisuite.audio_send(call,my_path+"announce.la")<co id="incoming_ex2_2a"/>
+			capisuite.audio_send(call,my_path+"beep.la")
+			capisuite.audio_receive(call,my_path+"recorded.la",20,3)
+			capisuite.disconnect(call)
+		else:
+			capisuite.reject(call,1)<co id="incoming_ex2_3"/>
+	except capisuite.CallGoneError:
+		pass <co id="incoming_ex2_4"/></programlisting></example>
 
-		<para>Now, the &cs; configuration should be changed to use your own incoming script.
-		Do this by editing your <filename>capisuite.conf</filename> replacing the incoming.py
-		value by the path to the file you just created.</para>
+			<calloutlist>
+				<callout arearefs="incoming_ex2_1">
+					<para>&cs; will tell the script that the other party has disconnected
+					by raising an exception named <literal>CallGoneError</literal>. So
+					you should always put your code in a <literal>try</literal> statement
+					and catch the raised exception at the end of your script (or perhaps
+					earlier if needed). Be aware that this can happen <emphasis>at any
+					time</emphasis> interrupting anything you do in your script.</para>
+				</callout>
+				<callout arearefs="incoming_ex2_2">
+					<para>Have a look at the called number (please replace <literal>123</literal>
+					with the number &cs; should accept)...</para>
+				</callout>
+				<callout arearefs="incoming_ex2_3">
+					<para>... and ignore the call if it isn't what we want to accept.
+					The second parameter tells the exact reason for the reject - you can
+					ignore a call (any other ISDN device or phone will still be ringing for
+					that number) by using <literal>1</literal>, actively disconnect by
+					using <literal>2</literal> or signalling any error condition which is
+					available in the ISDN specification (see <xref linkend="capicodes_isdn"/>
+					for available codes).</para>
+				</callout>
+				<callout arearefs="incoming_ex2_2a">
+					<para>Play the announcement we recorded in the last section. If you don't
+					like it, simply record a new one and move the <filename>recorded.la</filename>
+					again to <filename>announce.la</filename>.</para>
+				</callout>
+				<callout arearefs="incoming_ex2_4">
+					<para>This is the block handling <literal>CallGoneError</literal> - the
+					exception &cs; raises when the call is disconnected by the other party.
+					This time, we just define it and do nothing (<literal>pass</literal>
+					is the keyword for <emphasis>do nothing</emphasis> in Python). In normal
+					scripts, you'll perhaps log the end of the call or free any ressources
+					you allocated earlier here.</para>
+				</callout>
+			</calloutlist>
 
+			<para>Save this to <filename>example.py</filename> again and test it.
+			It's not necessary to restart &cs; as all scripts will be read at
+			each time they're executed. Now you're allowed to hang up if you want,
+			too ;-).</para>
+
+
+		</sect2>
+		<sect2 id="incoming_tut_unique_names"><title>Using sensible file names</title>
+			<para>We always used the same name for the saved file which clearly isn't reasonable.
+			We really should choose a new name for every new call. This isn't as simple as it may sound -
+			you must assure that the used algorithm will also work for multiple calls arriving at the
+			same time. Fortunately, the helpful programmer of &cs; had the same problem ;-) and so
+			we can use the code he (hmmm... I?) has written.</para>
+
+			<para>The Python module <filename>cs_helpers.py</filename> contains some useful functions
+			which were needed for the default scripts provided with &cs; but may be also helpful
+			for the use with own scripts. It contains the function <literal>uniqueName</literal>
+			which does exactly what we need here. The syntax is:</para>
+
+<screen>filename=cs_helpers.uniqueName(directory,prefix,sufix)</screen>
+
+			<para>The function will find a new unique filename in the given <literal>directory</literal>.
+			The created filename will be "<filename>prefix-XXX.suffix</filename>" where <literal>XXX</literal>
+			is the next free number started at 0. The file is created with a size of 0 bytes and the name is
+			returned as <literal>filename</literal>.</para>
+
+			<para>Now we can simply add this call to our script:</para>
+
+			<example><title>using unique filenames</title>
+			<programlisting>import capisuite<emphasis>,cs_helpers</emphasis>
+
+my_path="/path/to/the/just/created/incoming-examples/"
+
+def callIncoming(call,service,call_from,call_to):
+	try:
+		<emphasis>filename=cs_helpers.uniqueName(my_path,"voice","la")</emphasis>
+		if (call_to=="123"):
+			capisuite.connect_voice(call,10)
+			capisuite.audio_send(call,my_path+"announce.la")
+			capisuite.audio_send(call,my_path+"beep.la")
+			capisuite.audio_receive(call,<emphasis>filename</emphasis>,20,3)
+			capisuite.disconnect(call)
+		else:
+			capisuite.reject(call,1)
+	except capisuite.CallGoneError:
+		pass</programlisting></example>
+
+			<para>If you're interested in other functions which <literal>cs_helpers.py</literal>
+			defines, just have a look at the reference at @ref.</para>
+		</sect2>
+		<sect2 id="incoming_tut_fax_recognition"><title>Automatic fax recognition and receiving</title>
+
+			<para>As last step, here I want to show you how fax recognition and receiving works and
+			how to switch from voice to fax mode.</para>
+
+			<para>Here's the last and most complicated example of this section. It'll introduce
+			four new &cs; functions and shows how to split up the functionality in another
+			function which is used by <literal>callIncoming</literal>. There are much changes
+			which are described below - but most of them should be nearly self-explanatory -
+			so I don't think this last step is too big. And you don't want to read 10 more steps
+			here, do you? ;-)</para>
+
+			<example><title>Adding fax functions</title>
+			<programlisting>import capisuite,cs_helpers,os<co id="incoming_ex4_0"/>
+
+my_path="/path/to/the/just/created/incoming-examples/"
+
+def callIncoming(call,service,call_from,call_to):
+	try:
+		filename=cs_helpers.uniqueName(my_path,"voice","la")
+		if (call_to=="123"):
+			capisuite.connect_voice(call,10)
+			capisuite.enable_DTMF(call)<co id="incoming_ex4_1"/>
+			capisuite.audio_send(call,my_path+"announce.la",1)<co id="incoming_ex4_2"/>
+			capisuite.audio_send(call,my_path+"beep.la",1)
+			capisuite.audio_receive(call,filename,20,3,1)
+			dtmf=capisuite.read_DTMF(call,0)<co id="incoming_ex4_3"/>
+			if (dtmf=="X"):<co id="incoming_ex4_4"/>
+				os.unlink(filename)<co id="incoming_ex4_5"/>
+				faxIncoming(call)<co id="incoming_ex4_6"/>
+			capisuite.disconnect(call)
+		else:
+			capisuite.reject(call,1)
+	except capisuite.CallGoneError:
+		pass
+
+def faxIncoming(call):
+	capisuite.switch_to_faxG3(call,"+49 123 45678","Test headline")<co id="incoming_ex4_7"/>
+	filename=cs_helpers.uniqueName(my_path,"fax","sff")
+	capisuite.fax_receive(call,filename)<co id="incoming_ex4_8"/></programlisting></example>
+
+			<calloutlist>
+				<callout arearefs="incoming_ex4_0">
+					<para>In this example, we need a normal Python module for the first time.
+					The <literal>os</literal> module holds functions for all kinds of operation
+					system services and is needed for deleting a file here.</para>
+				</callout>
+				<callout arearefs="incoming_ex4_1">
+					<para>DTMF is the abbreviation for Dual Tone Multi Frequency. These
+					are the tones which are generated when you press the digits on your
+					phone and are usually used for dialling. They're also sent by modern
+					fax machines before the transmission starts. Therefore, the same
+					functions can be used for recognizing pressed digits and fax machines.
+					</para>
+
+					<para>Before any DTMF is recognized by &cs;, the according function must
+					be enabled which is done by <literal>enable_DTMF</literal>.</para>
+				</callout>
+				<callout arearefs="incoming_ex4_2">
+					<para>All audio send and receive functions support abortion when a DTMF
+					tone is recognized. This is enabled by giving "<literal>1</literal>"
+					as last parameter. It will also prevent the function from starting
+					if a DTMF char was recognized <emphasis>before</emphasis> but not yet
+					read by the script.</para>
+				</callout>
+				<callout arearefs="incoming_ex4_3">
+					<para>&cs; stores all received DTMF signals in a buffer from where they
+					can be read at any time. Reading is done by <literal>read_DTMF</literal>
+					which also clears the buffer. It will return all received characters in
+					a string, so if the caller presses "3","5","*", you'll get "35*".</para>
+
+					<para>The <literal>0</literal> tells &cs; not to
+					wait for DTMF signals - if none are available, it will simply do nothing.
+					It's also possible to specify that it should wait for a certain amount of
+					time or until a certain number of signals have been received.</para>
+
+					<note><para>Please note that it's not necessary to check for received DTMF
+					after each audio send or receive function. Simply enable the DTMF abortion
+					in all commands in a block and check for received tones after the whole block.
+					</para></note>
+				</callout>
+				<callout arearefs="incoming_ex4_4">
+					<para>Fax machines send a special tone which is represented as
+					"<literal>X</literal>" by the CAPI. So if you receive the string
+					"X", a fax machine is calling and we should start our fax handling routines.</para>
+				</callout>
+				<callout arearefs="incoming_ex4_5">
+					<para>As we have created a file for storing the received voice call by
+					calling <literal>cs_helpers.uniqueName</literal> which we don't need any
+					more (as we'll create a new file named <filename>fax-XXX.sff</filename>),
+					we must delete it by calling <literal>os.unlink</literal>. There's a small
+					chance that </para>
+				</callout>
+				<callout arearefs="incoming_ex4_6">
+					<para>Fax handling was realized in a seperate function which is called here.</para>
+				</callout>
+				<callout arearefs="incoming_ex4_7">
+					<para>So far, this connection is in voice mode (which was set by using
+					<literal>connect_voice</literal>). If we want to receive a fax now, the
+					mode must be changed to fax. This is done by <literal>switch_to_faxG3</literal>.
+					As the fax protocol needs some additional parameters, they must be given
+					here. The first string is the so called <emphasis>fax station ID</emphasis>
+					which is sent to the calling fax and shown in it's protocol, while the
+					second one is a <emphasis>fax headline</emphasis>. This headline is mainly
+					used for sending faxes. To be honest, I personally don't know if it has any
+					sense to specify this if you only want to receive a fax. But it surely won't
+					harm ;-). If someone knows this for sure, please tell me.</para>
+
+					<note><para>If you want to use an own number solely for fax purposes, you
+					should <emphasis>not</emphasis> use <literal>switch_to_faxG3</literal>.
+					Use <literal>connect_faxG3</literal> instead.</para></note>
+				</callout>
+				<callout arearefs="incoming_ex4_8">
+					<para>After the connection has been set to fax mode succesfully, we can
+					receive the fax document finally. The used function
+					<literal>fax_receive</literal> gets a new name which is again created by
+					calling <literal>cs_helpers.uniqueName</literal> as above.</para>
+				</callout>
+			</calloutlist>
+
+			<para>Now we've finished our small tutorial. Now it's up to you - you can play with
+			the created script and try to make it more complete. There's still much to do -
+			sending received calls to a user via E-Mail, log connections, ... If you want to
+			complete this script, the <xref linkend="command_reference"/> will be helpful.
+			You can also read on here to have a short look on the idle scripts, followed by a
+			quick overview of the structure of the default scripts shipped with &cs;.</para>
+		</sect2>
 	</sect1>
 
 	<sect1 id="idle_examples"><title>Examples for idle scripts</title>
 
+		<para>After we've seen how to handle incoming calls, a very short introduction to
+		initiate outgoing calls by using the idle script will follow.</para>
 
+		<para>As written before, the idle script will be called by &cs; in regular intervals
+		allowing you to look for stored jobs somewhere and sending them to the destinations.</para>
+
+		<para>The example shown here will look for a file <filename>fax-XXXX.sff</filename> in
+		the example directory. This file will be faxed to the destination indicated by
+		<literal>XXXX</literal> if found. If you have no valid destination where you can
+		send test faxes to, how about using &cs; for receiving also? If you want to do this,
+		replace <literal>XXXX</literal> by the number our just created incoming script will
+		handle. In this case, replace <literal>XXXX</literal> by the number your incoming script
+		handles. This won't work if your ISDN card can't handle two fax transfers at the same time
+		(some old AVM B1 cards have this limitation, for example).</para>
+
+		<para>We now need one or more fax files in the SFF format for our tests, so please
+		create some with a name like the one shown above. If you don't know how to do this,
+		please refer to <xref linkend="create_sff"/>.</para>
+
+		<para>If I want to develop a &cs; script but am not really sure how to do it, I often
+		start by coding a normal script which I can test without &cs;. So let's create a script
+		which searches the files and extracts the destination numbers first. If this works,
+		we can continue by adding the &cs; specific calls later.</para>
+
+		<example><title>idle_test.py</title>
+			<programlisting>import os,re<co id="idle_ex1_1"/>
+
+my_path="/path/to/your/example/dir/"
+
+files=os.listdir(my_path)<co id="idle_ex1_2"/>
+files=filter (lambda s: re.match("fax-.*\.sff",s),files)<co id="idle_ex1_3"/>
+
+for job in files:<co id="idle_ex1_4"/>
+	destination=job[4:-3]<co id="idle_ex1_5"/>
+	print "found",job,"to destination",destination</programlisting>
+		</example>
+
+		<calloutlist>
+			<callout arearefs="idle_ex1_1">
+				<para>We know the <literal>os</literal> module already.
+				<literal>re</literal> provides functions for searching for regular
+				expressions. If you don't know what regular expressions are, please
+				read for example the Python documentation for the
+				<literal>re</literal>-module or some other documentation about them.
+				It's too complicated to explain it here.</para>
+			</callout>
+			<callout arearefs="idle_ex1_2">
+				<para><literal>os.listdir</literal> returns the files in a given
+				directory as list.</para>
+			</callout>
+			<callout arearefs="incoming_ex1_3">
+				<para>This line is a little bit more tricky. It filters out all filenames
+				which doesn't follow the rule <emphasis>starting with "fax-", then any
+				number of chars, ending with ".sff"</emphasis> from the list. This is
+				done by the <literal>filter</literal> function. The function expects the name
+				of a function which checks the rule as first parameter and the list to filter
+				(<literal>files</literal>) as second one.</para>
+
+				<para>We could now define a new function and use its name here, but the
+				<literal>lambda</literal> keyword allows a much more elegant solution: it
+				defines a "nameless function" with the parameter <literal>s</literal>. The
+				function body follows directly behind and consists of a call to
+				<literal>re.match</literal> which checks if the given string
+				<literal>s</literal> matches the expression.
+				</para>
+
+			</callout>
+			<callout arearefs="incoming_ex1_4">
+				<para>Iterate over all found filenames.</para>
+			</callout>
+			<callout arearefs="incoming_ex1_5">
+				<para>The destination is extracted from the given filename by using string
+				indexes.</para>
+			</callout>
+		</calloutlist>
+
+		<para>Now, save the script as <filename>idle_test.py</filename> in our example dir and run
+		it by calling <command>python idle_test.py</command>.</para>
+
+		<para>If you have provided SFF files with the right names they should be shown line by line
+		now. But... Obviously something doesn't work right here. The destination includes the
+		"<literal>.</literal>". Indeed, I've made a mistake when indexing the string. It should be
+		<literal>destination=job[4:-4]</literal> instead of <literal>[4:-3]</literal>. It was a good
+		idea that we didn't </para>
 	</sect1>
 
+	<sect1 id="default_script_overview"><title>Structural overview of the default scripts</title>
+		<para>jjj</para>
+	</sect1>
+
+	<sect1 id="command_reference"><title>&cs; command reference</title>
+		<para>askdj</para>
+	</sect1>
 
 </chapter>
 <chapter id="develguide"><title>Developers Guide</title>
@@ -1460,10 +1881,10 @@ def callIncoming(call,service,call_from,call_to):
 
  <section id="capicodes_connection"><title>CAPI errors describing connection problems</title>
 
- 	<para>All errors described here indicate some problem with the connection. 
+ 	<para>All errors described here indicate some problem with the connection.
 	These errors are also important for script writers as they're returned by
 	some CapiSuite Python functions like capisuite.disconnect() (@ref).</para>
-         
+
 	<section id="capicodes_protocol"><title>Protocol errors</title>
 		<para>Protocol errors indicate some problem during data transfer. Only messages for
 		voice (transparent) and fax are shown here as these are the only protocols spoken
@@ -1486,12 +1907,12 @@ def callIncoming(call,service,call_from,call_to):
 		</itemizedlist>
 	</section>
 	<section id="capicodes_isdn"><title>ISDN error codes</title>
-	
+
 	<para>The codes shown here are ISDN error codes which are described by the
 	ETS 300 102-01 standard in more detail. It's currently available for private use at
 	<ulink url="http://www.etsi.org"/> without fee. For details how the ISDN codes
 	are mapped to the CAPI numbers see the CAPI specification, parameter "Info".</para>
-	
+
 	<itemizedlist>
 		<listitem><para><literal>3480</literal> - Normal termination</para></listitem>
 		<listitem><para><literal>3481</literal> - Unallocated (unassigned) number</para></listitem>
