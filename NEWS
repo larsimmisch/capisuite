@@ -18,7 +18,11 @@
 	  wrong (bug #29, thx to Eckhard Rüggeberg)
 
 	* scripts: fax jobs can be given a literal addressee and a subject
-	  for informational purposes now (bug #18 reported by Achim Bohnet) 
+	  for informational purposes now (bug #18 reported by Achim Bohnet)
+
+	* core: fax headline is now converted to the right charset internally,
+	  so that special characters like german umlauts are working now
+	  (thx to Eckhard Rüggeberg for reporting)
 
 0.4.2 (CVS tag CAPISUITE_042):
 ==============================

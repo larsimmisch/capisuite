@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.9 $
+    $Revision: 1.10 $
 */
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 #include <../../config.h>
 #include <fstream>
 #include <pthread.h>
+#include <iconv.h> // for iconv(), iconv_open(), iconv_close()
 #include "capi.h"
 #include "callinterface.h"
 #include "connection.h"
@@ -978,7 +979,7 @@ Connection::getNumber(_cstruct capi_input, bool isCallingNr)
 
 	if (a.empty()) {
 		a="-";
-	} else if (isCallingNr && ((capi_input[1] & 0x70) == 0x20)) {  //  national number
+	} else if (isCallingNr && ((capi_input[1] & 0x70) == 0x20)) {  // national number
 		a='0'+a;
 	} else if (isCallingNr && ((capi_input[1] & 0x70) == 0x10)) { // international number
 		a='+'+a;
@@ -1018,6 +1019,11 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 				faxStationID=faxStationID.substr(0,20);
 			if (faxHeadline.size()>254)  // if the string would be longer the struct must be coded different, but I think a header > 254 bytes has no sence
 				faxHeadline=faxHeadline.substr(0,254);
+
+			// convert faxHeadline to CP437 for AVM drivers as they expect the string in this format
+			if (capi->profiles[controller-1].manufacturer.find("AVM")!=std::string::npos)
+				convertToCP437(faxHeadline);
+
 			B3config=new unsigned char [1+2+2+1+faxStationID.size()+1+faxHeadline.size()]; // length + 1 byte for the length itself
 			int i=0;
 			B3config[i++]=2+2+1+faxStationID.size()+1+faxHeadline.size();  // length
@@ -1037,9 +1043,47 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 	}
 }
 
+void
+Connection::convertToCP437(string &text)
+{
+	size_t from_length=text.size()+1;
+	size_t to_length=from_length;
+
+	char* from_buf=new char[from_length];
+	char* from_buf_tmp=from_buf; // as pointer is changed by iconv()
+	char* to_buf = new char[to_length];
+	char* to_buf_tmp=to_buf; // as pointer is changed by iconv()
+
+	strncpy(from_buf,text.c_str(),from_length);
+
+	iconv_t conv=iconv_open("CP437","Latin1");
+
+	if (conv==(iconv_t)-1) {
+		error << prefix() << "WARNING: string conversion to CP437 not supported by iconv" << endl;
+		return;
+	}
+
+	if (iconv(conv,&from_buf_tmp,&from_length,&to_buf_tmp,&to_length)==(size_t)-1) {
+		char msg[200];
+		throw CapiExternalError(string("error during string conversion (iconv): ")+strerror_r(errno,msg,200),"Connection::convertToCP437");
+	}
+
+	if (iconv_close(conv)!=0)
+		throw CapiExternalError("error during string conversion (iconv_close)","Connection::convertToCP437");
+
+	text=to_buf;
+        delete[] from_buf;
+        delete[] to_buf;
+}
+
+
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.10  2003/06/28 12:49:47  gernot
+- convert fax headline to CP437, so that german umlauts and other special
+  characters will work now
+
 Revision 1.9  2003/05/25 13:38:30  gernot
 - support reception of color fax documents
 

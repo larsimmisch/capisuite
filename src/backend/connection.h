@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.5 $
+    $Revision: 1.6 $
 */
 
 /***************************************************************************
@@ -80,7 +80,7 @@ class Connection
 		    @param call_to the number which we want to call
 		    @param service service to use (currently only VOICE and FAXG3 are supported), see service_t
 		    @param faxStationID fax station ID, only used with service faxG3
-		    @param faxHeadline fax headline (written on each fax page), only used with service faxG3
+		    @param faxHeadline fax headline (written on each fax page), only used with service faxG3, encoded in ISO8859-1
 		    @throw CapiExternalError thrown when parameters are missing or wrong
 		    @throw CapiMsgError thrown by Capi::connect_req, see there
 		*/
@@ -117,7 +117,7 @@ class Connection
 
 		    @param desired_service service to switch to
 		    @param faxStationID Only needed when switching to FaxG3. The fax station ID to use.
-		    @param faxHeadline Only needed when switching to FaxG3. The fax headline to use.
+		    @param faxHeadline Only needed when switching to FaxG3. The fax headline to use, encoded in ISO8859-1
 		    @throw CapiExternalError Thrown by Connection::buildBconfiguration. See there.
 		    @throw CapiMsgError Thrown by Connection::select_b_protocol_req. See there.
 		    @throw CapiWrongState Connection is in wrong state. Either it was finished by the partner or you didn't disconnect the logical connection before calling changeProtocol
@@ -197,7 +197,7 @@ class Connection
 
 		    @param desired_service to determine with which service we should connect (e.g. VOICE or FAXG3)
 		    @param faxStationID my fax station ID - only needed in FAXG3 mode
-		    @param faxHeadline my fax headline - only needed in FAXG3 mode
+		    @param faxHeadline my fax headline - only needed in FAXG3 mode, encoded in ISO8859-1
 		    @throw CapiWrongState Thrown if call is not in necessary state (waiting for acception or rejection)
 		    @throw CapiExternalError Thrown by buildBconfiguration. See there.
 		    @throw CapiMsgError Thrown by Capi::connect_resp(). See there.
@@ -549,7 +549,7 @@ class Connection
 		void send_block() throw (CapiWrongState, CapiExternalError, CapiMsgError);
 
 		/** @brief called to build the B Configuration info elements out of given service
-		
+
 		    This is a convenience function to do the quite annoying enconding stuff for the
 		    6 B configuration parameters.
 
@@ -559,15 +559,27 @@ class Connection
 		    @param controller number of controller to use - necessary to check available services
 		    @param service value indicating service to be used as described in service_t
 		    @param faxStationID my fax station ID
-		    @param faxHeadline the fax headline
+		    @param faxHeadline the fax headline, encoded in ISO8859-1
 		    @param B1proto return value: B1protocol value for CAPI, see CAPI spec
 		    @param B2proto return value: B2protocol value for CAPI, see CAPI spec
 		    @param B3proto return value: B3protocol value for CAPI, see CAPI spec
 		    @param B1config return value: B1configuration element for CAPI, see CAPI spec
 		    @param B2config return value: B2configuration element for CAPI, see CAPI spec
 		    @param B3config return value: B3configuration element for CAPI, see CAPI spec
+		    @throw CapiExternalError thrown when the ISDN controller doesn't support the wanted service
 		*/
 		void buildBconfiguration(_cdword controller, service_t service, string faxStationID, string faxHeadline, _cword& B1proto, _cword& B2proto, _cword& B3proto, _cstruct& B1config, _cstruct& B2config, _cstruct& B3config) throw (CapiExternalError);
+
+		/** @brief convert a String from ISO8859-1 to CP437 (IBM PC-DOS charset)
+
+		    Unfortunately, some CAPI drivers expect the fax headline to be given in the IBM PC-DOS
+		    charset. This method can convert the string from the normal ISO8859-1 representation
+		    to this charset.
+
+		    @param text the string to convert
+		    @throw CapiExternalError thrown when the iconv* functions report an error (other than conversion not supported)
+		*/
+		void convertToCP437(string &text);
 
 		/********************************************************************************/
     		/*	                       attributes					*/
@@ -657,6 +669,10 @@ class Connection
 /*  History
 
 $Log: connection.h,v $
+Revision 1.6  2003/06/28 12:49:47  gernot
+- convert fax headline to CP437, so that german umlauts and other special
+  characters will work now
+
 Revision 1.5  2003/05/25 13:38:30  gernot
 - support reception of color fax documents
 
