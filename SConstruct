@@ -299,7 +299,7 @@ if not GetOption('clean') and not is_dist:
     # "configure" only if necessary or requested
     if not File('config.h', build_dir).exists() \
            or 'configure' in COMMAND_LINE_TARGETS:
-        env.SConscript('SConscript-Config')#, build_dir=build_dir)
+        env.SConscript('SConscript-Config', build_dir=build_dir)
 
     # get some build variables we always need to evaluate
     GetPythonModuleSetup(env)
