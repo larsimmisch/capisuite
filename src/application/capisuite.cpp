@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -70,23 +70,23 @@ CapiSuite::CapiSuite(int argc,char **argv)
 		debug_level=atoi(config["log_level"].c_str());
 
 		(*debug) << prefix() << "CapiSuite " << VERSION << " started." << endl;
+		(*error) << prefix() << "CapiSuite " << VERSION << " started." << endl;
+
+		// backend init
+		capi=new Capi(*debug,debug_level,*error);
+		capi->registerApplicationInterface(this);
+
                 string info;
 		if (debug_level>=2)
-			info=Capi::getInfo(true);
+			info=capi->getInfo(true);
 		else
-			info=Capi::getInfo(false);
+			info=capi->getInfo(false);
 		(*debug) << prefix();
 		for (int i=0;i<info.size();i++) {
 			(*debug) << info[i];
 			if (i!=info.size()-1 && info[i]=='\n')
 				(*debug) << prefix();
 		}
-
-		(*error) << prefix() << "CapiSuite " << VERSION << " started." << endl;
-
-		// backend init
-		capi=new Capi(*debug,debug_level,*error);
-		capi->registerApplicationInterface(this);
 
 		capi->setListenTelephony(0); // TODO: 0 = all, evtl. einstellbar?
 		capi->setListenFaxG3(0); // TODO: 0 = all, evtl. einstellbar?
@@ -398,6 +398,9 @@ CapiSuite::help()
 /* History
 
 $Log: capisuite.cpp,v $
+Revision 1.5  2003/04/03 21:09:46  gernot
+- Capi::getInfo isn't static any longer
+
 Revision 1.4  2003/03/06 09:34:44  gernot
 - added missing endl's in error messages
 
