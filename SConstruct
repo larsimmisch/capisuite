@@ -416,14 +416,15 @@ ln -sf ../../etc/init.d/capisuite $RPM_BUILD_ROOT/usr/sbin/rccapisuite
 #
 
 for d in (
-    '${DESTDIR}${localstatedir}/log',
-    '${DESTDIR}${spooldir}/sendq',
-    '${DESTDIR}${spooldir}/done',
-    '${DESTDIR}${spooldir}/failed',
-    '${DESTDIR}${spooldir}/users',
+    '${localstatedir}/log',
+    '${spooldir}/sendq',
+    '${spooldir}/done',
+    '${spooldir}/failed',
+    '${spooldir}/users',
     ):
-    if not os.path.exists(env.subst(d)):
-        d = env.Command(env.BasedDir(d), None, Mkdir('$TARGET'))
+    d = env.BasedDir(d)
+    if not d.exists():
+        d = env.Command(d, None, Mkdir('$TARGET'))
         env.Alias('install-data-local', d)
 
 # 'install' includes the other parts, too
@@ -470,7 +471,7 @@ if 'rpms' in COMMAND_LINE_TARGETS:
     env.Alias('rpms', 
       env.Command([File('%s.%s.rpm' % (_rpmbasename, _arch), _distdir),
                    File('%s.%s.rpm' % (_rpmbasename, 'src'), _distdir)],
-                  ['suse/capisuite-mdk-9.2.spec', dist], [ \
+                  ['packages/rpm/capisuite-mdk-9.2.spec', dist], [ \
                   ['rpmbuild',
                    '--define', '_builddir %s'  % _builddir.abspath,
                    '--define', '_sourcedir %s' % _distdir.abspath,
