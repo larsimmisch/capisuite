@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# capisuite. CapiSuite cleanup script, should be run regularly 
+# by cron. It's only useful for the default scripts provided 
+# with CapiSuite. 
+#
+# It will read a central configuration file placed in 
+# /etc/capisuite/cronjob.conf where you must define a variable
+# called MAX_DAYS which defines how many days a received or sent
+# file may stay in the spool dirs. 
+#
+# Author: Gernot Hillier <gernot@hillier.de>
+#
+
+#
+# paranoia settings
+#
+umask 022
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH
+
+# do nothing if there is no global config
+test -r @pkgsysconfdir@/cronjob.conf || exit
+
+for i in @spooldir@/users/*/received @spooldir@/done @spooldir@/failed; do
+   # reset defaults
+   test -r @pkgsysconfdir@/cronjob.conf && . @pkgsysconfdir@/cronjob.conf
+   # user can overwrite default values
+   test -r $i/cronjob.conf && . $i/cronjob.conf
+   
+   test "$MAX_DAYS" -gt 0 2> /dev/null || continue
+   find $i/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \;
+   find $i/. -name "*voice-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \; 
+done;
+
+exit 0
+

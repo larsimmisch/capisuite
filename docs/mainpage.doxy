@@ -1,0 +1,11 @@
+/** @mainpage %CapiSuite Documentation
+
+This is the reference manual describing the internal structures of %CapiSuite. If you're interested in developing,
+you're right here. 
+@htmlonly
+If you "just" want to use it, please refer to <a href="../manual/index.html">../manual/index.html</a>.
+@endhtmlonly
+Thx!
+
+@author Gernot Hillier <gernot@hillier.de>
+*/

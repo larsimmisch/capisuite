@@ -1,0 +1,26 @@
+AC_INIT(src/main.cpp)
+AM_INIT_AUTOMAKE(capisuite,0.4)
+AM_CONFIG_HEADER(config.h)
+
+AC_LANG_CPLUSPLUS
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+AC_PROG_MAKE_SET
+AC_PATH_PROG(doxygen,doxygen)
+dnl suggested by autoscan:
+
+AC_CHECK_FUNCS([gettimeofday])
+AC_CHECK_HEADERS([sys/time.h])
+AC_HEADER_TIME
+
+CS_SET_DOCDIR
+
+AC_CHECK_LIB(capi20,capi20_register,,AC_MSG_ERROR(libcapi20 not found))
+AC_CHECK_LIB(pthread,pthread_create,,AC_MSG_ERROR(libpthread not found))
+AM_PATH_PYTHON(2.2)
+PGAC_CHECK_PYTHON_EMBED_SETUP
+CPPFLAGS='-DLOCALSTATEDIR=\"$(localstatedir)\" -DPKGDATADIR=\"$(pkgdatadir)\" -DPKGSYSCONFDIR=\"$(sysconfdir)/capisuite\" -DPKGLIBDIR=\"$(pkglibdir)\" $(python_includespec)'
+
+AC_OUTPUT(Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile)

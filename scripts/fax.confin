@@ -1,0 +1,142 @@
+# $Id: fax.confin,v 1.1 2003/02/19 08:19:54 gernot Exp $
+#
+# This is the fax configuration file for the scripts distributed with CapiSuite
+#
+# It is read by the scripts which are distributed with CapiSuite (incoming.py,
+# idle.py and capisuitefax). If you don't want to use these scripts and develop
+# your completely own application, you won't need it! CapiSuite itself (the
+# daemon) doesn't read it.
+#
+# For a further description, please see the CapiSuite documentation - there's a
+# part describing the scripts and this config file.
+#
+# As usual, lines starting with # or empty lines will be ignored
+#
+# The rest must be key value pairs written as key=value or section names.
+#
+# Additional whitespaces and quotation marks (") surrounding
+# the values will be ignored.
+#
+# The file is split in sections starting with "[sectionname]". The section
+# [GLOBAL] contains all options common for all users. For each different user,
+# an own section is used which must at least contain "fax_numbers"
+#
+# Nearly all options are available in the [GLOBAL] section and
+# the user sections. The defaults from the global section can be overwritten in
+# [user]-sections.
+
+###############################################################################
+############################ global settings ##################################
+###############################################################################
+
+[GLOBAL]
+
+# Directory where idle.py will save its data. There must exist two
+# subdirectories:
+#
+# spool_dir/done    -  a successful delivered job is moved here
+# spool_dir/failed  -  jobs which have finally failed live here
+spool_dir="@spooldir@/"
+
+# Directory for all user-specific data. Contains one subdirectory
+# for each user (named like his userid). The following directory tree is used below:
+#
+# user_dir/username/received - all received calls (voice and fax) will be saved here
+# user_dir/username/sendq    - the files to send will be queued here
+fax_user_dir="@spooldir@/users/"
+
+# send_tries
+#
+# Number of tries for sending a fax document. After completing the
+# given number of tries, the document will considered as failed.
+send_tries="10"
+
+# send_delays
+#
+# Delays in seconds between the send_tries. The different values are separated
+# by commas. The first value gives the delay between the first and the second
+# try and so on. The list should have send_tries-1 values. If some values are
+# missing, the last value will be used for all subsequent tries. Superfluous
+# values will be ignored.
+send_delays="60,60,60,300,300,3600,3600,18000,36000"
+
+# send_controller
+#
+# This value defines which one of the installed controllers will be used for
+# sending faxes. All controllers are numbered beginning with "1". If you
+# have only one controller installed, leave this value alone. Unfortunately,
+# there's only one send_controller supported currently.
+send_controller="1"
+
+# outgoing_MSN
+#
+# The MSN (number) to use for outgoing calls. You can also leave this empty.
+# Then default MSN of your ISDN interface will be used automatically. Will
+# be overwritten by the first entry of fax_numbers if set.
+outgoing_MSN=""
+
+# outgoing_timeout
+#
+# This value decides how long to wait for a successful connection if the other
+# party doesn't answer the call at once.
+outgoing_timeout="60"
+
+# fax_stationID
+#
+# This is the default for the fax station ID (fax number send to the other
+# party). It must only contain the following characters <space>,'+','0'..'9'.
+# The maximal length is 20 chars.
+fax_stationID="+49 000 0000"
+
+# fax_headline
+#
+# This is the default for the fax headline. There's no definitive length
+# constraint given by the CAPI specification, so it may be dependent on
+# the driver you use. Just use a reasonable short string.
+fax_headline="Fax sent by CapiSuite (http://www.capisuite.de)"
+
+###############################################################################
+############################# user settings ###################################
+###############################################################################
+
+# The following sections start with the name of the users which want to use
+# CapiSuite. The names must be exactly equal to system users.
+#
+# Each user section can override the following default options given above:
+#
+# outgoing_MSN, outgoing_timeout, fax_stationID, fax_headline
+#
+# Additionally, the following options are possible:
+#
+# fax_numbers="<num1>,<num2>, ..."
+#   A list containing the numbers on which this user wants to receive incoming
+#   fax calls. The values are separated by commas. The first number is also
+#   used as our own number for outgoing calls. This overrides outgoing_MSN.
+#   You can also use the special entry "*" which stands for accepting ALL
+#   incoming calls as fax (use with care!)
+#
+# fax_email="name@domain.de"
+#   If given, this string indicates an email-address where the received faxes
+#   and voice calls will be sent to. If it is empty, the recorded calls and
+#   faxes will be sent to the user on the current system. It's also used to
+#   send status reports for sent fax jobs to. If you don't want to get emails,
+#   see the "action" option below
+#
+# fax_action="<action>"
+#   Here you can define what action will be taken when a fax is received.
+#   Currently, three possible actions are supported:
+#
+#   MailAndSave - the received call will be mailed to the given address (see
+#		  "email" above) and saved to the user_dir.
+#   SaveOnly 	- the fax will be only saved to the user_dir
+#
+# Here's an example of a valid user configuration for "gernot" - just remove
+# the leading #-signs and edit it:
+#
+# [gernot]
+# fax_numbers="11,12"
+# fax_stationID="+49 89 123456"
+# fax_headline="Gernot Hillier - sent by CapiSuite"
+# fax_email="" # sent to gernot@localhost
+# fax_action="MailAndSave"
+

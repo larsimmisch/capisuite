@@ -1,0 +1,22 @@
+The CapiSuite manual is written in the DocBook format. Only
+read on if you want to change it. You'll need some knowledge
+of DocBook and the appropriate tools for that.
+
+Otherwise just use the prepared HTML documentation which
+will be installed in your doc_dir when you do "make install".
+Have a look into /usr/local/share/doc/capisuite/manual/
+after the installation and please READ it. :-)
+
+------ Only experts read on here, please ------
+
+You can create HTML pages by using tools like xsltproc and
+the DocBook stylesheets of Norman Walsh. 
+
+An example of how to call xsltproc:
+
+xsltproc -o manual/ /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.xsl manual.docbook
+
+To validate the document, use e.g. xmllint:
+
+xmllint --noout --valid manual.docbook
+

@@ -1,0 +1,340 @@
+#         cs_helpers.py - some helper functions for CapiSuite scripts
+#         -----------------------------------------------------------
+#    copyright            : (C) 2002 by Gernot Hillier
+#    email                : gernot@hillier.de
+#    version              : $Revision: 1.1 $
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+
+# the name of the config file read by the scripts; see there for options and
+# descriptions
+configfile_fax="@pkgsysconfdir@/fax.conf"
+configfile_voice="@pkgsysconfdir@/answering_machine.conf"
+
+# @brief read configuration file and return a ConfigParser object
+#
+# The configfile is read from the path given above and the surrounding
+# quotation marks from the values are removed
+#
+# @return the constructed config file object
+def readConfig(file=""):
+	import ConfigParser
+	config=ConfigParser.ConfigParser()
+	if (file==""):
+		config.readfp(open(configfile_fax))
+		config.readfp(open(configfile_voice))
+	else:
+		config.readfp(open(file))
+	for s in config.sections():
+		for o in config.options(s):
+			value=config.get(s,o)
+			if (len(value)>1 and value[0]=='"'):
+				config.set(s,o,value[1:-1])
+	if (not config.has_section('GLOBAL')):
+		raise IOError("invalid configuration file - section GLOBAL is missing")
+	return config
+
+# @brief get an option from the user or global section
+#
+# The option is searched in the users section and if not found
+# in the global section.
+#
+# @param config the ConfigParser object containing the values
+# @param user the name of the user section to use
+# @param option the name of the option to search for
+#
+# @return the value for this option or None if it's not found
+def getOption(config,user,option):
+	if config.has_option(user,option):
+		return config.get(user,option)
+	elif config.has_option('GLOBAL',option):
+		return config.get('GLOBAL',option)
+	else:
+		return None
+
+# @brief Search for an audio file first in user_dir, than in audio_dir
+#
+# @param config the ConfigParser object containing the configuration
+# @param user the name of the user
+# @param filename the filename of the wave file
+#
+# @return the found file with full path
+def getAudio(config,user,filename):
+	import os
+	systemdir=config.get('GLOBAL','audio_dir')
+	userdir=config.get('GLOBAL','voice_user_dir')+user+"/"
+	if (config.getint('GLOBAL','user_audio_files') and os.access(userdir+filename,os.R_OK)):
+		return userdir+filename
+	else:
+		return systemdir+filename
+
+# @brief thread-safe creation of a unique filename in a directory
+#
+# This function reads the nextnumber from then "nextnr"-file in the given
+# directory and updates it. It holds the next free file number.
+#
+# If nextnr doesn't exist, it's created.
+#
+# The filenames created will have the format
+#
+# basename-number.suffix
+#
+# @param directory name of the directory to work in
+# @param basename the basename of the filename
+# @param suffix the suffix of the filename (without ".")
+#
+# @return new file name
+def uniqueName(directory,basename,suffix):
+	import fcntl,os,re
+	# acquire lock
+	lockfile=open(directory+"cs_lock","w")
+        fcntl.lockf(lockfile,fcntl.LOCK_EX)
+
+        try:
+		 countfile=open(directory+basename+"-nextnr","r")
+		 nextnr=int(countfile.readline())
+		 countfile.close()
+	except IOError:
+		# search for next free sequence number
+		files=os.listdir(directory)
+		files=filter (lambda s: re.match(re.escape(basename)+"-.*\."+re.escape(suffix),s),files)
+		if (len(files)):
+			files=map(lambda s: int(s[len(basename)+1:-len(suffix)-1]),files)
+			nextnr=max(files)+1 # take nr of last file and increase it by one
+		else:
+			nextnr=0
+		files.sort()
+
+        newname=directory+basename+"-"+str(nextnr)+"."+suffix
+
+	countfile=open(directory+basename+"-nextnr","w")
+	countfile.write(str(nextnr+1)+'\n')
+	countfile.close()
+
+	# unlock
+	fcntl.lockf(lockfile,fcntl.LOCK_UN)
+	lockfile.close()
+	os.unlink(directory+"cs_lock")
+	return newname
+
+# @brief send email with text and attachment of type sff or la converted to pdf/wav
+#
+# This function creates a multipart MIME-message containing a text/plain
+# part with a string and one attachment of type application/pdf or audio/wav.
+#
+# The given attachment is automatically converted from Structured Fax File
+# (.sff) or inversed A-Law (.la) to the well known PDF or WAV format.
+#
+# @param mail_from the From: address for the mail
+# @param mail_to the To: address for the mail
+# @param mail_subject the subject of the mail
+# @param mail_type containing either "sff" or "la"
+# @param text a string containing the text of the first part of the mail
+# @param attachment name of the file to send as attachment
+def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
+        import email.MIMEBase,email.MIMEText,email.MIMEAudio,email.Encoders,os,sys,popen2,capisuite
+        msg = email.MIMEBase.MIMEBase("multipart","mixed")
+        msg['Subject']=mail_subject
+        msg['From']=mail_from
+        msg['To']=mail_to
+
+        msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
+        msg.epilogue = '' # To guarantee the message ends with a newline
+
+        basename=attachment[:attachment.rindex('.')+1]
+        try:
+		if (mail_type=="sff"):
+			# sff -> tif
+			ret=os.spawnlp(os.P_WAIT,"sfftobmp","sfftobmp","-tif",attachment,basename+"tif")
+			if (ret or not os.access(basename+"tif",os.F_OK)):
+				raise "conv-error","Can't convert sff to tif. sfftobmp not installed?"
+			# tif -> ps -> pdf
+			tiff2ps=popen2.Popen3("tiff2ps -a "+basename+"tif")
+			if (tiff2ps.poll()!=-1):
+				raise "conv-error","Error while calling tiff2ps. Not installed?"
+			tiff2ps.tochild.close() # we don't need the input pipe
+			ps2pdf=popen2.Popen3("ps2pdf - -")
+			if (ps2pdf.poll()!=-1):
+				raise "conv-error","Error while calling ps2pdf. Not installed?\n"
+			ps2pdf.tochild.write(tiff2ps.fromchild.read())
+			tiff2ps.fromchild.close()
+			ret=tiff2ps.wait() 
+			if (ret!=0):
+				raise "conv-error","Error "+str(ret)+" occured during tiff2ps"
+			os.unlink(basename+"tif")
+			ps2pdf.tochild.close() # send EOF, so that it starts to convert
+			# create attachment with pdf stream
+			filepart = email.MIMEBase.MIMEBase("application","pdf")
+			filepart.add_payload(ps2pdf.fromchild.read())
+			ps2pdf.fromchild.close()
+			ret=ps2pdf.wait()
+			if (ret!=0):
+				raise "conv-error","Error "+str(ret)+" occured during ps2pdf"
+			email.Encoders.encode_base64(filepart)
+		elif (mail_type=="la"):
+			# la -> wav
+			# don't use stdout as sox needs a file to be able to seek in it otherwise the header will be incomplete
+			ret = os.spawnlp(os.P_WAIT,"sox","sox",attachment,basename+"wav")
+			if (ret or not os.access(basename+"wav",os.R_OK)):
+				raise "conv-error","Error while calling sox. Not installed?"
+			filepart = email.MIMEAudio.MIMEAudio(open(basename+"wav").read(),"x-wav")
+			os.unlink(basename+"wav")
+		textpart = email.MIMEText.MIMEText(text)
+		msg.attach(textpart)
+		msg.attach(filepart)
+	except "conv-error",errormessage:
+		text+="\n\nERROR occured while converting file: "+errormessage+"\nPlease talk to your friendly administrator.\n"
+		textpart = email.MIMEText.MIMEText(text)
+		msg.attach(textpart)
+
+	sendmail = popen2.Popen3("sendmail -f "+mail_from+" "+mail_to)
+	if (sendmail.poll()!=-1):
+		capisuite.error("Error while calling sendmail. Not installed?\n")
+		return
+	sendmail.tochild.write(msg.as_string())
+	sendmail.tochild.close()
+	sendmail.fromchild.close()
+	ret=sendmail.wait()
+	if (ret!=0):
+		capisuite.error("Error while calling sendmail, return code="+str(ret))
+	else:
+		capisuite.log("sendmail finished successful",3)
+
+# @brief send a simple text email
+#
+# This function creates a simple mail
+#
+# @param mail_from the From: address for the mail
+# @param mail_to the To: address for the mail
+# @param mail_subject the subject of the mail
+# @param text a string containing the text of the first part of the mail
+def sendSimpleMail(mail_from,mail_to,mail_subject,text):
+	import email.Encoders, email.MIMEText, popen2, sys,capisuite
+	# Create a text/plain message, using Quoted-Printable encoding for non-ASCII
+	# characters.
+	msg = email.MIMEText.MIMEText(text, _encoder=email.Encoders.encode_quopri)
+
+	msg['Subject'] = mail_subject
+	msg['From'] = mail_from
+	msg['To'] = mail_to
+
+	sendmail = popen2.Popen3("sendmail -f "+mail_from+" "+mail_to)
+	if (sendmail.poll()!=-1):
+		capisuite.error("Error while calling sendmail. Not installed?\n")
+		return
+	sendmail.tochild.write(msg.as_string())
+	sendmail.tochild.close()
+	sendmail.fromchild.close()
+	ret=sendmail.wait()
+	if (ret!=0):
+		capisuite.error("Error while calling sendmail, return code="+str(ret))
+	else:
+		capisuite.log("sendmail finished successful",3)
+
+
+# @brief write description file for received fax or voice
+#
+# This function writes an INI-style description file for the given data file
+# which can later on be read by a ConfigParser instance. The data file name
+# is used, the extension stripped and replaced by .txt
+#
+# @param filename the data filename (with extension!)
+# @param content the content as string
+def writeDescription(filename,content):
+	descr=open(filename[:filename.rindex('.')+1]+"txt","w")
+	descr.write("# Description file for "+filename+"\n")
+	descr.write("# This if for internal use of CapiSuite.\n")
+	descr.write("# Only change if you know what you do!!\n")
+	descr.write("[GLOBAL]\n")
+	descr.write("filename=\""+filename+"\"\n")
+	descr.write(content)
+	descr.close()
+
+# @brief say a german number
+#
+# All numbers from 0 to 99 are said correctly, while all larger ones are
+# split into numbers and only the numbers are said one after another
+#
+# @param call reference to the call
+# @param number the number to say
+# @param curr_user the current user named
+# @param config the ConfigParser instance holding the configuration info
+def sayNumber(call,number,curr_user,config):
+	import capisuite
+	if (len(number)==2 and number[0]!="0"):
+		if (number[0]=="1"):
+			if (number[1]=="0"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"10.la"),1)
+			elif (number[1]=="1"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"11.la"),1)
+			elif (number[1]=="2"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"12.la"),1)
+			elif (number[1]=="3"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"13.la"),1)
+			elif (number[1]=="4"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"14.la"),1)
+			elif (number[1]=="5"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"15.la"),1)
+			elif (number[1]=="6"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"16.la"),1)
+			elif (number[1]=="7"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"17.la"),1)
+			elif (number[1]=="8"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"18.la"),1)
+			elif (number[1]=="9"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"19.la"),1)
+		else:
+			if (number[1]=="0"):
+				capisuite.audio_send(call,getAudio(config,curr_user,number+".la"),1)
+			elif (number[1]=="1"):
+				capisuite.audio_send(call,getAudio(config,curr_user,"ein.la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,"und.la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,number[0]+"0.la"),1)
+			else:
+				capisuite.audio_send(call,getAudio(config,curr_user,number[1]+".la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,"und.la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,number[0]+"0.la"),1)
+	else:
+		for i in number:
+			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
+
+# $Log: cs_helpers.pyin,v $
+# Revision 1.1  2003/02/19 08:19:54  gernot
+# Initial revision
+#
+# Revision 1.8  2003/02/10 14:03:34  ghillie
+# - cosmetical fixes in sendMIMEMail
+# - added wait() calls to popen objects, otherwise processes will hang
+#   after CapiSuite has run them (i.e. sendmail stays as Zombie)
+#
+# Revision 1.7  2003/02/03 14:47:49  ghillie
+# - sayNumber now works correctly for all numbers between 0 and 99
+#   (in german). Added the necessary voice files and improved "1"-"9"
+#
+# Revision 1.6  2003/01/27 21:55:10  ghillie
+# - getOption returns now None if option isn't found at all (no exception)
+# - removed capisuite.log from uniqueName() (not possible in capisuitefax!)
+# - added some missing "import capisuite" statements
+#
+# Revision 1.5  2003/01/27 19:24:29  ghillie
+# - updated to use new configuration files for fax & answering machine
+#
+# Revision 1.4  2003/01/19 12:02:40  ghillie
+# - use capisuite log functions instead of stdout/stderr
+#
+# Revision 1.3  2003/01/17 15:08:17  ghillie
+# - typos as usual...
+# - added sendSimpleMail for normal text messages
+#
+# Revision 1.2  2003/01/15 15:52:49  ghillie
+# - readConfig now takes filename as parameter
+# - uniqueName: countfile now has basename as prefix, fixed small bug
+#   in countfile creation
+# - sendMail: added .la->.wav convertion, error messages now included
+#   in messages to user
+# - writeDescription: [data] renamed to [global]
+# - sayNumber: small fixes
+#

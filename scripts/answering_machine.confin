@@ -1,0 +1,125 @@
+# $Id: answering_machine.confin,v 1.1 2003/02/19 08:19:54 gernot Exp $
+#
+# This is the configuration file for the answering machine scripts distributed
+# with CapiSuite
+#
+# It is read by the incoming.py script which is distributed with CapiSuite.
+# If you don't want to use it but develop your completely own application,
+# you won't need it! CapiSuite itself (the daemon) doesn't read it.
+#
+# For a further description, please see the CapiSuite documentation -
+# there's a part describing the scripts.
+#
+# As usual, lines starting with # or empty lines will be ignored
+#
+# The rest must be key value pairs written as key=value or section names.
+#
+# Additional whitespaces and quotation marks (") surrounding
+# the values will be ignored.
+#
+# The file is split in sections starting with "[sectionname]". The section
+# [GLOBAL] contains all options common for all users. For each different user,
+# an own section is used which must at least contain "voice_numbers".
+#
+# Nearly all global options can be overwritten in the [user]-sections
+
+###############################################################################
+############################ global settings ##################################
+###############################################################################
+
+[GLOBAL]
+
+# Directory where audio snippets used in the answering machine script are
+# located. If user_audio_files is enabled (see below), each user can also
+# provide his own audio snippets in his user_dir (see below).
+audio_dir="@pkgdatadir@/"
+
+# Directory for all user-specific data. Contains one subdirectory
+# for each user (named like his userid). The following directory tree is used:
+#
+# user_dir/username/          -  here the user may provide his own audio_files
+#                                (see user_audio_files option). The user defined announcement
+#			         is also saved here.
+# user_dir/username/received  -  all received calls (voice and fax) will be saved here
+voice_user_dir="@spooldir@/users/"
+
+# Controls wether the user_dir (see below) will also be searched for audio
+# files. If set to "1", the script will look in the user_dir and then in
+# audio_dir for a needed audio file. If "0", only audio_dir is used.
+# This doesn't affect the announcement, which can and should be different
+# for each user in any case.
+user_audio_files="1"
+
+# Global setting for the time in seconds before incoming voice calls are
+# accepted.
+voice_delay="15"
+
+# This value gives the default name of the announcement file which is searched
+# in the user_dir. Each user should provide one in his/her own dir.
+announcement="announcement.la"
+
+# record_length
+#
+# Global setting for the maximal record length of the answering machine
+# in seconds
+record_length="60"
+
+# record_silence_timeout
+#
+# Global setting for the length of silence after which recording is
+# finished by the answering machine.
+record_silence_timeout="5"
+
+###############################################################################
+############################# user settings ###################################
+###############################################################################
+
+# The following sections start with the name of the users which want to use
+# CapiSuite. The names must be exactly equal to system users.
+#
+# Each user section can override the following default options given above:
+#
+# voice_delay, announcement, record_length, record_silence_timeout
+#
+# Additionally, the following options are possible:
+#
+# voice_numbers="13,14"
+#   This list contains the numbers on which this user wants to receive incoming
+#   voice calls. The values are separated by commas. You can also use the special 
+#   entry "*" which stands for accepting ALL incoming calls (use with care!).
+#
+# voice_email="name@domain.de"
+#   If given, this string indicates an email-address where the received faxes
+#   and voice calls will be sent to. If it is empty, the recorded calls and
+#   faxes will be sent to the user on the current system. It's also used to
+#   send status reports for sent fax jobs to. If you don't want to get emails,
+#   see the "action" option below
+#
+# pin="<PIN number>"
+#   pin for activating the remote inquiry. Start typing when the announcement
+#   is played. If you don't want remote inquiry function for your answering
+#   machine for security or other reasons, just set this to an empty string.
+#   You can use as many digits as you want. The script will wait 2 seconds after
+#   each typed digit for the next one.
+#
+# voice_action="<action>"
+#   Here you can define what action will be taken when a call is received.
+#   Currently, three possible actions are supported:
+#
+#   MailAndSave - the received call will be mailed to the given address (see
+#		  "email" above) and saved to the user_dir.
+#   SaveOnly 	- the call will be only saved to the user_dir
+#   None 	- only the announcement will be played - no voice file will
+#                 be recorded
+#
+# Here's an example of a valid user configuration for "gernot" - just remove
+# the leading #-signs and edit it:
+#
+# [gernot]
+# voice_numbers="13,14"
+# voice_action="MailAndSave"
+# voice_delay="10"
+# record_length="60"
+# voice_email="" # sent to gernot@localhost
+# pin="99*45"
+

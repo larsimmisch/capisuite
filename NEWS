@@ -1,0 +1,103 @@
+0.01 (tag CAPISUITE_001):
+=========================
+
+	* changed name from CapiCom to CapiSuite (name conflict with MS crypto API)
+	* added doxygen-created documentation for classes and python exported functions
+	* get_DTMF() was renamed to read_DTMF() and can wait for DTMF now
+	* connect_telephony() renamed to connect_voice()
+
+0.02 (tag CAPISUITE_002):
+=========================
+
+	* many bug fixes as usual (SEGV, ...)
+	* service constants SERVICE_VOICE, SERVICE_FAXG3 and SERVICE_OTHER 
+	  available in python now, no need to use CIP values any more
+	* audio_send and audio_receive return length in seconds now
+	* added support for idle script which can initiate outgoing calls
+
+0.03 (tag CAPISUITE_003):
+=========================
+
+	* improvement in idle script handling, own class for it (IdleScript)
+	* new classes for Python script handling (PythonScript) and derived classes 
+	  (IncomingScript & IdleScript)
+	* new python functions call_voice and call_faxG3 to initiate outgoing calls
+	* changed python exception handling to allow multiple calls in one script to be 
+ 	  handled correctly
+	* python functions disconnect() and reject() wait for complete disconnection and  
+	  return the disconnect cause now
+	* assure nice disconnection in any error case (hopefully)
+	* when error occured in script, physical connection is finished immediately leading 
+	  to an error visible at the sending side (e.g. when using the fax protocol)
+	* cleaned up python reference counting and threads, no known memory leaks any more 
+	* many changes to support outgoing calls (new module, many small changes) 
+	* Connection objects will be destroyed by application level now so dangling pointers
+	  are avoided
+	* exception handling generally improved
+
+0.1 (tag CAPISUITE_01):
+=======================
+	* "make install" and "make dist" work now, use config.h
+	* added main docu page for doxygen
+	* added capisuitefax-script (command line tool for sending faxes)
+	* added support for sending faxes in idle.py
+	* added support for "capisuite.conf" (global configuration file)
+	* capisuite can write its output to logfiles now
+	* faxsend module added, new python function fax_send()
+	* idle script will be disabled after 10 subsequent errors
+	* B3 disconnect cause now returned by disconnect() python function
+
+0.2 (tag CAPISUITE_02):
+=======================
+	* log improvements: log-level configurable (see capisuite.conf), appending log-file instead of re-creating
+	* configure allows to set docdir with --with-docdir 
+	* CapiSuite can be finished using Ctrl-C and SIGTERM nicely 
+	* very limited support for reload (kill -1) - only re-activates de-actived idle script yet,
+	  no reload of configuration
+	* all configuration for the scripts put in own config file 
+	* support for various new configuration options, multi-user-ready scripts (different user dirs in spool_dir/users)
+	* audio_receive does truncate recorded silence away 
+	* remote inquiry supports recording of own announcement
+	* commandline option "-d" runs CapiSuite as daemon
+	* new python commands: capisuite.log and capisuite.error let scripts write messages to the CapiSuite log
+	  and error log
+	 
+0.2.1 (tag CAPISUITE_021):
+==========================
+	* many document improvements (new DocBook manual)
+
+0.3 (tag CAPISUITE_03):
+=======================
+	* split up script configuration in two files (anwering machine, fax),
+	  some new features configurable now (e.g. actions)
+
+0.3.1 (tag CAPISUITE_031):
+==========================
+	* dist: included spec and init file in CVS and dist
+	* scripts: use different sendqueues for each user 
+	* core: fixed some bugs: 
+		- capisuite.error() didn't work, 
+		- logging in outgoing connections didn't work 
+		- callingParty wasn't set correctly
+	* scripts: answering machine switches to fax when incoming service indicator says fax
+	* scripts: sayNumber can now handle all number from 0 to 99, so all dates and times are 
+	  now said nearly correctly for the remote inquiry
+	* scripts: fixed a typo in incoming.py
+	* docs: added ISDN/CAPI error codes to manual 
+
+0.3.2 (tag CAPISUITE_032):
+==========================
+	* core: finally got rid of the CommonC++ library:
+		- threading implemented using native pthread_* calls
+		- rewritten CapiSuite::parseConfigFile() to use STL string routines
+		- changed Connection class to use pthread_mutex_*
+	* scripts: fixed bug which lead to hanging processes of externally started 
+	           progs like sendmail
+	* scripts: minor fixes 
+		
+0.4 (tag CAPISUITE_04):
+=======================
+	* added cron script for cleaning up spool dirs
+	* fixed bug in rc.capisuite (was also started when not configured)
+	* scripts: remote inquiry supports new and old messages now
+	* scripts: capisuitefax can show sendqueue and delete jobs now	

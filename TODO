@@ -1,0 +1,24 @@
+CRITICAL:
+- finish manual.docbook, provide simple examples
+- somewhere there's a bad thing (tm) which holds the python global lock
+  despite it mustn't (try incoming + outgoing call at the same time,
+  idlescript will stop working sometime...)
+
+IMPORTANT:
+- fax headline
+
+NICE:
+- ?valgrind-clean the used libs and Python?
+- support more than one send_controller
+- don't use 34xx codes, define constants instead and print meaningful messages
+- include email account check in idly.py 
+- add docbook -> html to Makefile.am
+- any solution for sending fax when having no fax config?
+
+FUTURE PLANS:
+- setuid away from root (problem: chown of recorded file to user)
+- log syntax errors in scripts, too
+	- PyRun_SimpleFile must be replaced by PyRun_File for this IMHO
+- test-implement the whole application part in Python
+- rewrite capisuitefax and idle.py to use named socket communication
+

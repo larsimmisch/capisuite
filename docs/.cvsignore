@@ -1,0 +1,9 @@
+reference
+reference/*
+manual
+manual/*
+susebuch
+susebuch/*
+Doxyfile
+Makefile
+Makefile.in
