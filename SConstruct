@@ -254,6 +254,8 @@ env = InstallableEnv(tools=Split('default sourcetar filesubst'),
     VERSION    = '0.5.cvs',
     RELEASE    = '1',
 
+    SVNREPOSITORY = 'https://h3281.serverkompetenz.net/repos/capisuite/',
+
     # required for some building the docs (doxygen)
     srcdir     = build_dir, 
 
@@ -359,7 +361,8 @@ env.SConscript(dirs=[Dir('.', build_dir),
 
 #--- additional files to be distributed ---
 env.ExtraDist(Split("""
-    ChangeLog TODO
+    ChangeLog.2003 ChangeLog.2004
+    TODO
     SConstruct
     SConscript-Config
     SConscript-Options
@@ -374,6 +377,7 @@ env.ExtraDist(Split("""
     packages/rpm/SConscript
     docs/SConscript
     """))
+# ChangeLog and ChangeLog.complete are build in SConscript
 
 
 #--- additional files to be distributed (automake/autoconf stuff) ---
@@ -452,6 +456,7 @@ env.Alias('install', env.Alias('install-man'))
 #
 if is_dist or 'rpms' in COMMAND_LINE_TARGETS:
     dist = env.DistTar('$DIST_ARCHIVE', env['DIST_FILES'])[0]
+    env.Alias('dist', dist)
 
 ###---####---###---####---###---####---###---####---###---####---###---###
 #
