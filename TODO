@@ -1,8 +1,5 @@
 CRITICAL:
 - finish manual.docbook, provide simple examples
-- somewhere there's a bad thing (tm) which holds the python global lock
-  despite it mustn't (try incoming + outgoing call at the same time,
-  idlescript will stop working sometime...)
 
 IMPORTANT:
 - fax headline
