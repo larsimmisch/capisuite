@@ -19,7 +19,7 @@ xsltproc -o manual/ /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.
 You must also copy the images from /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml to the created
 "manual" directory:
 
-cp -r /usr/share/sgml/docbook/docbook-xsl-stylesheets/images/ .
+cp -r /usr/share/sgml/docbook/docbook-xsl-stylesheets/images/ manual/ 
 
 To validate the document, use e.g. xmllint:
 
