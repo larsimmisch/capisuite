@@ -1,3 +1,8 @@
+2004-11-26  Gernot Hillier  <gernot@hillier.de>
+	* docs/Makefile.am: add man-pages to distribution, hopefully finally
+	  avoid to have them created during normal build
+	* docs/manual.docbook.in: renamed to manual.docbook again
+
 2004-11-07  Gernot Hillier  <gernot@hillier.de>
 	* configure.in: test for the sfftobmp version installed
 	* acinclude.m4 (CS_TEST_SFFTOBMP): Likewise.
@@ -17,7 +22,7 @@
 	* src/capisuite-py/__init__.py: Likewise.
 	* src/capisuite-py/config.py.in (class NoGlobalSectionError): moved
 	  to exceptions.py
-	* src/capisuite-py/exceptions.py: Likewise. 
+	* src/capisuite-py/exceptions.py: Likewise.
 
 2004-09-04  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (__sendmail, __call, sff2tif, cff2ps, 

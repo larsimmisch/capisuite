@@ -1,13 +1,12 @@
 docdir = @docdir@
-EXTRA_DIST = Doxyfile.in mainpage.doxy manual.docbook manual.README $(man_MANS)
+EXTRA_DIST = Doxyfile.in mainpage.doxy manual.docbook manual.README
 
-man_MANS = capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1
+dist_man_MANS = capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1
 
 # dist-hook may be not portable partly, so non-SuSE-users please
 # forgive me and don't call "make dist" or send me a patch ;-)
 
-# removed manual-pdf as it currently doesn't work, will be reactivated soon
-dist-hook: cleandoc manual-html reference-html capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1
+dist-hook: manual-prepare manual-html reference-html capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1 manual-pdf
 	mkdir $(distdir)/manual
 	cp -r $(srcdir)/manual/* $(distdir)/manual/
 	mkdir $(distdir)/reference
@@ -15,12 +14,13 @@ dist-hook: cleandoc manual-html reference-html capisuite.8 capisuite.conf.5 fax.
 	cp manual.pdf $(distdir)/
 
 # force recreation of complete manual for dist
-cleandoc:
-	-rm manual.docbook
+recreatedoc:
+	touch manual.docbook
 
-manual.docbook: manual.docbook.in
+manual-prepare: recreatedoc
 	sed -e 's,<title>CapiSuite [0-9a-z\.]*</title>,<title>CapiSuite $(VERSION)</title>,g' \
-	  manual.docbook.in > manual.docbook
+	  manual.docbook > manual.docbook.new
+	mv manual.docbook.new manual.docbook
 	xmllint --noout --valid manual.docbook
 
 manual-html: manual.docbook
