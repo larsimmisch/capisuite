@@ -125,7 +125,7 @@
         einzelne Klasse, jede Methode und jedes Attribut. Da er automatisch aus den Sourcen von &cs; 
         erstellt wird, ist er nicht Teil dieses Dokuments. Sie finden ihn entweder lokal unter
 		<ulink url="../reference/index.html"/> oder online unter
-		<ulink url="http://www.capisuite.de/capisuite/reference/index.html"/>.</para>
+		<ulink url="http://www.capisuite.de/reference/index.html"/>.</para>
 
 		<para>Es gibt dort auch noch einige zusätzliche Teile, in denen "was ich sonst noch sagen wollte"
         enthalten ist:</para>
@@ -2900,7 +2900,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 		<para>Eine komplette Referenz aller Funktionen dieses Moduls wird automatisch aus den &cs;-Sourcen
         generiert, sodass Sie es im Referenzhandbuch lokal unter
         <ulink url="../reference/group__python.html"/> oder online unter
-		<ulink url="http://www.capisuite.de/capisuite/reference/group__python.html"/> finden.</para>
+		<ulink url="http://www.capisuite.de/reference/group__python.html"/> finden.</para>
 
 		<para>Da es keinen Sinn macht, die Informationen hier doppelt zu halten, schauen Sie sie sich bitte
         dort an.</para>

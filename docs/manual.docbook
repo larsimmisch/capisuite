@@ -117,7 +117,7 @@
 		It provides an overview of the system and a detailled description for each single class, method
 		and attribute. As it's autocreated from the sources of &cs;, it's not included in this document.
 		You'll find it locally in <ulink url="../reference/index.html"/> or online at
-		<ulink url="http://www.capisuite.de/capisuite/reference/index.html"/>.</para>
+		<ulink url="http://www.capisuite.de/reference/index.html"/>.</para>
 
 		<para>There are also some additional parts containing "what I also wanted to mention":</para>
 
@@ -2596,7 +2596,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 
 		<para>A complete reference of all functions of this module is auto-generated from the &cs; sources and so you'll find it in the reference
 		manual available locally on <ulink url="../reference/group__python.html"/> or online on
-		<ulink url="http://www.capisuite.de/capisuite/reference/group__python.html"/>.</para>
+		<ulink url="http://www.capisuite.de/reference/group__python.html"/>.</para>
 
 		<para>As it doesn't make sense to duplicate the information here, please refer to it.</para>
 
