@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.10 $
+#    version              : $Revision: 1.11 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ def callIncoming(call,service,call_from,call_to):
 			capisuite.connect_voice(call,int(delay))
 			voiceIncoming(call,call_from,call_to,curr_user,config)
 		elif (curr_service==capisuite.SERVICE_FAXG3):
-			faxIncoming(call,call_from,call_to,curr_user,config)
+			faxIncoming(call,call_from,call_to,curr_user,config,0)
 	except capisuite.CallGoneError: # catch exceptions from connect_*
 		(cause,causeB3)=capisuite.disconnect(call)
 		capisuite.log("connection lost with cause 0x%x,0x%x" % (cause,causeB3),1,call)
@@ -85,7 +85,8 @@ def callIncoming(call,service,call_from,call_to):
 # @param call_to string containing the number of the called party
 # @param curr_user name of the user who is responsible for this
 # @param config ConfigParser instance holding the config data
-def faxIncoming(call,call_from,call_to,curr_user,config):
+# @param already_connected 1 if we're already connected (that means we must switch to fax mode)
+def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 	try:
 		udir=cs_helpers.getOption(config,"","fax_user_dir")
 		if (udir==None):
@@ -114,7 +115,10 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 			stationID=""
 		headline=cs_helpers.getOption(config,curr_user,"fax_headline","") # empty string is no problem here
 		capisuite.log("call from "+call_from+" to "+call_to+" for "+curr_user+" connecting with fax",1,call)
-		faxInfo=capisuite.connect_faxG3(call,stationID,headline,0)
+		if (already_connected):
+			faxInfo=capisuite.switch_to_faxG3(call,stationID,headline)
+		else:
+			faxInfo=capisuite.connect_faxG3(call,stationID,headline,0)
 		if (faxInfo!=None and faxInfo[3]==1):
 			faxFormat="cff" # color fax
 		else:
@@ -211,13 +215,7 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		if (dtmf_list=="X"):
 			if (os.access(filename,os.R_OK)):
 				os.unlink(filename)
-			stationID=cs_helpers.getOption(config,curr_user,"fax_stationID")
-			if (stationID==None):
-				capisuite.error("Warning: fax_stationID not found for user "+curr_user+" -> using empty string")
-				stationID=""
-			headline=cs_helpers.getOption(config,curr_user,"fax_headline","") # empty string is no problem here
-			capisuite.switch_to_faxG3(call,stationID,headline)
-			faxIncoming(call,call_from,call_to,curr_user,config)
+			faxIncoming(call,call_from,call_to,curr_user,config,1)
 		elif (dtmf_list!="" and pin!=""):
 			dtmf_list+=capisuite.read_DTMF(call,3) # wait 5 seconds for input
 			count=1
@@ -415,6 +413,11 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.11  2003/08/24 12:47:50  gernot
+# - faxIncoming tried to reconnect when it was called after a switch from
+#   voice to fax mode, which lead to a call abort. Thx to Harald Jansen &
+#   Andreas Scholz for reporting!
+#
 # Revision 1.10  2003/07/20 10:30:37  gernot
 # - started implementing faxInfo output in sent mails, not working currently
 #
