@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.10 $
+#    version              : $Revision: 1.11 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ def idle(capi):
 		userdata=pwd.getpwnam(user)
 		outgoing_nr=cs_helpers.getOption(config,user,"outgoing_MSN","")
                 if (outgoing_nr==""):
-			incoming_nrs=config.get(user,"fax_numbers","")
+			incoming_nrs=cs_helpers.getOption(config,user,"fax_numbers","")
 			if (incoming_nrs==""):
 				continue
 			else:
@@ -166,6 +166,9 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.11  2003/12/02 18:50:09  gernot
+# - fax_numbers is really allowed to be empty now...
+#
 # Revision 1.10  2003/10/03 13:42:09  gernot
 # - added new options "fax_email_from" and "voice_email_from"
 #
