@@ -7,7 +7,7 @@ File handling utility function.
 __author__    = "Hartmut Goebel <h.goebel@crazy-compilers.com>"
 __copyright__ = "Copyright (c) 2004 by Hartmut Goebel"
 __version__   = "$Revision: 0.0 $"
-__credits__   = "This part of www.capisuite.de; some ideas taken from Gernot Hiller"
+__credits__   = "This file is part of www.capisuite.de; some ideas taken from Gernot Hillier"
 
 import fcntl, os, re, errno
 

@@ -21,4 +21,4 @@ This package consists of several files containing classes for certain aspects:
 __author__    = "Hartmut Goebel <h.goebel@crazy-compilers.com>"
 __copyright__ = "Copyright (c) 2004 by Hartmut Goebel"
 __version__   = "$Revision: 0.0 $"
-__credits__   = "This is part of www.capisuite.de; thanks to Gernot Hiller"
+__credits__   = "This file is part of www.capisuite.de; thanks to Gernot Hillier"

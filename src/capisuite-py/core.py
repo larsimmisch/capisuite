@@ -6,7 +6,7 @@ This module exposes the built-in core of capisuite.
 __author__    = "Hartmut Goebel <h.goebel@crazy-compilers.com>"
 __copyright__ = "Copyright (c) 2004 by Hartmut Goebel"
 __version__   = "$Revision: 0.0 $"
-__credits__   = "This part of www.capisuite.de; thanks to Gernot Hiller"
+__credits__   = "This file is part of www.capisuite.de; thanks to Gernot Hillier"
 
 
 # _capisuite may only be imported when running within capisuite

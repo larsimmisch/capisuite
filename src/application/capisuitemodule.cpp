@@ -14,9 +14,6 @@
  *                                                                         *
  ***************************************************************************/
 
-// IMPORTANT: every python function MUST call PyErr_Occured() before using the associated
-// Connection object! (connection can be already deleted while the python script is still running
-
 #include <Python.h>
 #include <string>
 #include <unistd.h> // for sleep()
