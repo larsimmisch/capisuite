@@ -40,10 +40,6 @@
 
 	* core: accept incoming color faxes now
 
-	* scripts: added new options "fax_email_from" and "voice_email_from" to
-	  answering_machine.conf and fax.conf (thx to Achim Bohnet for submitting
-	  a patch with this feature!; closes bug #46)
-
 	* started a detailed ChangeLog file from 2003-10-05. From now on, NEWS
 	  should only contain important changes from a user's point of view, while
 	  ChangeLog records all changes in detail.
@@ -80,6 +76,10 @@
 	  building CapiSuite. If you change your sfftobmp version later,  
 	  you'll have to adapt the function sfftotif at the beginning of
 	  cs_helpers.py manually.
+
+	* scripts: added new options "fax_email_from" and "voice_email_from" to
+	  answering_machine.conf and fax.conf (thx to Achim Bohnet for submitting
+	  a patch with this feature!; closes bug #46)
 	
 	* core: use shorter, more readable format for Python traceback logging
 

@@ -80,7 +80,7 @@ record_length="60"
 # finished by the answering machine
 record_silence_timeout="5"
 
-# voice_email_from (optional, default voice message addressee) [New in 0.5]
+# voice_email_from (optional, default voice message addressee)
 # When voice messages are send by e-mail this address is used in the 'From:'
 # header field.
 voice_email_from="capisuite daemon <root>"

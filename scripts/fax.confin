@@ -108,7 +108,7 @@ fax_stationID="+49 000 0000"
 #
 fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 
-# fax_email_from (optional, default fax addressee) [New in 0.5]
+# fax_email_from (optional, default fax addressee)
 # When a received fax is distributed by e-mail this address
 # used in the 'From:' header field. Ditto from success/failed fax e-mail
 # messages.
