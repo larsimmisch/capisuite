@@ -105,6 +105,10 @@
 0.4.1 (tag NN):
 ===============
 	* cron script: redirect error output to /dev/null
-	* scripts: removed os.setuid() in incoming.py: it's not allowed
-          to setuid a thread -> this lead to bug #527 (idle.py freezed)
-	* cosmetical improvements to make old gcc-2.95 more happy	
+	* scripts: fixed a bug in incoming.py that lead to idle.py
+	  doing nothing after a while and so no faxes were sent any more
+          (bug #527)
+	* core: cosmetical code improvements to make old gcc-2.95 more happy
+	* scripts: fixed remote inquiry: mixed new and old messages sometimes
+	* core: fixed quite some problems when doing "make install" to an arbitrary
+	  prefix, thanks to Achim Bohnet for pointing me to these	
