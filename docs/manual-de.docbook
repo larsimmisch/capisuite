@@ -256,6 +256,20 @@
 						<ulink url="http://www.hillier.de/linux/jpeg2ps-multi.php3"/> herunterladen und anwenden.</para>
 						</listitem>
 					</varlistentry>
+                                        <varlistentry>
+                                                <term>glibc Locales</term>
+                                                <listitem><para>Wenn Sie eine AVM-ISDN-Karte für den Versand oder Empfang von Faxen benutzen
+							wollen, so benötigen Sie die sogenannten "glibc locales", damit CapiSuite Ihre Faxkopf-
+							zeile in das historische CP437-Encoding übersetzen kann, das AVM-Treiber erwarten. Diese
+							Locales sind Teil der Basis-C-Bibliothek glibc, die Teil jedes heutigen Linux-Systems ist.
+							Manche Distributoren verpacken jedoch die Locales in separate Installationspakete, die Sie
+							evtl. nachinstallieren müssen. SuSE benutzt dafür beispielsweise das Paket "glibc-locale".
+							Um zu sehen, ob die Locales auf Ihrem System verfügbar sind, suchen Sie nach einer Datei
+							namens "IBM437.so" in den Bibliothekspfaden auf Ihrem System (bei SuSE liegt sie
+							beispielsweise unter /usr/lib/gconv). Sollten Sie die Datei dort nicht finden, suchen Sie
+							im Paketmanager Ihrer Distribution nach einem glibc-Subpaket, das Locales enthält.</para>
+                                                </listitem>
+                                        </varlistentry>
 				</variablelist>
 			</sect3>
 		</sect2>

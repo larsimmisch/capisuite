@@ -230,6 +230,19 @@
 						<ulink url="http://www.hillier.de/linux/jpeg2ps-multi.php3"/></para>
 						</listitem>
 					</varlistentry>
+                                        <varlistentry>
+                                                <term>glibc locales</term>
+                                                <listitem><para>If you want to use an AVM card (which most of you will do ;-) ) to send or receive
+							faxes, you'll need installed glibc locales because CapiSuite needs to convert your fax
+							headline to the historic CP437 encoding which AVM drivers expect. The glibc locales are
+							a part of the default C library glibc which you definitely already have installed, but some
+							distributors make the locales installable separately. SuSE e.g. puts them in a package 
+							called glibc-locale which you probably have to install. To see if you already have them,
+							look for a file called "IBM437.so" in your library paths (in SuSE it's located in 
+							/usr/lib/gconv). If you don't find it, look for sub-packages of glibc which could include 
+							them.</para>
+                                                </listitem>
+                                        </varlistentry>
 				</variablelist>
 			</sect3>
 		</sect2>

@@ -21,7 +21,7 @@ Group:        Hardware/ISDN
 Autoreqprov:  on
 Version:      0.4.3  
 Release:      0 
-Requires:     sfftobmp sox tiff ghostscript-library
+Requires:     sfftobmp sox tiff ghostscript-library glibc-locale
 Summary:      ISDN telecommunication suite providing fax and voice services
 Source0:      capisuite-%{version}.tar.gz
 URL:          http://www.capisuite.de
