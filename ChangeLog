@@ -21,4 +21,7 @@
 	* docs/manual.docbook (require_soft): updated link to jpeg2ps (thx to
 	  Achim Bohnet)
 	* docs/manual-de.docbook (require_soft): see above
+
+	* scripts/cs_helpers.pyin (sendMIMEMail): better wording for some error
+	  messages
 	  
