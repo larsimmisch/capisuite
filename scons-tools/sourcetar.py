@@ -18,7 +18,10 @@ def _e_dist(target, source, env):
             if not s.is_derived(): # this node is not built (nor side-effect)
                 #assert not s.all_children()
                 if isinstance(s, Base) and s.is_under(env.fs.Dir('#')):
-                    collected[s] = None
+                    if not s.srcnode().exists():
+                        print 'warning: file', s.srcnode(), 'is missing'
+                    else:
+                        collected[s] = None
             else:
                 collect_sources(s.all_children(scan=1), collected, done)
 
@@ -32,10 +35,6 @@ def _e_dist(target, source, env):
         else:
             collected[s] = None
     collected = [ c.srcnode() for c in collected.keys() ]
-    for c in collected:
-        if not c.exists():
-            print 'warning: file', c, 'is missing'
-    collected = [c for c in collected if c.exists()]
     collected.sort(cmp_path)
     return (target, collected)
 
