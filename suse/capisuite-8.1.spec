@@ -57,7 +57,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/sbin
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 install -g root -m 644 -o root cronjob.conf $RPM_BUILD_ROOT/etc/capisuite/cronjob.conf
 install -g root -m 755 -o root rc.capisuite $RPM_BUILD_ROOT/etc/init.d/capisuite
-install -g root -o 755 -o root capisuite.cron $RPM_BUILD_ROOT/etc/cron.daily/capisuite
+install -g root -m 755 -o root capisuite.cron $RPM_BUILD_ROOT/etc/cron.daily/capisuite
 ln -sf ../../etc/init.d/capisuite $RPM_BUILD_ROOT/usr/sbin/rccapisuite
 
 %clean
