@@ -11,4 +11,10 @@
 	* suse/capisuite-8.0.spec: add dependancy to glibc-locale
 	* suse/capisuite-8.1.spec: add dependancy to glibc-locale
 	* suse/capisuite-8.2.spec: add dependancy to glibc-locale
+
+2003-10-19  Gernot Hillier  <gernot@hillier.de>
+
+	* docs/manual.docbook (creating_alaw): add note how to convert vbox
+	  to inversed A-Law files
+	* docs/manual-de.docbook (creating_alaw): see above
 	  

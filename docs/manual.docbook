@@ -1534,6 +1534,11 @@ is not present, current time as returned by localtime() is used.
 
 				<screen><command>sox myfile.wav -r 8000 -c 1 -b outfile.la resample -ql</command></screen>
 
+				<para>If you used vbox in the past and want to convert your old message files, you can
+				use the following command:</para>
+
+				<screen><command>vboxtoau < infile.msg | sox -tau - outfile.la</command></screen>
+
 			</sect3>
 			<sect3 id="playing_alaw"><title>Playing A-Law files</title>
 				<para>Again, there are two possibilities. The <command>play</command> command
