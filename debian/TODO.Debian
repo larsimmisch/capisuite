@@ -1,11 +1,13 @@
 TODO (high to low IMHO)
 
 o split manpages out of manual.sgml
-o logrotate log files
+o logrotate log files (to examples?)
 o fix perms of capi log/error file
+o remove log files on purge (policy)
 
-o split manual into capisuite-doc
+o split manual/reference into capisuite-doc pkg
 
 o Try to build on Debian unstable
+o try chroot builds for stable/unstable. pbuild or sbuild?
 o limit arch to i386 just as libcapi20 does
 __END__

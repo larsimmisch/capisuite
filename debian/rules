@@ -28,6 +28,7 @@ config.status: configure
 	if test ! -f patch-stamp; then \
 		for patch in $(CURDIR)/debian/patches/*.diff ;\
 		do \
+			test -f $$patch || continue ;\
 			echo APPLYING PATCH\: ${patch##*/};\
 			patch -p0 < $$patch ;\
 		done ;\
@@ -64,6 +65,7 @@ clean:
 	if test -f patch-stamp; then \
 		for patch in $(CURDIR)/debian/patches/*.diff ;\
 		do \
+			test -f $$patch || continue ;\
 			echo REMOVING PATCH\: ${patch##*/};\
 			patch -p0 -R < $$patch ;\
 		done ;\
