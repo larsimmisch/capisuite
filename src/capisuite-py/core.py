@@ -132,7 +132,8 @@ class Call:
     
     def __repr__(self):
         # todo: add service, call_from, call_to
-        return repr(self._handle)
+        return ('Call(%(_handle)x, service=%(service)s, '
+                'from_nr=%(from_nr)s, to_nr%(to_nr)s)') % self.__dict__
 
 
     ###--- general --###
