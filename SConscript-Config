@@ -16,6 +16,9 @@ open(headerfilename, 'w') # clear file contents
 
 import SCons.Conftest, string
 from types import IntType
+
+transmap = string.maketrans(':./ ', '____')
+
 def _Have(context, key, have):
     """
     Slightly modified version of SCons.Conftest._Have which uses
@@ -23,11 +26,7 @@ def _Have(context, key, have):
     necessary until SCons support a way to actually use this feature.
     In addition this writes '#define ... 1'.
     """
-    key_up = string.upper(key)
-    key_up = string.replace(key_up, ':', '_')
-    key_up = string.replace(key_up, '.', '_')
-    key_up = string.replace(key_up, '/', '_')
-    key_up = string.replace(key_up, ' ', '_')
+    key_up = string.translate(string.upper(key), transmap)
     havedict[key_up] = have
     if headerfilename:
         f = open(headerfilename, "a")
