@@ -40,6 +40,8 @@ class Capi:
         """
         self._handle = handle
 
+    def __repr__(self):
+        return 'Capi(%(_handle)s)' % self.__dict__
 
     def call_voice(self, controller, call_from, call_to,
                    timeout, clir=0):
@@ -132,7 +134,7 @@ class Call:
     
     def __repr__(self):
         # todo: add service, call_from, call_to
-        return ('Call(%(_handle)x, service=%(service)s, '
+        return ('Call(%(_handle)s, service=%(service)s, '
                 'from_nr=%(from_nr)s, to_nr%(to_nr)s)') % self.__dict__
 
 
