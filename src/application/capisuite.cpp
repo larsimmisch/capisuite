@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -51,7 +51,7 @@ CapiSuite::CapiSuite(int argc,char **argv)
 :capi(NULL),waiting(),config(),idle(NULL),py_state(NULL),debug(NULL),error(NULL),finish_flag(false),custom_configfile(),daemonmode(false)
 {
 	if (capisuiteInstance!=NULL) {
-		cerr << "FATAL error: More than one instances of CapiSuite created";
+		cerr << "FATAL error: More than one instances of CapiSuite created" << endl;
 		exit(1);
 	}
 	capisuiteInstance=this;
@@ -95,13 +95,13 @@ CapiSuite::CapiSuite(int argc,char **argv)
 		Py_Initialize();
 		PycString_IMPORT; // initialize cStringIO module
 		if (!(save_cStringIO=PycStringIO)) { // save it as it will be overwritten by each #include<cStringIO.h> with NULL (sic)
-			(*error) << prefix() << "FATAL error: error during Python interpreter initialization (cString)";
+			(*error) << prefix() << "FATAL error: error during Python interpreter initialization (cString)" << endl;
 			exit(1);
 		}
 		PyEval_InitThreads();  // init and acquire lock
 		py_state=PyEval_SaveThread();  // release lock, save thread context
 		if (!py_state) {
-			(*error) << prefix() << "FATAL error: can't release python lock";
+			(*error) << prefix() << "FATAL error: can't release python lock" << endl;
 			exit(1);
 		}
 
@@ -336,11 +336,11 @@ CapiSuite::readConfiguration()
 
 	if (daemonmode) {
 		if (debug==&cout) {
-			cerr << "FATAL error: not allowed to write to stdout in daemon mode.";
+			cerr << "FATAL error: not allowed to write to stdout in daemon mode." << endl;
 			exit(1);
 		}
 		if (error==&cerr) {
-			cerr << "FATAL error: not allowed to write to stderr in daemon mode.";
+			cerr << "FATAL error: not allowed to write to stderr in daemon mode." << endl;
 			exit(1);
 		}
 	}
@@ -398,6 +398,9 @@ CapiSuite::help()
 /* History
 
 $Log: capisuite.cpp,v $
+Revision 1.4  2003/03/06 09:34:44  gernot
+- added missing endl's in error messages
+
 Revision 1.3  2003/02/25 13:22:42  gernot
 - remove old, unused attribute
 - correct some forgotten references to CallControl to IncomingScript
