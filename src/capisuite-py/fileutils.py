@@ -47,7 +47,9 @@ def _getLock(lockname_=None, forfile=None, blocking=0):
             raise LockTakenError
         else:
             raise
-    core.log("lock taken %s" % lockname_, 3)
+    # currently log is only available if running within capisuite
+    if hasattr(core, 'log'):
+        core.log("lock taken %s" % lockname_, 3)
     return (lockname_, lockfile)
 
 
@@ -61,7 +63,9 @@ def _releaseLock((lockname, lockfile)):
         # in deleting than we; this doesn't harm, so ignore it
         if (err.errno!=2): 
             raise
-    core.log("lock released %s" % lockname, 3)
+    # currently log is only available if running within capisuite
+    if hasattr(core, 'log'):
+        core.log("lock released %s" % lockname, 3)
 
 
 def _setProtection(user, mode=0600, *files):
@@ -70,16 +74,13 @@ def _setProtection(user, mode=0600, *files):
         userdata = pwd.getpwnam(user)
     except KeyError:
         raise UnknownUserError(user)
-    print files
-    if os.getuid() == 0:
+    uid = os.getuid()
+    if uid == 0:
         # running as root, change ownership
-        for f in files:
-            os.chmod(f, mode)
-            os.chown(f, userdata.pw_uid, userdata.pw_gid)
-    else:
-        for f in files:
-            os.chmod(f, mode)
-            os.chown(f, os.getuid(), userdata.pw_gid)
+        uid = userdata.pw_uid
+    for f in files:
+        os.chmod(f, mode)
+        os.chown(f, uid, userdata.pw_gid)
 
 
 def _mkuserdir(user, parrentdir, *dirs):
