@@ -88,7 +88,7 @@
 		as starting points and/or examples for your own application.</para>
 
 		<para>The last part is intended for programmers who want to help in developing the &cs; core.
-		It provides an overview of the system and a detailled description for each single class, method 
+		It provides an overview of the system and a detailled description for each single class, method
 		and attribute. As it's autocreated from the sources of &cs;, it's not included in this document.
 		You'll find it locally in <ulink url="../reference/index.html"/> or online at
 		<ulink url="http://www.capisuite.de/capisuite/reference/index.html"/>.</para>
@@ -125,7 +125,7 @@
 				driver is available.</para>
 
 				<para>Currently these are all cards manufactured by AVM and some Eicon cards.
-				If you have one of the passive cards of AVM, you'll have to download and 
+				If you have one of the passive cards of AVM, you'll have to download and
 				install their CAPI drivers.</para>
 
 				<para>There are also some distributions (e.g. current versions of SuSE) which
@@ -459,8 +459,8 @@ make install</screen>
 					<term><option>--daemon, -d</option></term>
 					<listitem><para>run as daemon (used in your startup script, see above)</para></listitem>
 				</varlistentry>
-			</variablelist>  
-			
+			</variablelist>
+
 			<para>&cs; can run as any user you want theoretically. It only needs read/write permissions to <filename>/dev/capi20</filename>.
 			If you use the default scripts, however, &cs; <emphasis>must</emphasis> run as <literal>root</literal>.</para>
 		</sect2>
@@ -502,7 +502,7 @@ make install</screen>
 					</itemizedlist>
 				</listitem>
 			</itemizedlist>
-			
+
 			<para>As my native language is german, all waves distributed with &cs; are in german only. If someone wants to
 			provide waves in english (or any other language), please contact me. Thx!</para>
 		</sect2>
@@ -510,7 +510,7 @@ make install</screen>
 		<sect2 id="howscriptswork"><title>How the scripts work</title>
 			<para>Here follows a rough overview of how the scripts work in general. I will only explain
 			the behaviour which is important for the user here. If you want to understand the internals,
-			please refer to @ref userguidescriptchapter</para>
+			please refer to <xref linkend="default_script_overview"/>.</para>
 
 			<para>When an incoming call is received, several lists for the different users are
 			searched for the called number. The different users can define their own numbers in
@@ -545,7 +545,7 @@ make install</screen>
 			things like the users' numbers and some details of how to handle the calls.</para>
 
 			<para>These options are read from two configuration files. Each configuration file is divided into
-			one or more sections. A section begins with the section name in square brackets like <literal>[section]</literal> 
+			one or more sections. A section begins with the section name in square brackets like <literal>[section]</literal>
 			while the options are <literal>key="value"</literal> lines.</para>
 
 			<para>Each file must have a special section called <literal>[GLOBAL]</literal> and one section
@@ -946,7 +946,7 @@ make install</screen>
 			<variablelist>
 				<varlistentry>
 					<term><option>-a id</option></term>
-					<listitem><para>Abort the job with the given id. To get a job id, use the <option>-l</option> 
+					<listitem><para>Abort the job with the given id. To get a job id, use the <option>-l</option>
 					option.</para></listitem>
 				</varlistentry>
 				<varlistentry>
@@ -987,14 +987,14 @@ make install</screen>
 	<sect1 id="ug_python"><title>Introduction to Python</title>
 
  		<para>As I thought about the scripting language I wanted to integrate into &cs;,
-		my first idea was to develop an own, simple one. But as more as I looked into it, as
-		more I found that a general purpose language having common features already will be much
+		my first idea was to develop an own, simple one. But as more as I looked into it, the
+		more I found that a general purpose language will be much
 		more helpful than re-inventing every wheel that I would need. So I looked for some
 		easy to integrate (and to learn) language. The one I liked most was Python - and it
 		also had a nice documentation about embedding, so I chose it and I'm still happy about
 		that decision. :-)</para>
 
-		<para>So the first thing you'll have to do is to learn a little bit of Python. Don't be afraid -
+		<para>So the first thing you'll have to do is to learn Python. Don't be afraid -
 		it was developed as a beginners language and Guido (Guido van Rossum, the inventor of Python)
 		has done very well in my opinion.</para>
 
@@ -1009,10 +1009,10 @@ make install</screen>
 
 		<sect2 id="python_basics"><title>Python Basics</title>
 
-		<para>Python supports most features you know from other common languages. So here's the
-		syntax of the basic operations shown in a Python session. A python session is another
+		<para>Python supports most features you know from other common languages. Here's the
+		syntax of the basic operations shown in a Python session. A Python session is another
 		fine feature of its interpreter: just start it by typing <command>python</command>
-		in a shell and you'll get the prompt of Python:</para>
+		in a shell and you'll get a prompt:</para>
 
 		<screen
 		>gernot@linux:~> python
@@ -1031,7 +1031,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 		<para>Ok, now let's go on:</para>
 
-		<screen>&gt;&gt;&gt; # comments start with # at begin of the line
+		<screen>&gt;&gt;&gt; # comments start with # at the begin of a line
 &gt;&gt;&gt; # now the usual first steps
 &gt;&gt;&gt; print "hello world"
 hello world
@@ -1072,7 +1072,7 @@ b is hello
 &gt;&gt;&gt; a[1:3]=[0] # replace positions 1 to 3 (without 3) with 0
 &gt;&gt;&gt; a
 [1, 0]
-&gt;&gt;&gt; a[-1]=7; a[-2]=8
+&gt;&gt;&gt; a[-1]=7; a[-2]=8 # a[-i] is the i-the element counted from the back
 &gt;&gt;&gt; a
 [8, 7]</screen>
 
@@ -1082,7 +1082,7 @@ b is hello
 			<literal>end</literal>, braces (<literal>{</literal>, <literal>}</literal>)
 			or the like are needed. This sounds very uncomfortable at the first sight, but it's
 			really nice - you must always structure your code exactly how you
-			<emphasis>mean</emphasis>it:</para>
+			<emphasis>mean</emphasis> it:</para>
 
 			<screen>&gt;&gt;&gt; for i in [1,2,3]:
 ...     print 2*i
@@ -1126,7 +1126,7 @@ You divided by zero, message was: integer division or modulo by zero</screen>
 		</sect2>
 		<sect2 id="py_modules"><title>Working with modules</title>
 			<para>Modules are a way to group functions together. They must be
-			imported, before you can use them and they give you a new object
+			imported before you can use them and they give you a new object
 			containing all functions. Let's play around with some of them:
 			</para>
 
@@ -1184,7 +1184,7 @@ not present, current time as returned by localtime() is used.
 		of scripts used in &cs;. Now let's have a closer look on them.</para>
 
 		<sect2 id="ug_scripts_incoming"><title>The incoming script</title>
-			<para>Every time, a call is received by &cs;, it will call the incoming script -
+			<para>Every time a call is received by &cs;, it will call the incoming script -
 			to be precise it will call a function named <literal>callIncoming</literal> in
 			a python script located somewhere on your disk. This "somewhere" was defined in
 			<xref linkend="configcs"/>, remember?</para>
@@ -1202,12 +1202,13 @@ not present, current time as returned by localtime() is used.
 					<term>call</term>
 					<listitem><para>reference to the incoming call. This will be used
 					later in all &cs;-functions you call to tell the system which call
-					you mean. You'll only pass this parameter to other functions - the
-					script can't do anything with it.</para></listitem>
+					you mean. You'll only pass this parameter on to other functions - the
+					script can't do anything other with it (it's 
+					<emphasis>opaque</emphasis>).</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term>service (integer)</term>
-					<listitem><para>Service of the incoming call as signalled by ISDN,
+					<listitem><para>Service of the incoming call as signalled by the ISDN,
 					set to one of the following values:
 					<itemizedlist>
 						<listitem><para><literal>SERVICE_VOICE</literal>: voice call</para></listitem>
@@ -1226,11 +1227,11 @@ not present, current time as returned by localtime() is used.
 				</varlistentry>
 			</variablelist>
 
-			<para>The first task of the function will be to decide if it wants to accept or reject
+			<para>The first task of the function should be to decide if it wants to accept or reject
 			the call. If it accepts it, it will normally do something with it (receive a fax, record
 			a voice call, play nice announcements, ...) and then disconnect. After it has done
 			all necessary work, it should finish immidiately. In a later chapter, I'll present
-			you some examples which should make things clearer...</para>
+			you some examples which should make things clearer.</para>
 
 			<para>Naturally, you can break down your application in more functions and perhaps more
 			scripts, which will be called and/or imported recursively - but the starting point is always
@@ -1270,17 +1271,11 @@ not present, current time as returned by localtime() is used.
 
 			<para>Now you can do what you want in this function. Most likely, you'll check
 			for a job in an email account, look for a file to send in a special directory
-			or so and place a call sending the job to the right destination.</para>
+			or so and place a call to send the job to the right destination.</para>
 
 			<para>Theoretically, you could also accomplish every other periodical task on your
 			system in the idle script - but perhaps we should leave such general things to
 			applications which were designed for this like <application>cron</application>. ;-)</para>
-
-			<para>By the way: be careful - it isn't that easy to write an own, correct idle
-			script - especially if you want to handle jobs coming from different users. You
-			easily get trapped in security related problems. So perhaps it's a good idea to
-			just use the default idle script distributed with &cs; (let's hope I've done it right)
-			if you only want to send faxes.</para>
 
 			<para>As above, <literal>idle</literal> can call other functions or scripts if
 			you like to and all Python modules are available for import.</para>
@@ -1288,18 +1283,17 @@ not present, current time as returned by localtime() is used.
 	</sect1>
 
 	<sect1 id="fileformats"><title>Used file formats</title>
-		<para>Before we'll continue with a reference of all available &cs; functions available
-		in scripts, please let me tell you some words about the file formats the &cs; core uses
-		as it will perhaps also affect your scripts.</para>
+		<para>Before we'll continue with writing scripts, please let me tell you some words 
+		about the file formats the &cs; core uses.</para>
 
-		<para>&cs; always reads and saves files in the native format as they will be expected and given
+		<para>&cs; always reads and saves files in the native format as they are be expected and given
 		by the CAPI ISDN drivers. This preserves it from having to convert everything from and to other
 		formats thus reducing unnecessary overhead.</para>
 
 		<para>As these formats aren't that well-known and you will need special tools to convert or
 		view/play them, I'll give you a short overview of how you can do this.</para>
 
-		<para>Most likely, your scripts will also convert the special ISDN file formats to well-known
+		<para>Most likely, your scripts will convert the special ISDN file formats to well-known
 		ones for sending them to you via e-mail for example. Nevertheless, I'd advice you to store
 		the received and sent files in the native &cs; formats somewhere. This will protect you from
 		losing data in the case the conversion fails and will help you in debugging problems which may
@@ -1308,12 +1302,12 @@ not present, current time as returned by localtime() is used.
 		<para>All tools which I refer to here are described in <xref linkend="require_soft"/>. See
 		there for informations how to get them.</para>
 
-		<sect2 id="voice_fileformat"><title>Format for voice files (inversed A-Law, 8kHz, mono)</title>
+		<sect2 id="voice_fileformat"><title>Format of voice files (inversed A-Law, 8kHz, mono)</title>
 			<para>ISDN transmits voice data as waves with a sample-rate of 8kHz in mono. To
 			save bandwith, a compression called A-Law is used (at least in Europe, other countries
 			like the USA use u-Law which is quite similar to A-Law). For any reason
 			beyond my understanding, they use a bit-reversed form of A-Law called
-			inversed A-Law.</para>
+			"inversed A-Law".</para>
 
 			<sect3 id="creating_alaw"><title>Creating A-Law files</title>
 
@@ -1321,20 +1315,21 @@ not present, current time as returned by localtime() is used.
 
 				<para>The first one is to call your computer with your phone (either use the default answering
 				machine script and configure it as described in <xref linkend="script_config_voice"/>
-				or write a simple script yourself), record whatever you want and take the created
+				or write a simple script yourself). Now, record whatever you want and take the created
 				output file (when you use the default scripts please take the file from the
 				user_dir, not the attachment of the mail as this is already converted) and use it.</para>
 
 				<para>You eventually want to trim the recorded file and remove unwanted
 				noise and silence at the beginning and the end. This can easily be done
-				by <command>sox</command> and <command>play</command> (which comes together
-				with <command>sox</command>).</para>
+				by <command>sox</command> and <command>play</command> (both come together
+				with the <command>sox</command> package).</para>
 
 				<para><command>sox</command> is used to convert a file while <command>play</command>
 				is used to just play it. Both support the same effects including the trim option.
 				Both also detect what type of file you are using by looking at the suffix of
-				your file name. So all your inversed A-Law files should be named <filename>something.la</filename>
-				(<filename>.la</filename> is the inversed form of <filename>.al</filename> which stands for A-Law).</para>
+				your file name. So all your inversed A-Law files should be named like
+				<filename>something.la</filename> (<filename>.la</filename> is the inversed
+				form of <filename>.al</filename> which stands for A-Law).</para>
 
 				<para>So let's first try to find the optimal values for the trim effect by calling
 				<command>play:</command></para>
@@ -1342,7 +1337,7 @@ not present, current time as returned by localtime() is used.
 				<screen><command>play myfile.la trim &lt;start-offset&gt; &lt;duration&gt;</command></screen>
 
 				<para>Now play around with start-offset and duration (both given in seconds) until
-				you find the right values. If you found them, you can use <command>sox</command>
+				you know the right values. If you found them, you can use <command>sox</command>
 				to actually produce the needed file:</para>
 
 				<screen><command>sox myfile.la outfile.la trim &lt;start-offset&gt; &lt;duration&gt;</command></screen>
@@ -1354,9 +1349,9 @@ not present, current time as returned by localtime() is used.
 				with your favourite sound-tools and convert it to the destination format using
 				<command>sox</command>. You'll get the best results when your WAV file already
 				is in 8kHz, mono, 8 bit format. <command>sox</command> is able to convert
-				other waves if necessary but this usually will result in bad quality.</para>
+				other waves if necessary but this usually will result in worse quality.</para>
 
-				<para>Now you can convert the WAV to inversed A-Law by calling:</para>
+				<para>You can convert WAV to inversed A-Law by calling:</para>
 
 				<screen><command>sox myfile.wav -r 8000 -c 1 -b outfile.la</command></screen>
 
@@ -1377,12 +1372,12 @@ not present, current time as returned by localtime() is used.
 				by nearly any audio player without problems.</para>
 			</sect3>
 		</sect2>
-		<sect2 id="fax_fileformat"><title>Format of fax files (Structured Fax Files)</title>
+		<sect2 id="fax_fileformat"><title>Format of fax files (Structured Fax Files) format</title>
 			<para>CAPI-compliant drivers will expect and provide fax files in a so called
 			Structured Fax File (SFF). As this seems to be a CAPI-specific format, there
 			are not much tools out there for GNU/Linux which are capable of handling it.
-			Finally I found some small tools written by Peter Sch&auml;fer, so
-			we can use them thankfully :-).</para>
+			Finally I found some small tools written by Peter Sch&auml;fer, which we can
+			use here.</para>
 
 			<sect3 id="create_sff"><title>Creating a SFF</title>
 				<para>In current Ghostscript releases, a patch from Peter has been
@@ -1398,7 +1393,8 @@ not present, current time as returned by localtime() is used.
 
 				<screen><command>gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax -sOutputFile=outfile.sff myfile.ps</command></screen>
 
-				<para>If you're not sure if it worked you can use <command>sffview</command>.</para>
+				<para>If you're not sure if it worked you can use <command>sffview</command>
+				as described below.</para>
 			</sect3>
 			<sect3 id="view_sff"><title>Viewing / converting from SFF</title>
 				<para>To simply view a received SFF, you can use the <command>sffview</command>
@@ -1407,15 +1403,15 @@ not present, current time as returned by localtime() is used.
 				desired file.</para>
 
 				<para>If you want to convert a fax file to a more common format, I recommend
-				using <command>sfftobmp</command>. It supports quite some common output formats
+				using <command>sfftobmp</command>. It supports quite some output formats
 				like JPEG, TIFF, PBM or BMP. I prefer multipage TIFF files as this is the only
-				format being able to contain several pages in one file. To convert
+				format being able to store several pages in one file. To convert
 				SFF to multipage TIFF, call:</para>
 
 				<screen><command>sfftobmp -tif myfile.sff outfile.tiff</command></screen>
 
 				<para>This will give you a TIFF file which you can convert now to nearly
-				any other useful format with the TIFF tools, for example <command>tiff2ps</command>
+				any other useful format with the TIFF tools, for example <command>tiff2ps</command>.
 				</para>
 			</sect3>
 
@@ -1425,7 +1421,7 @@ not present, current time as returned by localtime() is used.
 	<sect1 id="incoming_tutorial"><title>Tutorial: writing an incoming script</title>
 		<para>In this section, I'll show you how to code your own incoming script step by step.
 		We begin with simply accepting every incoming call, playing a beep. The last example
-		is a very simple answering machine with fax recognition and receiving.</para>
+		is a very simple but useful answering machine with fax recognition and receiving.</para>
 
 		<sect2 id="incoming_tut_basics"><title>Basics and a really dumb answering machine.</title>
 			<para>Let's start with a very simple case: accept all incoming calls, beep and record
@@ -1454,12 +1450,7 @@ def callIncoming(call,service,call_from,call_to):<co id="incoming_ex1_3"/>
 	capisuite.audio_receive(call,my_path+"recorded.la",20,3)<co id="incoming_ex1_6"/>
 	capisuite.disconnect(call)<co id="incoming_ex1_7"/></programlisting></example>
 
-			<para>&cs; configuration must be changed now to use the just created script.
-			Do this by editing your <filename>capisuite.conf</filename> and replacing the
-			<literal>incoming_script</literal> value by the path to the file you just
-			created (see <xref linkend="configcs"/>) and restart &cs;.</para>
-
-			<para>Let's walk through the script line by line now:</para>
+			<para>Let's walk through the script line by line:</para>
 
 			<calloutlist>
 				<callout arearefs="incoming_ex1_1">
@@ -1512,6 +1503,11 @@ def callIncoming(call,service,call_from,call_to):<co id="incoming_ex1_3"/>
 					<para>Last, but not least - disconnect. Hang up. Finish. It's over.</para>
 				</callout>
 			</calloutlist>
+
+			<para>&cs; configuration must be changed to use the just created script.
+			Do this by editing your <filename>capisuite.conf</filename> and replacing the
+			<literal>incoming_script</literal> value by the path to the file you just
+			created (see <xref linkend="configcs"/>) and restart &cs;.</para>
 
 			<para>Now test it: call any number which ends up at your ISDN card - if you have
 			connected it to your ISDN interface, than any number (MSN) will do - if it's connected
@@ -1578,8 +1574,8 @@ def callIncoming(call,service,call_from,call_to):
 					by raising an exception named <literal>CallGoneError</literal>. So
 					you should always put your code in a <literal>try</literal> statement
 					and catch the raised exception at the end of your script (or perhaps
-					earlier if needed). Be aware that this can happen <emphasis>at any
-					time</emphasis> interrupting anything you do in your script.</para>
+					earlier if needed). This exception can be raised by call to a &cs;
+					command.</para>
 				</callout>
 				<callout arearefs="incoming_ex2_2">
 					<para>Have a look at the called number (please replace <literal>123</literal>
@@ -1591,46 +1587,44 @@ def callIncoming(call,service,call_from,call_to):
 					again to <filename>announce.la</filename>.</para>
 				</callout>
 				<callout arearefs="incoming_ex2_3">
-					<para>Ignore the call if it isn't what we want to accept.
+					<para>Ignore the call.
 					The second parameter tells the exact reason for the reject - you can
 					ignore a call (any other ISDN device or phone will still be ringing for
 					that number) by using <literal>1</literal>, actively disconnect by
-					using <literal>2</literal> or signalling any error condition which is
+					using <literal>2</literal> or any error condition which is
 					available in the ISDN specification (see <xref linkend="capicodes_isdn"/>
 					for available codes).</para>
 				</callout>
 				<callout arearefs="incoming_ex2_3a">
 					<para>You always have to call <literal>disconnect</literal> at the end of your script,
 					as this will wait for the end of the call, while <literal>reject</literal> only initiates
-					the call reject. Otherwise you'll get a warning in the error log stating that you script
-					didn't disconnect completely.</para>
+					the call reject. Otherwise you'll get a warning in the error log.</para>
 				</callout>
 				<callout arearefs="incoming_ex2_4">
-					<para>This is the block handling <literal>CallGoneError</literal> - the
+					<para>This is the exception handler for <literal>CallGoneError</literal> - the
 					exception &cs; raises when the call is disconnected by the other party.
-					You should also call <literal>disconnect</literal> here, because it
-					can take some time from the disconnection signal to the completion
-					of the process.</para>
+					You should also call <literal>disconnect</literal> here to wait until
+					the call is completely disconnected.</para>
 				</callout>
 			</calloutlist>
 
 			<para>Save this to <filename>example.py</filename> again and test it.
 			It's not necessary to restart &cs; as all scripts will be read at
-			each time they're executed. Now you're allowed to hang up if you want,
-			too ;-).</para>
+			each time they're executed. Now you're allowed to hang up, too ;-).
+			</para>
 
 
 		</sect2>
 		<sect2 id="incoming_tut_unique_names"><title>Using sensible file names</title>
-			<para>We always used the same name for the saved file which clearly isn't reasonable.
-			We really should choose a new name for every new call. This isn't as simple as it may sound -
+			<para>We always used the same name to save the recorded message to which clearly isn't 
+			reasonable. We should really choose a new name for every new call. This isn't as simple as it may sound -
 			you must assure that the used algorithm will also work for multiple calls arriving at the
-			same time. Fortunately, the helpful programmer of &cs; had the same problem ;-) and so
+			same time. Fortunately, the helpful programmer of &cs; had the same problem and so
 			we can use the code he (hmmm... I?) has written.</para>
 
 			<para>The Python module <filename>cs_helpers.py</filename> contains some useful functions
-			which were needed for the default scripts provided with &cs; but may be also helpful
-			for the use with own scripts. It contains the function <literal>uniqueName</literal>
+			which are needed by the default scripts provided with &cs; but may be also helpful
+			for the use in your own scripts. It contains the function <literal>uniqueName</literal>
 			which does exactly what we need here. The syntax is:</para>
 
 <screen>filename=cs_helpers.uniqueName(directory,prefix,sufix)</screen>
@@ -1638,10 +1632,9 @@ def callIncoming(call,service,call_from,call_to):
 			<para>The function will find a new unique filename in the given <literal>directory</literal>.
 			The created filename will be "<filename>prefix-XXX.suffix</filename>" where <literal>XXX</literal>
 			is the next free number started at 0. The next free number is remembered in a file
-			<filename>prefix-nextnr</filename> and the created name is returned as 
-			<literal>filename</literal>.</para>
+			<filename>prefix-nextnr</filename> and the created name is returned.</para>
 
-			<para>Now we can simply add this call to our script:</para>
+			<para>We can simply add this call to our script:</para>
 
 			<example><title>using unique filenames</title>
 			<programlisting>import capisuite<emphasis>,cs_helpers</emphasis>
@@ -1662,18 +1655,18 @@ def callIncoming(call,service,call_from,call_to):
 	except capisuite.CallGoneError:
 		capisuite.disconnect(call)</programlisting></example>
 			<para>If you're interested in other functions which <literal>cs_helpers.py</literal>
-			defines, just have a look at the reference at @ref.</para>
+			defines, just have a look at the reference at <xref linkend="default_helpers"/>.</para>
 		</sect2>
 		<sect2 id="incoming_tut_fax_recognition"><title>Automatic fax recognition and receiving</title>
 
-			<para>As last step, here I want to show you how fax recognition and receiving works and
+			<para>As last step, I want to show you how fax recognition and receiving works and
 			how to switch from voice to fax mode.</para>
 
 			<para>Here's the last and most complicated example of this section. It'll introduce
 			four new &cs; functions and shows how to split up the functionality in another
 			function which is used by <literal>callIncoming</literal>. There are much changes
-			which are described below - but most of them should be nearly self-explanatory -
-			so I don't think this last step is too big. And you don't want to read 10 more steps
+			which are described below - but most of them should be nearly self-explanatory.
+			So I don't think this last step is too big. And you don't want to read 10 more steps
 			here, do you? ;-)</para>
 
 			<example><title>Adding fax functions</title>
@@ -1683,8 +1676,8 @@ my_path="/path/to/the/just/created/capisuite-examples/"
 
 def callIncoming(call,service,call_from,call_to):
 	try:
-		filename=cs_helpers.uniqueName(my_path,"voice","la")
 		if (call_to=="123"):
+			filename=cs_helpers.uniqueName(my_path,"voice","la")
 			capisuite.connect_voice(call,10)
 			capisuite.enable_DTMF(call)<co id="incoming_ex4_1"/>
 			capisuite.audio_send(call,my_path+"announce.la",1)<co id="incoming_ex4_2"/>
@@ -1721,11 +1714,11 @@ def faxIncoming(call):
 					</para>
 
 					<para>Before any DTMF is recognized by &cs;, the according function must
-					be enabled which is done by <literal>enable_DTMF</literal>.</para>
+					be enabled by <literal>enable_DTMF</literal>.</para>
 				</callout>
 				<callout arearefs="incoming_ex4_2">
 					<para>All audio send and receive functions support abortion when a DTMF
-					tone is recognized. This is enabled by giving "<literal>1</literal>"
+					tone is recognized. This is enabled by passing "<literal>1</literal>"
 					as last parameter. It will also prevent the function from starting
 					if a DTMF char was recognized <emphasis>before</emphasis> but not yet
 					read by the script.</para>
@@ -1736,8 +1729,8 @@ def faxIncoming(call):
 					which also clears the buffer. It will return all received characters in
 					a string, so if the caller presses "3","5","*", you'll get "35*".</para>
 
-					<para>The <literal>0</literal> tells &cs; not to
-					wait for DTMF signals - if none are available, it will simply do nothing.
+					<para>The <literal>0</literal> tells &cs; not to wait for DTMF signals - 
+					if none are available, it will simply return an empty string.
 					It's also possible to specify that it should wait for a certain amount of
 					time or until a certain number of signals have been received.</para>
 
@@ -1753,7 +1746,7 @@ def faxIncoming(call):
 				</callout>
 				<callout arearefs="incoming_ex4_5">
 					<para>Possibly, the announcement was so short that the recording has started
-					already before the fax is recognized. We won't save an empty file containing
+					already before the fax is recognized. We won't save a file containing
 					only the fax beep and so we test if it was created (<function>os.access</function>
 					checks for the existence of a file) and delete it if needed by calling
 					<literal>os.unlink</literal>.</para>
@@ -1787,7 +1780,7 @@ def faxIncoming(call):
 
 			<para>Congrats. You've finished my small tutorial. Now it's up to you - you can play with
 			the created script and try to make it more complete. There's still much to do -
-			sending received calls to a user via E-Mail, log connections, ... If you want to
+			sending received calls to a user via e-mail, log connections, ... If you want to
 			complete this script, <xref linkend="command_reference"/> will be helpful.
 			You can also read on here to have a short look on the idle scripts, followed by a
 			quick overview of the structure of the default scripts shipped with &cs;.</para>
@@ -1803,13 +1796,12 @@ def faxIncoming(call):
 		allowing you to look for stored jobs somewhere and sending them to the destinations.</para>
 
 		<para>The example shown here will look for a file <filename>job-XXXX.sff</filename> in
-		the example directory we created in the last section. This file will be faxed to the 
-		destination indicated by
-		<literal>XXXX</literal> if found. If you have no valid destination where you can
-		send test faxes to, how about using &cs; for receiving also? In this case, replace 
-		<literal>XXXX</literal> by the number your incoming script handles. This won't work
-		 if your ISDN card can't handle two fax transfers at the same time
-		(some old AVM B1 cards have this limitation, for example).</para>
+		the example directory we created in the last section. This file will be faxed to the
+		destination indicated by <literal>XXXX</literal>. If you have no valid destination 
+		where you can send test faxes to, how about using &cs; as source and destination at 
+		the same time? In this case, replace <literal>XXXX</literal> by the number your 
+		incoming script handles. This won't work if your ISDN card can't handle two fax 
+		transfers in parallel (some old AVM B1 cards have this limitation, for example).</para>
 
 		<para>We now need one or more fax files in the SFF format for our tests, so please
 		create some with a name like the one shown above. If you don't know how to do this,
@@ -1829,7 +1821,7 @@ files=os.listdir(my_path)<co id="idle_ex1_2"/>
 files=filter (lambda s: re.match("job-.*\.sff",s),files)<co id="idle_ex1_3"/>
 
 for job in files:<co id="idle_ex1_4"/>
-	destination=job[4:-3]<co id="idle_ex1_5"/>
+	destination=job[4:-3]<co id="idle_ex1_5"/> # Hmmm.. Is this right?
 	print "found",job,"to destination",destination</programlisting>
 		</example>
 
@@ -1879,10 +1871,11 @@ for job in files:<co id="idle_ex1_4"/>
 		now. But... Obviously something doesn't work right here. The destination includes the
 		"<literal>.</literal>". Indeed, I've made a mistake when indexing the string. It should be
 		<literal>destination=job[4:-4]</literal> instead of <literal>[4:-3]</literal>. So let's change
-		that and test again. It should work now.</para>
+		that and test again. It should work now. That's the reason why I prefer to code such scripts
+		outside of &cs; first. Debugging is much faster this way...</para>
 
 		<para>As we know now that the basic parts work, we can add the real communication functions.</para>
-		
+
 		<para>Please save this example to <filename>idle_example.py</filename> in your example directory, again.</para>
 
 		<example><title>idle_example.py, version for &cs;</title>
@@ -1931,15 +1924,15 @@ def idle(capi):<co id="idle_ex2_4"/>
 			<callout arearefs="idle_ex2_4">
 				<para>As explained in <xref linkend="ug_scripts_idle"/>, you have to define a function called 
 				<literal>idle</literal> which will be executed in regular intervals by &cs; then. So all code
-				is moved to this function.</para>
+				has been moved to this function.</para>
 			</callout>
 			<callout arearefs="idle_ex2_5">
-				<para>We can't print messages to stdout as the script will be run in the context of a daemon. So &cs;
+				<para>We can't print messages to stdout as the script will run in the context of a daemon. So &cs;
 				provides functions for creating entries in the &cs; log file. <function>log</function> expects at
 				least two parameters: the message and a log level. This level corresponds to the log level setting
 				in the global &cs; configuration (see <xref linkend="configcs"/>). If the level of the message is
 				<emphasis>less or equal</emphasis> the level set in the configuration, it is printed to the logs.
-				So you can insert messages for debug purposes which aren't printed to the logs in normal operation 
+				So you can insert messages for debug purposes which aren't printed to the logs in normal operation
 				by using levels higher than 1.</para>
 			</callout>
 			<callout arearefs="idle_ex2_6">
@@ -1953,10 +1946,10 @@ def idle(capi):<co id="idle_ex2_4"/>
 					<listitem><para>the fax station ID</para></listitem>
 					<listitem><para>fax headline</para></listitem>
 				</itemizedlist>
-				<para>The function returns a tuple containing of a reference to the created call and an error value.</para>
+				<para>The function returns a tuple containing a reference to the created call and an error value.</para>
 			</callout>
 			<callout arearefs="idle_ex2_7">
-				<para>This block checks if the connection was successful. For a detailled description of possible error values, 
+				<para>This block checks if the connection was successful. For a detailled description of possible error values,
 				please see the <xref linkend="command_reference"/>. 0 means "everything was ok, call is established".</para>
 			</callout>
 			<callout arearefs="idle_ex2_9">
@@ -1971,24 +1964,26 @@ def idle(capi):<co id="idle_ex2_4"/>
 			</callout>
 			<callout arearefs="idle_ex2_12">
 				<para>We previously ignored the reasons <emphasis>why</emphasis> a call was disconnected. Now we have to
-				analyze them because we need to know if the file was transferred succesful. Therefore, 
+				analyze them because we need to know if the file was transferred succesful. Therefore,
 				<function>disconnect</function> returns a tuple containing of the physical and logical error value. Every
-				ISDN connection contains a physical and (at least) a logical connection. One could imagine the physical 
-				connection as "the wire" connecting us to our destination, while the logical connection refers to 
+				ISDN connection contains one physical and (at least) one logical connection. One could imagine the physical
+				connection as "the wire" connecting us to our destination, while the logical connection refers to
 				the fax protocol which uses this "wire". You have to look on both values to see if everything was ok.</para>
 			</callout>
 			<callout arearefs="idle_ex2_13">
-				<para>Allowed values for the physical connection are 0,0x3400,0x3480 and 0x3490. These all mean "no error occured, 
-				call was disconnected normally". The logical may only be 0 if everything went ok. For further information 
-				of error values, refer to <xref linkend="command_reference"/>, please.</para>
+				<para>Allowed values for the physical disconnection are 0,0x3400,0x3480 and 0x3490. These all mean "no error
+				occured, call was disconnected normally". The logical value may only be 0 if everything went ok. For further
+				information on error values, please refer to <xref linkend="command_reference"/>.</para>
 			</callout>
-		</calloutlist> 
+		</calloutlist>
 
-		<para>After you've saved the file and changed the default values to your own configuration, please alter the value of 
-		idle_script in the &cs; configuration to point to this script.</para>
+		<para>After you've saved the file and changed the default values to your own configuration, please alter the value of
+		<literal>idle_script</literal> in the &cs; configuration to point to this script as described in <xref linkend="configcs"/>.
+		</para>
 
-		<para>Restart &cs; and watch the logs. Some seconds later, the job-XXX.sff files should've been sent and renamed to either
-		done-job-XXX.sff or failed-job-XXX.sff. If the job failed, please consult the error log and the error values explained in
+		<para>Restart &cs; and watch the logs. Some minutes later, the <filename>job-XXX.sff</filename> files should've been sent 
+		and renamed to either <filename>done-job-XXX.sff</filename> or <filename>failed-job-XXX.sff</filename>. If the job failed, 
+		please consult the error log and the error values explained in
 		<xref linkend="command_reference"/> and <xref linkend="capicodes"/>.</para>
 
 		<para>Hopefully, this tutorial helped you in understanding how to code your own scripts. Please continue with changing the
