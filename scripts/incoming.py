@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.16 $
+#    version              : $Revision: 1.17 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -315,7 +315,7 @@ def remoteInquiry(call,userdir,curr_user,config):
 			else:
 				i+=1
 
-		cs_helpers.sayNumber(call,str(len(messages)),curr_user,config)
+		cs_helpers.sayNumber(call,str(len(messages)),curr_user,config,"f")
 		if (len(messages)==1):
 			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachricht.la"),1)
 		else:
@@ -334,7 +334,7 @@ def remoteInquiry(call,userdir,curr_user,config):
 
 		# start inquiry
 		for curr_msgs in (messages,oldmessages):
-			cs_helpers.sayNumber(call,str(len(curr_msgs)),curr_user,config)
+			cs_helpers.sayNumber(call,str(len(curr_msgs)),curr_user,config,"f")
 			if (curr_msgs==messages):
 				if (len(curr_msgs)==1):
 					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-nachricht.la"),1)
@@ -363,7 +363,7 @@ def remoteInquiry(call,userdir,curr_user,config):
 				cs_helpers.sayNumber(call,str(calltime[1]),curr_user,config)
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"..la"),1)
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"um.la"),1)
-				cs_helpers.sayNumber(call,str(calltime[3]),curr_user,config)
+				cs_helpers.sayNumber(call,str(calltime[3]),curr_user,config,"n")
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"uhr.la"),1)
 				cs_helpers.sayNumber(call,str(calltime[4]),curr_user,config)
 				capisuite.audio_send(call,filename,1)

@@ -15,6 +15,11 @@
 	* src/backend/connection.cpp (data_b3_conf): fix behaviour when 
 	  DATA_B3_CONF comes immediately after DATA_B3_REQ
 	* scripts/capisuitefax.in: also accept PDF files
+	* scripts/cs_helpers.pyin (sayNumber): allow gender specification
+	* scripts/incoming.py (remoteInquiry): use "eine" instead of "eins"
+	  in some places ("eine Nachricht")
+	* scripts/waves/Makefile.am: new file eine.la
+	* scripts/waves/eine.la: Likewise. 
 
 2004-01-18  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (sendMIMEMail): remove space in sox call

@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.18 $
+#    version              : $Revision: 1.19 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -299,10 +299,16 @@ def writeDescription(filename,content):
 # @param number the number to say
 # @param curr_user the current user named
 # @param config the ConfigParser instance holding the configuration info
-def sayNumber(call,number,curr_user,config):
+# @param gender if the number is used in connection with a singular noun ("f" --> "eine Nachricht")
+def sayNumber(call,number,curr_user,config,gender="-"):
 	import capisuite
 	if (number=="-" or number=="??"): # "??" is needed for backward compatibility to versions <= 0.4.1a
 		capisuite.audio_send(call,getAudio(config,curr_user,"unbekannt.la"),1)
+	elif (gender!="-" and number in ("1","01")):
+		if (gender in ("n","m"): 
+			capisuite.audio_send(call,getAudio(config,curr_user,"ein.la"),1)
+		else:
+			capisuite.audio_send(call,getAudio(config,curr_user,"eine.la"),1) 
 	elif (len(number)==2 and number[0]!="0"):
 		if (number[0]=="1"):
 			if (number[1]=="0"):

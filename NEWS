@@ -1,6 +1,9 @@
 0.5 (CVS nn):
 =============
 
+	* scripts: remote inquiry now uses correct female form ("eine Nachricht"
+	  instead of "eins Nachricht", thx to Eckhard Rüggeberg and Jörg Fester)
+
 	* scripts: capisuitefax now also accepts PDF files (thx to Jochen Meyer
 	  and Eckhard Rüggeberg for reporting)
 
