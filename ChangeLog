@@ -1,3 +1,12 @@
+2004-02-25  Gernot Hillier  <gernot@hillier.de>
+	* docs/.cvsignore: add manpages/*
+	* docs/Makefile.am: add support for manpage creation, move validation
+	  etc. to separate target
+	* docs/manual.README: update, add information about manpages
+	* docs/manual.docbook: restructure to also create five man pages:
+	  (capisuite.8, capisuite.conf.5, fax.conf.5, answering_machine.conf.5,
+	  capisuitefax.1)
+
 2004-02-20  Gernot Hillier  <gernot@hillier.de>
 	* src/application/capisuite.cpp: changed include order to get rid of
 	  the "_POSIX_C_SOURCE redefined" warning (thx to Hartmut Goebel)

@@ -9,17 +9,54 @@ after the installation and please READ it. :-)
 
 ------ Only experts read on here, please ------
 
+create HTML pages:
+==================
+
 You can create HTML pages by using tools like xsltproc and
-the DocBook stylesheets of Norman Walsh. 
+the DocBook stylesheets of Norman Walsh. This is done in two
+steps: 
 
-An example of how to call xsltproc:
+1. First, you have to profile the document: there are some parts
+in it which shouldn't end up in the HTML documentation. Profiling
+is done by throwing aways all parts which have a "condition" attribute
+not equal to "html" set. To do the profiling, you can also use Norman's
+stylesheets and xsltproc:
 
-xsltproc -o manual/ /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.xsl manual.docbook
+xsltproc --stringparam profile.condition html -o manual-profiled.docbook \
+  /usr/share/sgml/docbook/docbook-xsl-stylesheets/profiling/profile.xsl  \
+  manual.docbook
 
-You must also copy the images from /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml to the created
+2. Then you can call xsltproc to create the real documentation:
+
+xsltproc -o manual/ \
+  /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.xsl \
+  manual-profiled.docbook
+
+You must also copy the images from 
+/usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml to the created "manual"
 "manual" directory:
 
 cp -r /usr/share/sgml/docbook/docbook-xsl-stylesheets/images/ manual/ 
+
+create man pages:
+=================
+
+You can again do this by using xsltproc and the DocBook stylesheets:
+
+1. Profiling: 
+
+xsltproc --stringparam profile.condition man -o manual-profiled.docbook \
+  /usr/share/sgml/docbook/docbook-xsl-stylesheets/profiling/profile.xsl \
+  manual.docbook
+
+2. Create man pages:
+
+xsltproc -o manpages/ \
+  /usr/share/sgml/docbook/docbook-xsl-stylesheets/manpages/docbook.xsl \
+   manual-profiled.docbook
+
+validate:
+=========
 
 To validate the document, use e.g. xmllint:
 

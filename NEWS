@@ -1,6 +1,10 @@
 0.5 (CVS nn):
 =============
 
+	* documentation: 5 man pages are now also created: capisuite(8),
+	  capisuite.conf(5), fax.conf(5), answering_machine.conf(5),
+	  capisuitefax(1) (fixes bug #13, thx to Achim Bohnet for reporting)
+
 	* scripts: remote inquiry now uses correct female form ("eine Nachricht"
 	  instead of "eins Nachricht", thx to Eckhard Rüggeberg and Jörg Fester)
 

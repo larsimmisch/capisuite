@@ -19,21 +19,37 @@
 
 <preface id="intro"><title>Introduction</title>
 
-	<sect1 id="welcome"><title>Welcome to &cs;</title>
-		<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite.
+	<sect1><title>Welcome to &cs;</title>
+
+	<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite.</para>
+
+	<para>
+	This manual should help you to be able to use &cs; as quick as possible.
+	As I hate reading long documentation just as much as you do, let's jump
+	right in.
+	</para>
+
+	<refentry id="capisuite">
+	<refmeta>
+		<refentrytitle>capisuite</refentrytitle>
+		<manvolnum>8</manvolnum>
+	</refmeta>
+	<refnamediv>
+		<refname>capisuite</refname>
+		<refpurpose>Python-scriptable ISDN telecommunication suite</refpurpose>
+	</refnamediv>
+	<refsect1 id="welcome"><title>Description</title>
+		<para>&cs; is a Python-scriptable ISDN telecommunication suite.
 		It uses the new CAPI interface for accessing
 		your ISDN-hardware - so you'll need a card for which a CAPI compatible
 		driver is available. Currently these are all cards manufactured by AVM
 		and some Eicon cards.
 		</para>
 
-		<para>
-		This manual should help you to be able to use &cs; as quick as possible.
-		As I hate reading long documentation just as much as you do, let's jump
-		right in.
-		</para>
-	</sect1>
-	<sect1 id="whatis"><title>What the heck is "&cs;"?!</title>
+		<para condition="man">This man page only gives a short introduction, for
+		the real documentation please see the HTML or PDF manual distributed
+		with CapiSuite.</para>
+
 		<para>&cs; tries to give the user the ability to code his own ISDN applications
 		without having to fiddle around with all the dirty programming details like callback
 		functions, data buffers, protocol settings and so on.</para>
@@ -72,7 +88,16 @@
 		like to do the things the way I do - just change it or completely do it on your
 		own. And if you write nice scripts or have changes to my default scripts, I would
 		love to get and perhaps make them available for all users if you don't mind.</para>
-
+	</refsect1>
+	<refsect1 condition="man"><title>See Also</title>
+		<para><simplelist type="inline">
+			<member><xref linkend="capisuite.conf"/></member>
+			<member><xref linkend="fax.conf"/></member>
+			<member><xref linkend="answering_machine.conf"/></member>
+			<member><xref linkend="capisuitefax"/></member>
+		</simplelist></para>
+	</refsect1>
+	</refentry>
 	</sect1>
 	<sect1 id="manual"><title>Structure of the manual</title>
 		<para>This manual is split into three big parts.</para>
@@ -425,15 +450,27 @@ make install</screen>
 		<sect2 id="configcs"><title>Configuration of &cs;</title>
 			<para>&cs; uses a general configuration file for the core functions. This file should
 			be located in <filename>/etc/capisuite/capisuite.conf</filename> or <filename>/usr/local/etc/capisuite/capisuite.conf</filename>
-			depending on how you installed &cs;.</para>
+			depending on how you installed &cs;. It's described in detail in <xref linkend="capisuite.conf"/>.
+			Most options are set to reasonable defaults already for using the standard scripts -
+			so if you want you can also skip this section.</para>
 
-			<para>Most options are set to reasonable defaults already for using the standard scripts
-			- so if you want you can also skip this section and read on in <xref linkend="startcs"/></para>
+			<refentry id="capisuite.conf">
+			<refmeta>
+				<refentrytitle>capisuite.conf</refentrytitle>
+				<manvolnum>5</manvolnum>
+			</refmeta>
+			<refnamediv>
+				<refname>capisuite.conf</refname>
+				<refpurpose>configuration of the &cs; daemon</refpurpose>
+			</refnamediv>
+			<refsect1><title>Description</title>
 
-			<para>The options will be presented in brief here - for further details please
+			<para>The options for the &cs; daemon are configured here. They will be
+			presented in brief here - for further details please
 			refer to the comments in the configuration file itself.</para>
-
-			<variablelist><title>Options available in capisuite.conf</title>
+			</refsect1>
+			<refsect1><title>Options</title>
+			<variablelist>
 				<varlistentry>
 					<term><option>incoming_script="/path/to/incoming.py"</option></term>
 					<listitem><para>This option tells &cs; which script should be executed at incoming
@@ -505,6 +542,16 @@ make install</screen>
 				</varlistentry>
 
 			</variablelist>
+			</refsect1>
+			<refsect1 condition="man"><title>See Also</title>
+				<para><simplelist type="inline">
+					<member><xref linkend="capisuite"/></member>
+					<member><xref linkend="fax.conf"/></member>
+					<member><xref linkend="answering_machine.conf"/></member>
+					<member><xref linkend="capisuitefax"/></member>
+				</simplelist></para>
+			</refsect1>
+			</refentry>
 		</sect2>
 		<sect2 id="startcs"><title>Startup of CapiSuite</title>
 			<para>As &cs; is a daemon, it is normally activated during the system
@@ -635,414 +682,467 @@ make install</screen>
 			<para>There are some important options which the scripts need to know before you can use them -
 			things like the users' numbers and some details of how to handle the calls.</para>
 
-			<para>These options are read from two configuration files. Each configuration file is divided into
-			one or more sections. A section begins with the section name in square brackets like <literal>[section]</literal>
-			while the options are <literal>key="value"</literal> lines.</para>
-
-			<para>Each file must have a special section called <literal>[GLOBAL]</literal> and one section
-			for each user called <literal>[&lt;username&gt;]</literal> <emphasis>with <literal>&lt;username&gt;</literal> being a
-			valid system user).</emphasis></para>
-
-			<para>The <literal>[GLOBAL]</literal>-section defines some global options like
-			pathnames and default settings for options that can be overridden in the user-sections. The user-sections
-			hold all the options which belong to a particular user.</para>
-
-			<para>All options for the two files are described in short below. For all details, please see the comments
+			<para>These options are read from two configuration files. All options for the two
+			files are described in short below. For all details, please see the comments
 			in the sample configuration files installed with &cs;.</para>
 
-			<sect3 id="script_config_fax"><title>Configuration for fax service</title>
-				<para>This file holds all available config options for the fax services (fax receive and send).</para>
+			<refentry id="fax.conf">
+			<refmeta>
+				<refentrytitle>fax.conf</refentrytitle>
+				<manvolnum>5</manvolnum>
+			</refmeta>
+			<refnamediv>
+				<refname>fax.conf</refname>
+				<refpurpose>configuration of the &cs; fax services</refpurpose>
+			</refnamediv>
+			<refsect1><title>Description</title>
+				<para>This file holds all available config options for the fax
+				services provided by the default scripts distributed with &cs;.
+				It is read from <filename>/etc/capisuite/fax.conf</filename> or
+				<filename>/usr/local/etc/capisuite/fax.conf</filename> (depending on the installation).</para>
 
-				<para>It's read from <filename>/etc/capisuite/fax.conf</filename> or
-				  <filename>/usr/local/etc/capisuite/fax.conf</filename> (depending on the installation).</para>
+				<para>It is divided into one or more sections. A section begins with the section
+				name in square brackets like <literal>[section]</literal> while the options are <literal>key="value"</literal> lines.</para>
 
-				<sect4 id="options_fax_global"><title>The [GLOBAL] section</title><variablelist>
-					<varlistentry id="fax_spool_dir">
-						<term><option>spool_dir="/path/to/spooldir/"</option></term>
-						<listitem><para>This directory is used to archive sent (or failed) jobs. It must exist and
-							the user &cs; runs as must have write permission to its subdirectories.
-							Two subdirectories are used:</para>
+				<para>A special section called <literal>[GLOBAL]</literal> and one section
+				for each user called <literal>[&lt;username&gt;]</literal> are required.
+				<emphasis>The <literal>&lt;username&gt;</literal> must be a valid system user</emphasis>.</para>
+
+				<para>The <literal>[GLOBAL]</literal>-section defines some global options like
+				pathnames and default settings for options that can be overridden in the user-sections.
+				The user-sections hold all the options which belong to a particular user.</para>
+			</refsect1>
+			<refsect1><title>The [GLOBAL] section</title>
+			<variablelist>
+				<varlistentry id="fax_spool_dir">
+					<term><option>spool_dir="/path/to/spooldir/"</option></term>
+					<listitem><para>This directory is used to archive sent (or failed) jobs. It must exist and
+						the user &cs; runs as must have write permission to its subdirectories.
+						Two subdirectories are used:</para>
+						<variablelist>
+							<varlistentry>
+								<term><filename>spooldir/done/</filename></term>
+								<listitem><para>Jobs finished successfully are moved to this directory.</para></listitem>
+							</varlistentry>
+							<varlistentry>
+								<term><filename>spooldir/failed/</filename></term>
+								<listitem><para>Job which have failed finally end up here.</para></listitem>
+							</varlistentry>
+						</variablelist>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_user_dir">
+					<term><option>fax_user_dir="/path/to/userdir/"</option></term>
+					<listitem><para>This directory is used to store fax jobs and received documents
+						to. It must exist and
+						the user &cs; runs as must have write permission to it. It will contain
+						one subdirectory for each configured user (named like his userid). The
+						following subdirectories are used below the user-specific dir:</para>
+						<variablelist>
+							<varlistentry>
+								<term><filename>user_dir/username/received/</filename></term>
+								<listitem><para>Received faxes are saved here.</para></listitem>
+							</varlistentry>
+							<varlistentry>
+								<term><filename>user_dir/username/sendq/</filename></term>
+								<listitem><para>Fax files to be sent are queued here by <command>capisuitefax</command>.</para></listitem>
+							</varlistentry>
+						</variablelist>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_send_tries">
+					<term><option>send_tries="10"</option></term>
+					<listitem>
+						<para>When a fax can't be sent to the destination for any reason, it's tried for several times.
+							This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir
+							(see <option>fax_spool_dir</option>) and the user will get a mail.
+						</para>
+						<para>This option is optional. If not given, it defaults to 10 tries.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_send_delays">
+					<term><option>send_delays="60,60,60,300,300,3600,3600,18000,36000"</option></term>
+					<listitem><para>When a fax can't be sent to the destination for any reason, it's tried again.
+						This setting specifies the delays in seconds between subsequent tries. The different values are
+						separated with commas and <emphasis>no blanks</emphasis>. The list should have send_tries-1
+						(see <option>fax_send_tries</option>) values - if not, surplus entries are ignored and missing
+						entries are filled up with the last value. The default should just be ok giving you increasing
+						delays for up to 10 tries.</para>
+						<para>This option is optional. If not given, it defaults to the list shown above.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_send_controller">
+					<term><option>send_controller="1"</option></term>
+					<listitem><para>If you have more than one ISDN controller installed (some active cards for more than
+						one basic rate interface like the AVM C2 or C4 are also represented as multiple controllers for
+						CAPI applications like &cs;), you can decide which controller (and therefore which basic rate
+						interface) should be used for sending your faxes. All controllers are numbered starting with 1.
+						If you're not sure which controller has which number, increase the log level to at least 2
+						in &cs; (see <xref linkend="configcs"/>), restart it and have a look in the log file where all
+						controllers will be listed then. Unfortunately, &cs; isn't able to use more than one controller
+						for sending faxes at the moment, so no list is allowed here. If you have only one controller,
+						just leave it at <literal>1</literal></para>
+						<para>This option is optional. If not given, it defaults controller 1.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_outgoing_MSN">
+					<term><option>outgoing_MSN="&lt;your MSN&gt;"</option></term>
+					<listitem><para>This number is used as our own number for outgoing calls. If it's not given,
+						the first number of fax_numbers is used (see user sections). If
+						this one is also empty, the user can't send faxes. Please
+						replace with one valid MSN of your ISDN interface or leave empty. This value can be
+						overwritten in the user sections individually.</para>
+						<para>This option is optional. If not given, it defaults to empty.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_outgoing_timeout">
+					<term><option>outgoing_timeout="60"</option></term>
+					<listitem><para>Default setting which defines how many seconds we will wait for a successful connection after
+						dialing the number. This value can be overwritten in the user sections individually.</para>
+						<para>This option is optional. If not given, it defaults to 60 seconds.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_dial_prefix">
+					<term><option>dial_prefix=""</option></term>
+					<listitem>
+						<para>If anything is entered here, it will be used as a prefix which is added to any
+							number given to <command>capisuitefax</command> as prefix. This is e.g. very helpful if your
+							ISDN adapter is connected to a PBX which needs "0" for external calls. It's also possible to
+							disable its usage later for a certain fax document, so setting this will certainly not prevent
+							you from placing internal calls without prefix.
+						</para>
+						<para>This option is optional. If not given, it defaults to an empty prefix.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_stationID">
+					<term><option>fax_stationID="&lt;your faxID&gt;"</option></term>
+					<listitem><para>Default fax station ID to use when sending a fax document. The station ID is
+						usually the number of your fax station in international format, so an example would be
+						"+49 89 123456" for a number in Munich, Germany. Station IDs may only consist of the "+"-sign,
+						spaces and the digits 0-9. The maximal length is 20. This value can be overwritten in the user
+						sections individually.</para>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_headline">
+					<term><option>fax_headline="&lt;your faxheadline&gt;"</option></term>
+					<listitem><para>Default fax headline to use when sending a fax document. Where and if this
+						headline will be presented depends on the implementation of your CAPI driver. The headline
+						should have a reasonable length to fit on the top of a page, but there's no definite limit
+						given.</para>
+						<para>This option is optional. If not given, it defaults to an empty headline.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_email_from">
+					<term><option>fax_email_from="&lt;mailaddress&gt;"</option></term>
+					<listitem><para>You can set a default originator ("From"-address) for the e-mails &cs; sends
+						here.</para>
+						<para>This option is optional. If you set this to an empty string, the destinator is used as 
+						originator (i.e. if "gernot" receives a fax, the mail comes from "gernot" to "gernot").</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			</refsect1>
+			<refsect1><title>The user sections</title>
+			<variablelist>
+				<varlistentry>
+					<term><option>outgoing_MSN</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>outgoing_timeout</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>fax_stationID</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>fax_headline</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>fax_email_from</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry id="fax_numbers">
+					<term><option>fax_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
+					<listitem><para>A list containing the numbers on which this user wants to receive incoming fax calls.
+						These numbers are used to differ between users - so the same number must not appear in more
+						than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
+						are allowed. The first number of the list also serves as our own number for
+						sending a fax if outgoing_MSN is not set (see <option>outgoing_MSN</option>).</para>
+						<para>If you want to use the same number for receiving fax and voice calls, please
+						<emphasis>do not</emphasis> enter it here. Use the voice_numbers option instead
+						(see <xref linkend="answering_machine.conf"/>) - the answering machine has a built in fax detection
+						and can also receive faxes.</para>
+						<para>When this list is set to <literal>*</literal>,
+						<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
+						This is only useful for a setup with only one user which wants to receive any call as fax.
+						</para>
+						<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special
+						MSNs (austrian telecom seems to do this for the main MSN, where it is called "Global Call"),
+						you can use the special sign <literal>-</literal> which means "no destination number available".</para>
+						<para>This option is optional. If not given, the user can't receive fax documents.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_email">
+					<term><option>fax_email=""</option></term>
+					<listitem><para>If given, this string indicates email-addresses where the received faxes will
+						be sent to. More addresses are separated by commas. If it is empty, they will be sent
+						to the user account on the system &cs; is running on. The address is also used to send
+						status reports for sent fax jobs to. If you don't want emails to be sent at all, use the
+						action option (see option <option>fax_action</option>) below.</para>
+						<para>This option is optional. If not given, the mail is sent to the system account.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="fax_action">
+					<term><option>fax_action="MailAndSave"</option></term>
+					<listitem><para>Here you can define what action will be taken when a call is received.
+							Currently, two possible actions are supported:
 							<variablelist>
 								<varlistentry>
-									<term><filename>spooldir/done/</filename></term>
-									<listitem><para>Jobs finished successfully are moved to this directory.</para></listitem>
+									<term><option>MailAndSave</option></term>
+									<listitem><para>The received call will be mailed to the given address (see
+										<option>fax_email</option> above) and saved to the <option>fax_user_dir</option> (see global options)
+										</para>
+									</listitem>
 								</varlistentry>
 								<varlistentry>
-									<term><filename>spooldir/failed/</filename></term>
-									<listitem><para>Job which have failed finally end up here.</para></listitem>
+									<term><option>SaveOnly</option></term>
+									<listitem><para>The call will be only saved to the fax_user_dir (see global options)</para>
+									</listitem>
 								</varlistentry>
 							</variablelist>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_user_dir">
-						<term><option>fax_user_dir="/path/to/userdir/"</option></term>
-						<listitem><para>This directory is used to store fax jobs and received documents
-							to. It must exist and
-							the user &cs; runs as must have write permission to it. It will contain
-							one subdirectory for each configured user (named like his userid). The
-							following subdirectories are used below the user-specific dir:</para>
+						</para>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			</refsect1>
+			<refsect1 condition="man"><title>See Also</title>
+				<para><simplelist type="inline">
+					<member><xref linkend="capisuite"/></member>
+					<member><xref linkend="capisuite.conf"/></member>
+					<member><xref linkend="answering_machine.conf"/></member>
+					<member><xref linkend="capisuitefax"/></member>
+				</simplelist></para>
+			</refsect1>
+			</refentry>
+
+			<refentry id="answering_machine.conf">
+			<refmeta>
+				<refentrytitle>answering_machine.conf</refentrytitle>
+				<manvolnum>5</manvolnum>
+			</refmeta>
+			<refnamediv>
+				<refname>answering_machine.conf</refname>
+				<refpurpose>configuration of &cs; answering machine</refpurpose>
+			</refnamediv>
+			<refsect1><title>Description</title>
+				<para>This file holds all available config options for the answering
+				machine provided by the default scripts distributed with &cs;. It is read
+				from <filename>/etc/capisuite/answering_machine.conf</filename>
+				or <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (depending on the installation).</para>
+
+				<para>It is divided into one or more sections. A section begins with the section
+				name in square brackets like <literal>[section]</literal> while the options are <literal>key="value"</literal> lines.</para>
+
+				<para>A special section called <literal>[GLOBAL]</literal> and one section
+				for each user called <literal>[&lt;username&gt;]</literal> are required.
+				<emphasis>The <literal>&lt;username&gt;</literal> must be a valid system user</emphasis>.</para>
+
+				<para>The <literal>[GLOBAL]</literal>-section defines some global options like
+				pathnames and default settings for options that can be overridden in the user-sections.
+				The user-sections hold all the options which belong to a particular user.</para>
+			</refsect1>
+			<refsect1><title>The [GLOBAL] section</title>
+			<variablelist>
+				<varlistentry id="voice_audio_dir">
+					<term><option>audio_dir="/path/to/audiodir/"</option></term>
+					<listitem><para>The answering machine script uses several wave files, for example
+						a global announcement if the user hasn't set his own and some spoken word fragments
+						for the remote inquiry and the menu presented there. These audio files are searched
+						in this directory. If user_audio_files is enabled (see <option>user_audio_files</option>), each user can also
+						provide his own audio snippets in his user_dir (see <option>voice_user_dir</option>).</para>
+					<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_user_dir">
+					<term><option>voice_user_dir="/path/to/userdir/"</option></term>
+					<listitem><para>This directory is used to save user specific data to. It must exist and
+						the user &cs; runs as must have write permission to it. It will contain
+						one subdirectory for each configured user (named like his userid). The
+						following subdirectories are used below the user-specific dir:</para>
+						<variablelist>
+							<varlistentry>
+								<term><filename>user_dir/username/</filename></term>
+								<listitem><para>Here the user may provide his own audio_files
+								(see also option <option>user_audio_files</option> below).
+								The user defined announcement is also saved here.</para></listitem>
+							</varlistentry>
+							<varlistentry>
+								<term><filename>user_dir/username/received/</filename></term>
+								<listitem><para>Received voice calls are saved here.</para></listitem>
+							</varlistentry>
+						</variablelist>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_user_audio_files">
+					<term><option>user_audio_files="0"</option></term>
+					<listitem>
+						<para>If set to <literal>1</literal>, each user may provide his own audio files
+							in his user directory (see <option>voice_user_dir</option>). If set to <literal>0</literal>,
+							only the audio_dir (see <option>voice_audio_dir</option>) will be searched.
+						</para>
+						<para>This option is optional. If not set, it defaults to not reading own user audio files (0).</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_delay">
+					<term><option>voice_delay="15"</option></term>
+					<listitem><para>Sets the default value for the delay for accepting an incoming
+						call in (in seconds). A value of <literal>10</literal> means that the answering
+						machine accepts incoming calls 10 seconds after the incoming connection request.
+						This value can be overwritten in the user sections individually.</para>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_announcement">
+					<term><option>announcement="announcement.la"</option></term>
+					<listitem><para>Sets the default name to use for user announcements.
+						The announcements are searched in <filename>user_dir/username/announcement</filename>
+						then. If not found, a global announcement containing the called MSN will be played.
+						This value can be overwritten in the user sections individually.</para>
+						<para>This option is optional. If not set, it defaults to "announcement.la".</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_record_length">
+					<term><option>record_length="60"</option></term>
+					<listitem><para>Default setting for the maximum record length in seconds. This value can
+						be overwritten in the user sections individually.</para>
+						<para>This option is optional. If not set, it defaults to 60 seconds.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_record_silence_timeout">
+					<term><option>record_silence_timeout="5"</option></term>
+					<listitem><para>Default setting for the record silence timeout in seconds. When set to a value
+						greater than 0, the recording will be aborted if silence is detected for the given
+						amount of seconds. Set this to 0 to disable it. This value can
+						be overwritten in the user sections individually.</para>
+						<para>This option is optional. If not set, it defaults to 5 seconds.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_email_from">
+					<term><option>voice_email_from="&lt;mailaddress&gt;"</option></term>
+					<listitem><para>You can set a default originator ("From"-address) for the e-mails &cs; sends
+						here.</para>
+						<para>This option is optional. If you set this to an empty string, the destinator is used
+						as originator (i.e. if "gernot" receives a voice call, the mail comes from "gernot" to
+						"gernot").</para>
+					</listitem>
+				</varlistentry>
+			</variablelist></refsect1>
+			<refsect1><title>The user sections</title>
+			<variablelist>
+				<varlistentry>
+					<term><option>voice_delay</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>announcement</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>record_length</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>record_silence_timeout</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>voice_email_from</option></term>
+					<listitem><para>User specific value for the corresponding global option</para></listitem>
+				</varlistentry>
+				<varlistentry id="voice_numbers">
+					<term><option>voice_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
+					<listitem><para>A list containing the numbers on which this user wants to receive incoming voice calls.
+						These numbers are used to differ between users - so the same number must not appear in more
+						than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
+						are allowed. The answering machine script does also automatic fax detection, so a fax can
+						be sent to this number. When this list is set to <literal>*</literal>,
+						<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
+						This is only useful for a setup with only one user which wants to receive any call.</para>
+
+						<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special MSNs
+						(austrian telecom seems to do this for the main MSN, where it is called "Global Call"), you can
+						use the special sign <literal>-</literal> which means "no destination number available".</para>
+
+						<para>This option is optional. If not set, the user won't receive voice calls.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_email">
+					<term><option>voice_email=""</option></term>
+					<listitem><para>If given, this string indicates email-addresses where the received faxes and
+						voice calls will be sent to. If it is empty, they will be sent to the user account on the
+						system &cs; is running on. More addresses are separated by commas. If you don't want emails
+						to be sent at all, use the action option (see <option>voice_action</option>).</para>
+						<para>This option is optional. If not set, the calls are mailed to the system account.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_pin">
+					<term><option>pin="&lt;your PIN&gt;"</option></term>
+					<listitem><para>The answering machine also supports a remote inquiry function.
+						This function is used by entering a PIN (Personal Identification Number)
+						while the announcement is played. This PIN can be setup here.
+						If you don't want to use the remote inquiry function, just use an empty
+						PIN setting. The PIN doesn't have a maximal length - but perhaps you should
+						not use 200 digits or you perhaps won't be able to remember them (I won't at least). ;-)</para>
+						<para>This option is optional. If not set, remote inquiry is disabled.</para>
+					</listitem>
+				</varlistentry>
+				<varlistentry id="voice_action">
+					<term><option>voice_action="MailAndSave"</option></term>
+					<listitem><para>Here you can define what action will be taken when a call is received.
+							Currently, three possible actions are supported:
 							<variablelist>
 								<varlistentry>
-									<term><filename>user_dir/username/received/</filename></term>
-									<listitem><para>Received faxes are saved here.</para></listitem>
+									<term><option>MailAndSave</option></term>
+									<listitem><para>The received call will be mailed to the given address (see
+										<option>voice_email</option> above) and saved to the <filename>voice_user_dir</filename>
+										(see global options)
+										</para>
+									</listitem>
 								</varlistentry>
 								<varlistentry>
-									<term><filename>user_dir/username/sendq/</filename></term>
-									<listitem><para>Fax files to be sent are queued here by <command>capisuitefax</command>.</para></listitem>
+									<term><option>SaveOnly</option></term>
+									<listitem><para>The call will be only saved to the <filename>voice_user_dir</filename>
+									(see global options)</para></listitem>
+								</varlistentry>
+								<varlistentry>
+									<term><option>None</option></term>
+									<listitem><para>Only the announcement will be played - no recording is done.</para>
+									</listitem>
 								</varlistentry>
 							</variablelist>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_send_tries">
-						<term><option>send_tries="10"</option></term>
-						<listitem>
-							<para>When a fax can't be sent to the destination for any reason, it's tried for several times.
-								This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir
-								(see <option>fax_spool_dir</option>) and the user will get a mail.
-							</para>
-							<para>This option is optional. If not given, it defaults to 10 tries.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_send_delays">
-						<term><option>send_delays="60,60,60,300,300,3600,3600,18000,36000"</option></term>
-						<listitem><para>When a fax can't be sent to the destination for any reason, it's tried again.
-							This setting specifies the delays in seconds between subsequent tries. The different values are
-							separated with commas and <emphasis>no blanks</emphasis>. The list should have send_tries-1
-							(see <option>fax_send_tries</option>) values - if not, surplus entries are ignored and missing
-							entries are filled up with the last value. The default should just be ok giving you increasing
-							delays for up to 10 tries.</para>
-							<para>This option is optional. If not given, it defaults to the list shown above.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_send_controller">
-						<term><option>send_controller="1"</option></term>
-						<listitem><para>If you have more than one ISDN controller installed (some active cards for more than
-							one basic rate interface like the AVM C2 or C4 are also represented as multiple controllers for
-							CAPI applications like &cs;), you can decide which controller (and therefore which basic rate
-							interface) should be used for sending your faxes. All controllers are numbered starting with 1.
-							If you're not sure which controller has which number, increase the log level to at least 2
-							in &cs; (see <xref linkend="configcs"/>), restart it and have a look in the log file where all
-							controllers will be listed then. Unfortunately, &cs; isn't able to use more than one controller
-							for sending faxes at the moment, so no list is allowed here. If you have only one controller,
-							just leave it at <literal>1</literal></para>
-							<para>This option is optional. If not given, it defaults controller 1.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_outgoing_MSN">
-						<term><option>outgoing_MSN="&lt;your MSN&gt;"</option></term>
-						<listitem><para>This number is used as our own number for outgoing calls. If it's not given,
-							the first number of fax_numbers is used (see <xref linkend="options_fax_user"/>). If
-							this one is also empty, the user can't send faxes. Please
-							replace with one valid MSN of your ISDN interface or leave empty. This value can be
-							overwritten in the user sections individually.</para>
-							<para>This option is optional. If not given, it defaults to empty.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_outgoing_timeout">
-						<term><option>outgoing_timeout="60"</option></term>
-						<listitem><para>Default setting which defines how many seconds we will wait for a successful connection after
-							dialing the number. This value can be overwritten in the user sections individually.</para>
-							<para>This option is optional. If not given, it defaults to 60 seconds.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_dial_prefix">
-						<term><option>dial_prefix=""</option></term>
-						<listitem>
-							<para>If anything is entered here, it will be used as a prefix which is added to any
-								number given to <command>capisuitefax</command> as prefix. This is e.g. very helpful if your
-								ISDN adapter is connected to a PBX which needs "0" for external calls. It's also possible to
-								disable its usage later for a certain fax document, so setting this will certainly not prevent
-								you from placing internal calls without prefix.
-							</para>
-							<para>This option is optional. If not given, it defaults to an empty prefix.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_stationID">
-						<term><option>fax_stationID="&lt;your faxID&gt;"</option></term>
-						<listitem><para>Default fax station ID to use when sending a fax document. The station ID is
-							usually the number of your fax station in international format, so an example would be
-							"+49 89 123456" for a number in Munich, Germany. Station IDs may only consist of the "+"-sign,
-							spaces and the digits 0-9. The maximal length is 20. This value can be overwritten in the user
-							sections individually.</para>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_headline">
-						<term><option>fax_headline="&lt;your faxheadline&gt;"</option></term>
-						<listitem><para>Default fax headline to use when sending a fax document. Where and if this
-							headline will be presented depends on the implementation of your CAPI driver. The headline
-							should have a reasonable length to fit on the top of a page, but there's no definite limit
-							given.</para>
-							<para>This option is optional. If not given, it defaults to an empty headline.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_email_from">
-                                                <term><option>fax_email_from="&lt;mailaddress&gt;"</option></term>
-                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails &cs; sends
-						 	here.</para>
-							<para>This option is optional. If you set this to an empty string, the destinator is used as 
-							originator (i.e. if "gernot" receives a fax, the mail comes from "gernot" to "gernot").</para>
-                                                </listitem>
-                                        </varlistentry>
-				</variablelist></sect4>
-				<sect4 id="options_fax_user"><title>The user sections</title><variablelist>
-					<varlistentry>
-						<term><option>outgoing_MSN</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term><option>outgoing_timeout</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term><option>fax_stationID</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term><option>fax_headline</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
-					</varlistentry>
-                                        <varlistentry>
-                                                <term><option>fax_email_from</option></term>
-                                                <listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
-                                        </varlistentry>
-					<varlistentry id="fax_numbers">
-						<term><option>fax_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
-						<listitem><para>A list containing the numbers on which this user wants to receive incoming fax calls.
-							These numbers are used to differ between users - so the same number must not appear in more
-							than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
-							are allowed. The first number of the list also serves as our own number for
-							sending a fax if outgoing_MSN is not set (see <option>outgoing_MSN</option>).</para>
-							<para>If you want to use the same number for receiving fax and voice calls, please
-							<emphasis>do not</emphasis> enter it here. Use the voice_numbers option instead
-							(see <xref linkend="options_voice_user"/>) - the answering machine has a built in fax detection
-							and can also receive faxes.</para>
-							<para>When this list is set to <literal>*</literal>,
-							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
-							This is only useful for a setup with only one user which wants to receive any call as fax.
-							</para>
- 							<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special
-							MSNs (austrian telecom seems to do this for the main MSN, where it is called "Global Call"),
-							you can use the special sign <literal>-</literal> which means "no destination number available".</para>
-							<para>This option is optional. If not given, the user can't receive fax documents.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_email">
-						<term><option>fax_email=""</option></term>
-						<listitem><para>If given, this string indicates email-addresses where the received faxes will
-							be sent to. More addresses are separated by commas. If it is empty, they will be sent
-							to the user account on the system &cs; is running on. The address is also used to send
-							status reports for sent fax jobs to. If you don't want emails to be sent at all, use the
-							action option (see option <option>fax_action</option>) below.</para>
-							<para>This option is optional. If not given, the mail is sent to the system account.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="fax_action">
-						<term><option>fax_action="MailAndSave"</option></term>
-						<listitem><para>Here you can define what action will be taken when a call is received.
-								Currently, two possible actions are supported:
-								<variablelist>
-									<varlistentry>
-										<term><option>MailAndSave</option></term>
-										<listitem><para>The received call will be mailed to the given address (see
-											<option>fax_email</option> above) and saved to the <option>fax_user_dir</option> (see <xref linkend="options_fax_global"/>)
-											</para>
-										</listitem>
-									</varlistentry>
-									<varlistentry>
-										<term><option>SaveOnly</option></term>
-										<listitem><para>The call will be only saved to the fax_user_dir (see <xref linkend="options_fax_global"/>)</para>
-										</listitem>
-									</varlistentry>
-								</variablelist>
-							</para>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-				</variablelist></sect4>
-			</sect3>
-			<sect3 id="script_config_voice"><title>Configuration for the answering machine</title>
-				<para>This file holds all available config options for the answering machine.</para>
-
-				<para>It's read from <filename>/etc/capisuite/answering_machine.conf</filename> or
-				  <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (depending on the installation).</para>
-
-				<sect4 id="options_voice_global"><title>The [GLOBAL] section</title><variablelist>
-					<varlistentry id="voice_audio_dir">
-						<term><option>audio_dir="/path/to/audiodir/"</option></term>
-						<listitem><para>The answering machine script uses several wave files, for example
-							a global announcement if the user hasn't set his own and some spoken word fragments
-							for the remote inquiry and the menu presented there. These audio files are searched
-							in this directory. If user_audio_files is enabled (see <option>user_audio_files</option>), each user can also
-							provide his own audio snippets in his user_dir (see <option>voice_user_dir</option>).</para>
-						 <para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_user_dir">
-						<term><option>voice_user_dir="/path/to/userdir/"</option></term>
-						<listitem><para>This directory is used to save user specific data to. It must exist and
-							the user &cs; runs as must have write permission to it. It will contain
-							one subdirectory for each configured user (named like his userid). The
-							following subdirectories are used below the user-specific dir:</para>
-							<variablelist>
-								<varlistentry>
-									<term><filename>user_dir/username/</filename></term>
-									<listitem><para>Here the user may provide his own audio_files
-									(see also option <option>user_audio_files</option> below).
-									The user defined announcement is also saved here.</para></listitem>
-								</varlistentry>
-								<varlistentry>
-									<term><filename>user_dir/username/received/</filename></term>
-									<listitem><para>Received voice calls are saved here.</para></listitem>
-								</varlistentry>
-							</variablelist>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_user_audio_files">
-						<term><option>user_audio_files="0"</option></term>
-						<listitem>
-							<para>If set to <literal>1</literal>, each user may provide his own audio files
-								in his user directory (see <option>voice_user_dir</option>). If set to <literal>0</literal>,
-								only the audio_dir (see <option>voice_audio_dir</option>) will be searched.
-							</para>
-							<para>This option is optional. If not set, it defaults to not reading own user audio files (0).</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_delay">
-						<term><option>voice_delay="15"</option></term>
-						<listitem><para>Sets the default value for the delay for accepting an incoming
-							call in (in seconds). A value of <literal>10</literal> means that the answering
-							machine accepts incoming calls 10 seconds after the incoming connection request.
-							This value can be overwritten in the user sections individually.</para>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_announcement">
-						<term><option>announcement="announcement.la"</option></term>
-						<listitem><para>Sets the default name to use for user announcements.
-							The announcements are searched in <filename>user_dir/username/announcement</filename> 
-							then. If not found, a global announcement containing the called MSN will be played. 
-							This value can be overwritten in the user sections individually.</para>
-							<para>This option is optional. If not set, it defaults to "announcement.la".</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_record_length">
-						<term><option>record_length="60"</option></term>
-						<listitem><para>Default setting for the maximum record length in seconds. This value can
-							be overwritten in the user sections individually.</para>
-                                                        <para>This option is optional. If not set, it defaults to 60 seconds.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_record_silence_timeout">
-						<term><option>record_silence_timeout="5"</option></term>
-						<listitem><para>Default setting for the record silence timeout in seconds. When set to a value
-							greater than 0, the recording will be aborted if silence is detected for the given
-							amount of seconds. Set this to 0 to disable it. This value can
-							be overwritten in the user sections individually.</para> 
-                                                        <para>This option is optional. If not set, it defaults to 5 seconds.</para>
-						</listitem>
-					</varlistentry>
-                                       <varlistentry id="voice_email_from">
-                                                <term><option>voice_email_from="&lt;mailaddress&gt;"</option></term>
-                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails &cs; sends
-                                                        here.</para>
-                                                        <para>This option is optional. If you set this to an empty string, the destinator is used 
-							as originator (i.e. if "gernot" receives a voice call, the mail comes from "gernot" to 
-							"gernot").</para>
-                                                </listitem>
-                                        </varlistentry>
-				</variablelist></sect4>
-				<sect4 id="options_voice_user"><title>The user sections</title><variablelist>
-					<varlistentry>
-						<term><option>voice_delay</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term><option>announcement</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term><option>record_length</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term><option>record_silence_timeout</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
-					</varlistentry>
-                                        <varlistentry>
-                                                <term><option>voice_email_from</option></term>
-                                                <listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
-                                        </varlistentry>
-					<varlistentry id="voice_numbers">
-						<term><option>voice_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
-						<listitem><para>A list containing the numbers on which this user wants to receive incoming voice calls.
-							These numbers are used to differ between users - so the same number must not appear in more
-							than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
-							are allowed. The answering machine script does also automatic fax detection, so a fax can
-							be sent to this number. When this list is set to <literal>*</literal>,
-							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
-							This is only useful for a setup with only one user which wants to receive any call.</para>
-
-							<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special MSNs
-							(austrian telecom seems to do this for the main MSN, where it is called "Global Call"), you can
-							use the special sign <literal>-</literal> which means "no destination number available".</para>
-
-							<para>This option is optional. If not set, the user won't receive voice calls.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_email">
-						<term><option>voice_email=""</option></term>
-						<listitem><para>If given, this string indicates email-addresses where the received faxes and
-							voice calls will be sent to. If it is empty, they will be sent to the user account on the
-							system &cs; is running on. More addresses are separated by commas. If you don't want emails
-							to be sent at all, use the action option (see <option>voice_action</option>).</para>
-							<para>This option is optional. If not set, the calls are mailed to the system account.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_pin">
-						<term><option>pin="&lt;your PIN&gt;"</option></term>
-						<listitem><para>The answering machine also supports a remote inquiry function.
-							This function is used by entering a PIN (Personal Identification Number)
-							while the announcement is played. This PIN can be setup here.
-							If you don't want to use the remote inquiry function, just use an empty
-							PIN setting. The PIN doesn't have a maximal length - but perhaps you should
-							not use 200 digits or you perhaps won't be able to remember them (I won't at least). ;-)</para>
-                                                        <para>This option is optional. If not set, remote inquiry is disabled.</para>
-						</listitem>
-					</varlistentry>
-					<varlistentry id="voice_action">
-						<term><option>voice_action="MailAndSave"</option></term>
-						<listitem><para>Here you can define what action will be taken when a call is received.
-								Currently, three possible actions are supported:
-								<variablelist>
-									<varlistentry>
-										<term><option>MailAndSave</option></term>
-										<listitem><para>The received call will be mailed to the given address (see
-											<option>voice_email</option> above) and saved to the <filename>voice_user_dir</filename>
-											(see <xref linkend="options_voice_global"/>)
-											</para>
-										</listitem>
-									</varlistentry>
-									<varlistentry>
-										<term><option>SaveOnly</option></term>
-										<listitem><para>The call will be only saved to the <filename>voice_user_dir</filename>
-										(see <xref linkend="options_voice_global"/>)</para></listitem>
-									</varlistentry>
-									<varlistentry>
-										<term><option>None</option></term>
-										<listitem><para>Only the announcement will be played - no recording is done.</para>
-										</listitem>
-									</varlistentry>
-								</variablelist>
-							</para>
-							<para>This option is mandatory.</para>
-						</listitem>
-					</varlistentry>
-				</variablelist></sect4>
-			</sect3>
+						</para>
+						<para>This option is mandatory.</para>
+					</listitem>
+				</varlistentry>
+			</variablelist>
+			</refsect1>
+			<refsect1 condition="man"><title>See Also</title>
+				<para><simplelist type="inline">
+					<member><xref linkend="capisuite"/></member>
+					<member><xref linkend="capisuite.conf"/></member>
+					<member><xref linkend="fax.conf"/></member>
+					<member><xref linkend="capisuitefax"/></member>
+				</simplelist></para>
+			</refsect1>
+			</refentry>
 		</sect2>
 		<sect2 id="deleteoldfiles"><title>Deleting old files</title>
 
@@ -1101,16 +1201,57 @@ make install</screen>
 			to setup your mail program to receive local mails. Enjoy! :-)</para>
 		</sect2>
 		<sect2 id="usingscripts_remoteinquiry"><title>Doing a remote inquiry</title>
-			<para>To do a remote inquiry, please enter your PIN (see <xref linkend="options_voice_user"/>)
+			<para>To do a remote inquiry, please enter your PIN (see <xref linkend="answering_machine.conf"/>)
 			while the announcement of the answering machine is played. After some seconds
 			you will get a "voice menu" telling you how to record your own announcement
 			for your answering machine or how to playback the received calls.</para>
 		</sect2>
 		<sect2 id="usingscripts_send"><title>Sending fax jobs</title>
 			<para>The default scripts for &cs; also include a commandline
-			tool for sending faxes called <command>capisuitefax</command>.</para>
+                        tool for sending faxes called <command>capisuitefax</command>. It's
+			described in the next section.</para>
 
-			<para><command>capisuitefax</command> will be called with some parameters
+			<refentry id="capisuitefax">
+			<refmeta>
+				<refentrytitle>capisuitefax</refentrytitle>
+				<manvolnum>1</manvolnum>
+			</refmeta>
+			<refnamediv>
+				<refname>capisuitefax</refname>
+				<refpurpose>sending faxes with the &cs; default scripts</refpurpose>
+			</refnamediv>
+			<refsynopsisdiv>
+				<cmdsynopsis>
+					<command>capisuitefax</command>
+					<arg>-q</arg>
+					<arg>-n</arg>
+					<arg>-u <replaceable>user</replaceable></arg>
+                                        <arg>-A <replaceable>adr</replaceable></arg>
+                                        <arg>-S <replaceable>subj</replaceable></arg>
+                                        <arg choice="plain">-d <replaceable>number</replaceable></arg>
+					<arg choice="plain" rep="repeat">file</arg>
+				</cmdsynopsis>
+                                <cmdsynopsis>
+                                        <command>capisuitefax</command>
+                                        <arg>-q</arg>
+                                        <arg choice="plain">-a <replaceable>id</replaceable></arg>
+                                </cmdsynopsis>
+                                <cmdsynopsis>
+                                        <command>capisuitefax</command>
+                                        <arg choice="plain">-h</arg>
+                                </cmdsynopsis>
+                                <cmdsynopsis>
+                                        <command>capisuitefax</command>
+                                        <arg choice="plain">-l</arg>
+                                </cmdsynopsis>
+			</refsynopsisdiv>
+			
+			<refsect1><title>Description</title>
+
+			<para>The default scripts for &cs; come with the tool <command>capisuitefax</command>
+			for sending faxes.</para>
+
+			<para>It will be called with some parameters
 			telling it which file to send (it currently only supports PostScript files)
 			and to which number. It will then enqueue the job converted to the
 			right format into the send queue
@@ -1119,12 +1260,10 @@ make install</screen>
 			after trying for some time, the according user will get an email
 			telling him/her what has happened.</para>
 
-			<para>The following options are recognized by <command>capisuitefax</command>:</para>
+			</refsect1>
 
-			<screen>capisuitefax [-q] [-n] [-u user] [-A adr] [-S subj] -d number file1 [file2 ...]</screen>
-			<screen>capisuitefax [-q] -a id</screen>
-			<screen>capisuitefax -h</screen>
-			<screen>capisuitefax -l</screen>
+			<refsect1><title>Options</title>
+
 			<variablelist>
 				<varlistentry>
 					<term><option>-a id</option></term>
@@ -1170,11 +1309,21 @@ make install</screen>
 					</para></listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><option>file1 [file2...]</option></term>
+					<term><option>file...</option></term>
 					<listitem><para>One or more PostScript files to send to this destination. More than
 					one PostScript file will produce several separate fax jobs.</para></listitem>
 				</varlistentry>
 			</variablelist>
+			</refsect1>
+			<refsect1 condition="man"><title>See Also</title>
+				<para><simplelist type="inline">
+					<member><xref linkend="capisuite"/></member>
+					<member><xref linkend="capisuite.conf"/></member>
+					<member><xref linkend="fax.conf"/></member>
+					<member><xref linkend="answering_machine.conf"/></member>
+				</simplelist></para>
+			</refsect1>
+			</refentry>
 		</sect2>
 	</sect1>
 </chapter>
@@ -1521,7 +1670,7 @@ is not present, current time as returned by localtime() is used.
 				<para>There are two possible ways to create A-Law files.</para>
 
 				<para>The first one is to call your computer with your phone (either use the default answering
-				machine script and configure it as described in <xref linkend="script_config_voice"/>
+				machine script and configure it as described in <xref linkend="answering_machine.conf"/>
 				or write a simple script yourself). Now, record whatever you want and take the created
 				output file (when you use the default scripts please take the file from the
 				user_dir, not the attachment of the mail as this is already converted) and use it.</para>
