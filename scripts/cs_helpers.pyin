@@ -16,15 +16,13 @@ from capisuite.voice import sayNumber, getAudio
 
 # Convert sff files to tiff files. This is placed in an extra function
 # because the sfftobmp tool used for this conversion has changed its
-# parameters recently. So this function can be changed to fit your needs. 
-# Normally, the make environment of CapiSuite should do this automatically
-# but if you change your sfftobmp version after building CapiSuite you have
-# to adapt this manually.
-def sff2tif(infile, outfile):
-        # for sfftobmp 2.x: remove the "#2" characters of the following line
-        #2 __call('sff to tif', "sfftobmp", "-tif", infile, outfile)
-        # for sfftobmp 3.x: remove the "#3" characters of the following line
-        #3 __call('sff to tif', "sfftobmp", "-tif", infile, "-o", outfile)
+# parameters recently.
+if @sfftobmp_major_version@ <= 2:
+    def sff2tif(infile, outfile):
+        __call('sff to tif', "sfftobmp", "-tif", infile, outfile)
+else:
+    def sff2tif(infile, outfile):
+        __call('sff to tif', "sfftobmp", "-tif", infile, "-o", outfile)
 
 # Note: readConfig is now imported from capisuite.config
 

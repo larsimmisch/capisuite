@@ -1,3 +1,13 @@
+2004-12-30  Hartmut Goebel  <h.goebel@crazy-compilers.com>
+	* scripts/cs_helpers.pyin: Changed sfftotiff to be defined
+	  depending on @sfftobmp_major_version@ during runtime. This
+	  switch is made based by a compiletime substitution of
+	  sfftobmp_major_version. This change avoids problems which the
+	  old substitution may have cause ('#3' is an extremly short
+	  replacement pattern).
+	* scripts/Makefile.am (.pyin.py): Likewise. Remove old
+	  substitutions.
+
 2004-11-28  Gernot Hillier  <gernot@hillier.de>
 	* docs/manual.docbook: update to new features of 0.4.5, mention the 
 	  mISDN project, mention other binary packages besides SUSE/Debian,

@@ -13,18 +13,12 @@ SUBDIRS = waves
 
 capisuitefax: capisuitefax.in
 	rm -f $@
-	sed -e 's,@\PYTHON@,$(PYTHON),g' $< >$@
+	sed 's,@\PYTHON@,$(PYTHON),g' $< >$@
 	chmod 755 $@
 
 .pyin.py:
 	rm -f $@
-	if test $(sfftobmp_major_version) = "2"; then \
-		sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' \
-		    -e 's,#2 ,,g' $< >$@ ;\
-	else \
-		sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' \
-		    -e 's,#3 ,,g' $< >$@ ;\
-	fi
+	sed 's,@sfftobmp_major_version@,$(sfftobmp_major_version),g' $< >$@
 
 .confin.conf: 
 	rm -f $@
