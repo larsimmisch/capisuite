@@ -2,8 +2,15 @@
 ===========
 	* scripts & core: support color fax reception
 
-	* added missing file "unbekannt.la" to install targets in Makefiles (oops)
- 
+	* scripts: added missing file "unbekannt.la" to install targets in Makefiles
+
+	* scripts: added missing "+.la" which is necessary for the remote inquiry 
+          of recorded international calls
+
+	* scripts: fax_numbers may be now left empty in fax.conf. This makes
+	  it possible to use one MSN for receiving/sending faxes and voice  
+	  calls (fax sending was refused up to now if fax_numbers was empty).
+
 0.4.2 (CVS tag CAPISUITE_042):
 ==============================
 	* manual now available as PDF  
