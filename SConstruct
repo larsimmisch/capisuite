@@ -20,6 +20,9 @@ Example:
                      # since this is the default, the entry in options.cache
                      # will be renmoved
   scons              # default prefix is used
+  
+WARNING: This build method is not officially supported for CapiSuite. Please
+use the usual configure;make;make install triplet instead!
 """
 
 __targets__ = """

@@ -9,7 +9,6 @@ Important for 0.5.0/capisuite-py:
   - new modulename '_capisuite' (but use capisuite.core instead)
 * Add option '--is-configured' to capisuite-checkconfig to be used
   by rc-file.
-* Add 'scons-local' to distribution.
 
 NICE:
 - more checks/options for capisuite-checkconfig
