@@ -15,6 +15,6 @@
 2003-10-19  Gernot Hillier  <gernot@hillier.de>
 
 	* docs/manual.docbook (creating_alaw): add note how to convert vbox
-	  to inversed A-Law files
+	  to inversed A-Law files (thx to Thomas Niesel)
 	* docs/manual-de.docbook (creating_alaw): see above
 	  
