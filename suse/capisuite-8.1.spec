@@ -44,7 +44,7 @@ Authors:
 
 %prep
 %setup  
-./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-docdir=/usr/share/doc/packages/capisuite 
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-docdir=/usr/share/doc/packages/capisuite --mandir=/usr/share/man 
 
 %build
 make 
@@ -86,6 +86,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/rccapisuite
 
 %changelog -n capisuite
+* Wed Mar 24 2004 - gernot@hillier.de
+- add correct --mandir
 * Sun Jan 18 2004 - gernot@hillier.de
 - updated to 0.4.4
 * Sun Jul 20 2003 - gernot@hillier.de

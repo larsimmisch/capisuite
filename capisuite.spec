@@ -40,7 +40,7 @@ Authors:
 
 %prep
 %setup  
-./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-docdir=/usr/share/doc/packages/capisuite 
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-docdir=/usr/share/doc/packages/capisuite --mandir=/usr/share/man
 
 %build
 make 

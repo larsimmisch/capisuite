@@ -1,6 +1,8 @@
 2004-03-24  Gernot Hillier  <gernot@hillier.de>
 	* docs/Makefile.am: change pathes to Docbook stylesheets to reflect
 	  changes in SUSE 9.1
+	* docs/Makefile.am: create "make install" routines for manpages
+	* capisuite.spec: set mandir in configure call
 
 2004-03-23  Gernot Hillier  <gernot@hillier.de>
 	* docs/manual-de.docbook (capicodes_protocol): fix small typo

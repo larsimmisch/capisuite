@@ -1,5 +1,7 @@
 docdir = @docdir@
-EXTRA_DIST = Doxyfile.in mainpage.doxy manual.docbook manual.README
+EXTRA_DIST = Doxyfile.in mainpage.doxy manual.docbook manual.README $(man_MANS)
+
+man_MANS = capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1
 
 # dist-hook may be not portable partly, so non-SuSE-users please
 # forgive me and don't call "make dist" or send me a patch ;-)
@@ -73,5 +75,5 @@ uninstall-local:
 	rm -rf $(DESTDIR)$(docdir) 
 
 maintainer-clean-local:
-	rm -rf reference manual manual.pdf
+	rm -rf reference manual manual.pdf *.[1-9]
  
