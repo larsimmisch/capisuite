@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.4</title>
+<title>CapiSuite 0.3.2</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -965,7 +965,7 @@ autoreconf</screen>
 
 	<sect1 id="ug_python"><title>Introduction to Python</title>
 
- 		<para>As I tought about the scripting language I wanted to integrate into &cs;,
+ 		<para>As I thought about the scripting language I wanted to integrate into &cs;,
 		my first idea was to develop an own, simple one. But as more as I looked into it, as
 		more I found that a general purpose language having common features already will be much
 		more helpful than re-inventing every wheel that I would need. So I looked for some
@@ -983,28 +983,306 @@ autoreconf</screen>
 		wide-spread procedural and object-oriented languages.</para>
 
 		<para>If not, I would advise you to get and read a book for learning Python - there are many
-		available in different languages - or to have a look on the Python home page on
-		<ulink url="http://www.python.org"/> where nice and comprehensive manuals and tutorials are
-		available for free.</para>
-		
+		available in different languages. The Python home page on <ulink url="http://www.python.org"/>
+		has also nice and comprehensive manuals and tutorials available for free.</para>
+
 		<sect2 id="python_basics"><title>Python Basics</title>
-		
+
 		<para>Python supports most features you know from other common languages. So here's the
 		syntax of the basic operations shown in a Python session. A python session is another
 		fine feature of its interpreter: just start it by typing <command>python</command>
 		in a shell and you'll get the prompt of Python:</para>
-		
-		<screen></screen>
+
+		<screen
+		>gernot@linux:~> python
+Python 2.2.1 (#1, Sep 10 2002, 17:49:17)
+[GCC 3.2] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt;</screen>
+
+		<para>As you can see, the Python prompt is <literal>&gt;&gt;&gt;</literal>.
+		If you enter commands that span multiple lines, Python shows a second
+		prompt: <literal>...</literal></para>
+
+			<screen>&gt;&gt;&gt; if (1==2):
+...     print "Now THAT's interesting!"
+...</screen>
+
+		<para>Ok, now let's go on:</para>
+
+		<screen>&gt;&gt;&gt; # comments start with # at begin of the line
+&gt;&gt;&gt; # now the usual first steps
+&gt;&gt;&gt; print "hello world"
+hello world
+&gt;&gt;&gt; # variables
+&gt;&gt;&gt; a=5 # no separate declarations necessary
+&gt;&gt;&gt; b=a*2
+&gt;&gt;&gt; print b
+10
+&gt;&gt;&gt; b='hello'
+&gt;&gt;&gt; print b,'world'
+hello world
+&gt;&gt;&gt; # python is very powerful in handling sequences
+&gt;&gt;&gt; a=(1,2,3) # defines a tuple (not changeable!)
+&gt;&gt;&gt; print a
+(1, 2, 3)
+&gt;&gt;&gt; a[1]=2  # this must fail
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+TypeError: object doesn't support item assignment
+&gt;&gt;&gt; a=[1,2,3] # defines a list (changeable)
+&gt;&gt;&gt; a[1]=7
+&gt;&gt;&gt; print a
+[1, 7, 3]
+&gt;&gt;&gt; # control structures
+&gt;&gt;&gt; if (b=='hello'):
+...     print "b is hello"
+... else:
+...     print "????"
+...
+b is hello
+&gt;&gt;&gt; # the for statement can iterate over sequences
+&gt;&gt;&gt; for i in a:
+...     print i
+...
+1
+7
+3
+&gt;&gt;&gt; a[1:3]=[0] # replace positions 1 to 3 (without 3) with 0
+&gt;&gt;&gt; a
+[1, 0]
+&gt;&gt;&gt; a[-1]=7; a[-2]=8
+&gt;&gt;&gt; a
+[8, 7]</screen>
+
+		</sect2>
+		<sect2 id="py_blocks"><title>Blocks, Functions and Exceptions</title>
+			<para>Blocks are grouped only by identation. No <literal>begin</literal>,
+			<literal>end</literal>, braces (<literal>{</literal>, <literal>}</literal>)
+			or the like are needed. This sounds very uncomfortable at the first sight, but it's
+			really nice - you must always structure your code exactly how you
+			<emphasis>mean</emphasis>it:</para>
+
+			<screen>&gt;&gt;&gt; for i in [1,2,3]:
+...     print 2*i
+...
+2
+4
+6
+&gt;&gt;&gt; i=0
+&gt;&gt;&gt; while (i!=3):
+...     print i
+...     i+=1
+...
+0
+1
+2</screen>
+
+			<para>Now let's see how to define functions and how to work with
+			exceptions:</para>
+
+			<screen>&gt;&gt;&gt; def double_it(a):
+...     return (2*a)
+...
+&gt;&gt;&gt; print double_it(9)
+18
+&gt;&gt;&gt; print double_it("hello")
+hellohello
+&gt;&gt;&gt;
+&gt;&gt;&gt; # let's trigger a exception
+&gt;&gt;&gt; a=1/0
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in ?
+ZeroDivisionError: integer division or modulo by zero
+&gt;&gt;&gt;
+&gt;&gt;&gt; # now let's catch it
+&gt;&gt;&gt; try:
+...     a=1/0
+... except ZeroDivisionError,e:
+...     print "You divided by zero, message was:",e
+...
+You divided by zero, message was: integer division or modulo by zero</screen>
+		</sect2>
+		<sect2 id="py_modules"><title>Working with modules</title>
+			<para>Modules are a way to group functions together. They must be
+			imported, before you can use them and they give you a new object
+			containing all functions. Let's play around with some of them:
+			</para>
+
+			<screen>&gt;&gt;&gt; import time
+&gt;&gt;&gt; # what is in time?
+&gt;&gt;&gt; dir(time)
+['__doc__', '__file__', '__name__', 'accept2dyear', 'altzone', 'asctime', 'clock', 'ctime', 'daylight', 'gmtime', 'localtime', 'mktime', 'sleep', 'strftime', 'strptime', 'struct_time', 'time', 'timezone', 'tzname']
+&gt;&gt;&gt; # So - what do all these functions do? Python can tell...
+&gt;&gt;&gt; print time.__doc__
+This module provides various functions to manipulate time values.
+
+[...]
+
+Variables:
+
+[...]
+
+Functions:
+
+time() -- return current time in seconds since the Epoch as a float
+ctime() -- convert time in seconds to string
+[...]
+
+&gt;&gt;&gt; # Could you please explain ctime in more detail?
+&gt;&gt;&gt; print time.ctime.__doc__
+ctime(seconds) -> string
+
+Convert a time in seconds since the Epoch to a string in local time.
+This is equivalent to asctime(localtime(seconds)). When the time tuple is
+not present, current time as returned by localtime() is used.
+
+&gt;&gt;&gt; time.time()
+1044380131.186987
+&gt;&gt;&gt; time.ctime()
+'Tue Feb  4 18:35:36 2003'
+&gt;&gt;&gt; import os
+&gt;&gt;&gt; os.getuid()
+500
+&gt;&gt;&gt; import pwd
+&gt;&gt;&gt; pwd.getpwuid(500)
+('gernot', 'x', 500, 100, 'Gernot Hillier', '/home/gernot', '/bin/bash')</screen>
+
+			<para>Ok, now I hope you got a small idea of Python. Have fun with
+			it. I had... :-)</para>
+
+			<para>If you have further questions, I would <emphasis>really</emphasis> advise you
+			to continue with a good book or the documentation on
+			<ulink url="http://www.python.org"/>. Please don't ask general Python
+			questions on the CapiSuite lists...</para>
 
 		</sect2>
 	</sect1>
+	<sect1 id="ug_writing_scripts"><title>Writing your own incoming and idle scripts</title>
+		<para>In <xref linkend="howwork"/> I already told you that there are two kinds
+		of scripts used in &cs;. Now let's have a closer look on them.</para>
+
+		<sect2 id="ug_scripts_incoming"><title>The incoming script</title>
+			<para>Every time, a call is received by &cs;, it will call the incoming script -
+			to be precise it will call a function named <literal>callIncoming</literal> in
+			a python script located somewhere on your disk. This "somewhere" was defined in
+			<xref linkend="configcs"/>, remember?</para>
+
+			<para>So the given script must always define a function with the following signature:</para>
+
+			<programlisting>def callIncoming(call,service,call_from,call_to):
+	# function body
+	...</programlisting>
+
+			<para>The parameters given by &cs; are:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term>call</term>
+					<listitem><para>reference to the incoming call. This will be used
+					later in all &cs;-functions you call to tell the system which call
+					you mean. You'll only pass this parameter to other functions - the
+					script can't do anything with it.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>service (integer)</term>
+					<listitem><para>Service of the incoming call as signalled by ISDN,
+					set to one of the following values:
+					<itemizedlist>
+						<listitem><para><literal>SERVICE_VOICE</literal>: voice call</para></listitem>
+						<listitem><para><literal>SERVICE_FAXG3</literal>: analog fax call</para></listitem>
+						<listitem><para><literal>SERVICE_OTHER</literal>: other service not listed above</para></listitem>
+					</itemizedlist>
+					</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>call_from (string)</term>
+					<listitem><para>the number of the calling party (source of the call) as Python string</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term>call_to (string)</term>
+					<listitem><para>the number of the called party (destination of the call) as Python string</para></listitem>
+				</varlistentry>
+			</variablelist>
+
+			<para>The first task of the function will be to decide if it wants to accept or reject
+			the call. If it accepts it, it will normally do something with it (receive a fax, record
+			a voice call, play nice announcements, ...) and then disconnect. After it has done
+			all necessary work, it should finish immidiately. In a later chapter, I'll present
+			you some examples which should make things clearer...</para>
+
+			<para>Naturally, you can break down your application in more functions and perhaps more
+			scripts, which will be called and/or imported recursively - but the starting point is always
+			the <emphasis>incoming script</emphasis> containing <literal>callIncoming</literal>.
+			If Python and &cs; are correctly installed, you should also be able to import and use
+			any Python module.</para>
+
+		</sect2>
+
+		<sect2 id="ug_scripts_idle"><title>The idle script</title>
+			<para>As the incoming script will only be started when a call comes in, we need
+			another mechanism to initiate an outgoing call. As &cs; can't know when you plan
+			to do so, it will just call a function named <literal>idle</literal> in the
+			so called "idle script" in regular intervals. For configuring the intervals and where
+			this script is located, please refer to <xref linkend="configcs"/>.</para>
+
+			<para>The called function must have the following signature:</para>
+
+			<programlisting>def idle(capi):
+	# function body
+	...</programlisting>
+
+			<para>The only parameter given by &cs; is:</para>
+
+			<variablelist>
+				<varlistentry>
+					<term>capi</term>
+					<listitem><para>This is a reference to an internal class of &cs;
+					which handles the communication with the CAPI interface. You'll
+					have to pass on this parameter to some &cs; functions. Nothing
+					else useful you can do with it in your script. This
+					parameter has internal reasons and will possibly (hopefully)
+					go away some day in the future. Just pass it on when told
+					to do so for now.</para></listitem>
+				</varlistentry>
+			</variablelist>
+
+			<para>Now you can do what you want in this function. Most likely, you'll check
+			for a job in an email account, look for a file to send in a special directory
+			or so and place a call sending the job to the right destination.</para>
+
+			<para>Theoretically, you could also accomplish every other periodical task on your
+			system in the idle script - but perhaps we should leave such general things to
+			applications which were designed for this like <application>cron</application>. ;-)</para>
+
+			<para>By the way: be careful - it isn't that easy to write an own, correct idle
+			script - especially if you want to handle jobs coming from different users. You
+			easily get trapped in security related problems. So perhaps it's a good idea to
+			just use the default idle script distributed with &cs; (let's hope I've done it right)
+			if you only want to send faxes.</para>
+
+			<para>As above, <literal>idle</literal> can call other functions or scripts if
+			you like to and all Python modules are available for import.</para>
+		</sect2>
+	</sect1>
+
 	<sect1 id="fileformats"><title>Used file formats</title>
+		<para>Before we'll continue with a reference of all available &cs; functions available
+		in scripts, please let me tell you some words about the file formats the &cs; core uses
+		as it will perhaps also affect your scripts.</para>
+
 		<para>&cs; always reads and saves files in the native format as they will be expected and given
 		by the CAPI ISDN drivers. This preserves it from having to convert everything from and to other
 		formats thus reducing unnecessary overhead.</para>
 
 		<para>As these formats aren't that well-known and you will need special tools to convert or
 		view/play them, I'll give you a short overview of how you can do this.</para>
+
+		<para>Most likely, your scripts will also convert the special ISDN file formats to well-known
+		ones for sending them to you via e-mail for example. Nevertheless, I'd advice you to store
+		the received and sent files in the native &cs; formats somewhere. This will protect you from
+		losing data in the case the conversion fails and will help you in debugging problems which may
+		arise with your scripts.</para>
 
 		<para>All tools which I refer to here are described in <xref linkend="require_soft"/>. See
 		there for informations how to get them.</para>
@@ -1122,6 +1400,47 @@ autoreconf</screen>
 
 		</sect2>
 	</sect1>
+
+	<sect1 id="incoming_examples"><title>Simple incoming script examples</title>
+		<para>In this section, I'll show you how to code your own incoming script step by step.
+		We begin with simply accepting every incoming call and playing a beep and go on until we
+		have a very simple multi-user answering machine with fax recognition and receiving.</para>
+		
+		<para>Let's start with a very simple case: accept all incoming calls, beep and record
+		something so we have a audio file to play with later. First of all, create a new directory
+		somewhere which must be writable to <literal>root</literal>. We also need some test audio
+		file for sending it. Let's take the beep which is distributed with &cs;.</para>
+
+		<screen>mkdir incoming-examples
+chown 777 incoming-examples
+cd incoming-examples
+cp /usr/share/capisuite/beep.la .</screen>
+
+		<para>Now copy and paste the example shown here to a file called <filename>example1.py</filename>
+		in this directory.</para>
+
+		<example><programlisting>import capisuite
+		
+my_path="/path/to/the/just/created/incoming-examples/"
+
+def callIncoming(call,service,call_from,call_to):
+	capisuite.connect_voice(call,10)
+	capisuite.audio_send(call,my_path+"beep.la")
+	capisuite.audio_receive(call,my_path+"recorded.la",20,3)
+	capisuite.disconnect(call)</programlisting></example>
+
+		<para>Now, the &cs; configuration should be changed to use your own incoming script.
+		Do this by editing your <filename>capisuite.conf</filename> replacing the incoming.py
+		value by the path to the file you just created.</para>
+
+	</sect1>
+
+	<sect1 id="idle_examples"><title>Examples for idle scripts</title>
+
+
+	</sect1>
+
+
 </chapter>
 <chapter id="develguide"><title>Developers Guide</title>
 <para></para>
@@ -1134,11 +1453,11 @@ autoreconf</screen>
  as they'll be used in the &cs; Python functions like disconnect (@ref).</para>
 
  <para>In the next two sections, you'll find a list of all codes and a short description.
- A detailled description of the CAPI codes can be found in the CAPI specification available at 
+ A detailled description of the CAPI codes can be found in the CAPI specification available at
  <ulink url="http://www.capi.org"/>.</para>
- 
+
  <para>All numbers are given <emphasis>hexadecimal</emphasis>!</para>
- 
+
  <section id="capicodes_connection"><title>CAPI errors describing connection problems</title>
 
  	<para>All errors described here indicate some problem with the connection. 
