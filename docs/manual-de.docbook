@@ -532,21 +532,21 @@ make install</screen>
 						Wenn hier 0 gesetzt ist, dann ist DDI deaktiviert.</para>
 
 						<para>Sollten Sie jetzt nur Bahnhof verstanden haben, dann haben Sie vermutlich
-						kein DDI und können die Einstellung so belassen, wie sie ist.</para>
+						kein DDI und können die Einstellung so belassen, wie sie ist.</para></listitem>
 				</varlistentry>
 
 				<varlistentry>
 					<term><option>DDI_base_length="0"</option></term>
 					<listitem><para>Diese Option wird nur benutzt, wenn DDI_length nicht 0 ist.
 					Hier wird die Länge der Basisrufnummer festgelegt - im obigen Beispiel wäre das
-					4.</para>
+					4.</para></listitem>
 				</varlistentry>
 
 				<varlistentry>
 					<term><option>DDI_stop_numbers=""</option></term>
 					<listitem><para>Wenn Sie ülicherweise Durchwahlen einer bestimmten Länge verwenden,
 					aber auch einige kürzere Ausnahmen haben (beispielsweise die "-0" für die Zentrale),
-					dann können Sie diese Ausnahmen hier durch Kommata getrennt auflisten.</para>
+					dann können Sie diese Ausnahmen hier durch Kommata getrennt auflisten.</para></listitem>
 				</varlistentry>
 			</variablelist>
 		</sect2>
@@ -1747,7 +1747,7 @@ is not present, current time as returned by localtime() is used.
                                 <para>Wenn Sie fr&uuml;her vbox benutzt haben und nun Ihre alten Audio-Files konvertieren
 				wollen, k&ouml;nnen Sie auch das folgende Kommando benutzen:</para>
 
-                                <screen><command>vboxtoau < infile.msg | sox -tau - outfile.la</command></screen>
+                                <screen><command>vboxtoau &lt; infile.msg | sox -tau - outfile.la</command></screen>
 
 			</sect3>
 			<sect3 id="playing_alaw"><title>Abspielen von A-Law-Dateien</title>
@@ -2005,10 +2005,10 @@ def callIncoming(call,service,call_from,call_to):
 					Diese Exception kann durch jedes &cs;-Kommando, das eine bestehende
 					Verbindung erwartet, (wie audio_send()) ausgelöst werden. Seit &cs; 0.5
 					wird sie nicht mehr beim normalen Verbindungsabbau ausgelöst - also
-					zum Beispiel wenn die Gegenstelle <emphasize>während</emphasize>
+					zum Beispiel wenn die Gegenstelle <emphasis>während</emphasis>
 					audio_receive() auflegt. In diesem Fall endet die entsprechende Funktion
 					einfach normal. Die Exception wird erst beim Aufruf der
-					<emphasize>nächsten</emphasize> &cs;-Funktion ausgelöst. Der Grund für
+					<emphasis>nächsten</emphasis> &cs;-Funktion ausgelöst. Der Grund für
 					diese Änderung war, eine Exception wirklich nur im Fehlerfall auszulösen
 					und ansonsten den normalen Ablauf im Skript nicht zu verlassen. Für
 					die meisten Skripte sollte diese Änderung allerdins unerheblich sein.</para>
