@@ -20,7 +20,7 @@
 <preface id="intro"><title>Introduction</title>
 
 	<sect1 id="welcome"><title>Welcome to &cs;</title>
-		<para>Welcome to &cs;, a python-scriptable ISDN telecommunication suite. It uses the new CAPI interface for accessing
+		<para>Welcome to &cs;, a Python-scriptable ISDN telecommunication suite. It uses the new CAPI interface for accessing
 		your ISDN-hardware - so you'll need a card for which a CAPI compatible
 		driver is available. Currently these are all cards manufactured by AVM
 		and some Eicon cards.
@@ -69,14 +69,14 @@
 
 		<para>So &cs; is already equipped for your daily telecommunication needs - but if you don't
 		like to do the things the way I do - just change it or completely do it on your
-		own (and if you write nice scripts or have changes to my default scripts, I would
-		love to get and perhaps make them available for all users if you don't mind).</para>
+		own. And if you write nice scripts or have changes to my default scripts, I would
+		love to get and perhaps make them available for all users if you don't mind.</para>
 
 	</sect1>
 	<sect1 id="manual"><title>Structure of the manual</title>
 		<para>This manual is split into three big parts.</para>
 
-		<para>The first part (<xref linkend="gettingstarted"/>) explains how you install &cs;, what
+		<para>The first part (<xref linkend="gettingstarted"/>) explains how to install &cs;, what
 		you can do with the default scripts you have after installing it and how
 		to configure them. No line of code will be presented here. If you just want
 		to use the default scripts that should be all the reading you need.</para>
@@ -87,23 +87,28 @@
 		scripts is given which will tell you how they work so you can easily take them
 		as starting points and/or examples for your own application.</para>
 
-		<para>The last part (<xref linkend="develguide"/>) is intended for programmers who want to
-		help in developing the &cs; core. It provides a rough overview of the internal
-		structure of the program. All the rest is documented in doxygen pages, which give you
-		a thorough description for each single class, method and attribute...</para>
+		<para>The last part is intended for programmers who want to help in developing the &cs; core.
+		It provides an overview of the system and a detailled description for each single class, method 
+		and attribute. As it's autocreated from the sources of &cs;, it's not included in this document.
+		You'll find it locally in <ulink url="../reference/index.html"/> or online at
+		<ulink url="http://www.capisuite.de/capisuite/reference/index.html"/>.</para>
 
 		<para>There are also some additional parts containing "what I also wanted to mention":</para>
 
-		<para>Look at @ref knownbugs to find a list of known problems and what you should do
-		if you think you found a bug.</para>
-
-		<para>As &cs; started as a diploma thesis, I want to thank all who helped me so far in this section
-		 @ref blubber.</para>
+		<para>As &cs; started as a diploma thesis, I want to thank all who helped me so far in <xref linkend="acknowledgements"/></para>
 
 		<para>When you want to code your own scripts or want to help in developing the &cs; core,
 		you'll soon stumble upon some special ISDN and CAPI error codes, which are explained in
 		<xref linkend="capicodes"/>.
-		</para>
+		</para>     
+
+		<para>If you need further information or support, please have a look at the &cs; home page on
+		<ulink url="http://www.capisuite.de"/>. You'll find links to a bug tracker, up-to-date documentation,
+		downloads and other ressources there. If you have questions, need support or want to tell us your
+		ideas concerning &cs; or your opinion, you're more than welcome on the &cs; mailing lists. Please don't
+		write me personal mails with such questions as this won't help other users and I can't answer the same
+		question ten times a day, sorry. For informations on how to subscribe to the lists and where to find the
+		archives, please also refer to the home page.</para>
 
 		<para>Hope I managed to whet your appetite - so let's now really start over to get you ready to
 		use it.</para>
@@ -120,10 +125,10 @@
 				driver is available.</para>
 
 				<para>Currently these are all cards manufactured by AVM and some Eicon cards.
-				If you have one of the passive cards of AVM, you'll
-				have to download and install their CAPI drivers - you can't use the
-				drivers of the ISDN4Linux project included in the default Linux kernel yet.
-				There are also some distributions (e.g. current versions of SuSE) which
+				If you have one of the passive cards of AVM, you'll have to download and 
+				install their CAPI drivers.</para>
+
+				<para>There are also some distributions (e.g. current versions of SuSE) which
 				include the Capi4Linux drivers from AVM already - you'll only have to
 				activate them (use YaST2 in SuSE Linux). If you own an active card of AVM
 				(e.g. the B1, C2 or C4), then you'll have everything you need already installed.</para>
@@ -148,7 +153,7 @@
 				find further information on how to install them. It may be always a good idea to check the
 				installation tool of your favourite distribution first and see if they're included with it before
 				trying to download and install them from the net. Don't be afraid, because there are so many -
-				most of them will be included in nearly every distribution and perhaps are already installed on your system.</para>
+				most of them are included in nearly every distribution and perhaps are already installed on your system.</para>
 
 				<variablelist>
 					<varlistentry>
@@ -174,7 +179,7 @@
 						<listitem><para>&cs; will save fax files in the CAPI specific format Structured Fax File (SFF).
 							sfftobmp is a small but useful converter to convert this files to more
 							common formats like JPEG, TIFF or BMP. Get it on <ulink url="http://sfftools.sourceforge.net/sfftobmp.html"/>.
-							It's again not needed by the &cs; core, but for the default scripts.</para>
+							It's again not needed by the &cs; core, but by the default scripts.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry>
@@ -188,14 +193,15 @@
 						<term>tiff2ps</term>
 						<listitem><para>A small utility to convert TIFF files to the Postscript format. It's needed by
 							the default script to convert faxes to PDF files (SFF->TIFF->PS->PDF :-} ).
-							Surely already on your system. Details on <ulink url="http://www.libtiff.org"/>
+							It's often included in a package called <literal>tiff</literal> or 
+							<literal>tifftools</literal>. Details on <ulink url="http://www.libtiff.org"/>
 						</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term>ps2pdf</term>
 						<listitem><para>Again a small utility for the SFF->PDF chain - this time for the
 							conversion of Adobe PostScript to Adobe PDF. It's part of Ghostscript, so
-							you have it definitely already. (<ulink url="http://www.gnu.org/software/ghostscript/ghostscript.html"/>)
+							you most likely have it already. (<ulink url="http://www.gnu.org/software/ghostscript/ghostscript.html"/>)
 						</para></listitem>
 					</varlistentry>
 					<varlistentry>
@@ -227,7 +233,7 @@
 			when available for your distribution and platform.</para>
 
 			<para>You can download both binary packages and sources from the download section on
-			<ulink url="http://www.capisuite.de/download"/>. If you built up your own RPM packages
+			<ulink url="http://www.capisuite.de/download"/>. If you built up your own packages
 			for other distributions, please send me them and I'll copy them there...</para>
 
 			<sect3 id="install_bin"><title>Installation from binary packages</title>
@@ -239,16 +245,16 @@
 				thesis ;-) ).</para>
 
 				<para>To install the &cs; RPM packages you can either use your favorite setup tool -
-				either given by your distributor or the community - or you can do manually
+				either provided by your distributor or the community - or you can do manually
 				(as root):</para>
 
 				<screen>rpm -Uvh capisuite-version.rpm</screen>
 
 				<para>To install binary packages not in the RPM format, please refer to the
-				documentation of you package manager.</para>
+				documentation of your package manager.</para>
 
 				<para>If you managed to install &cs; on a system not mentioned above,
-				please tell me and I'll include the instructions here certainly.</para>
+				please tell me and I'll include the instructions here.</para>
 
 				<para>Now everything should be setup ready to run. So please read on in
 				<xref linkend="csglobal"/>.</para>
@@ -300,7 +306,7 @@ make install</screen>
 				<screen>make -f Makefile.cvs</screen>
 				</para>
 
-				<para>After that you can continue with the normal installation process as described in
+				<para>Now, you can continue with the normal installation process as described in
 				<xref linkend="install_source"/>.</para>
 
 
@@ -376,7 +382,7 @@ make install</screen>
 						use your own script.</para></listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><option>idle_script_interval="60"</option></term>
+					<term><option>idle_script_interval="30"</option></term>
 					<listitem><para>Here you can define how often the idle script should be executed. The
 						number given is the interval between subsequent invocations in seconds.
 						Lesser numbers give you quicker response to queued jobs but also a higher
@@ -401,7 +407,7 @@ make install</screen>
 				<varlistentry>
 					<term><option>log_error="/path/to/capisuite.error"</option></term>
 					<listitem><para>All errors which &cs; detects internally and in your scripts
-						will end up here. These were put to an extra file so that they don't
+						will end up here. They are written to an extra file so that they don't
 						get lost in the normal log. Please check this log regularly for any
 						messages - especially when you encounter problems. Please report all
 						messages you don't understand and which aren't caused by your
@@ -430,7 +436,7 @@ make install</screen>
 			As soon as you have configured the default scripts, simply run
 			<command>rccapisuite restart</command>.</para>
 
-			<para>For debug puposes, you can also start capisuite manually at any time
+			<para>For debug puposes, you can also start &cs; manually at any time
 			by just calling
 
 			<screen><command>/path/to/capisuite</command></screen></para>
@@ -453,7 +459,10 @@ make install</screen>
 					<term><option>--daemon, -d</option></term>
 					<listitem><para>run as daemon (used in your startup script, see above)</para></listitem>
 				</varlistentry>
-			</variablelist>
+			</variablelist>  
+			
+			<para>&cs; can run as any user you want theoretically. It only needs read/write permissions to <filename>/dev/capi20</filename>.
+			If you use the default scripts, however, &cs; <emphasis>must</emphasis> run as <literal>root</literal>.</para>
 		</sect2>
 	</sect1>
 	<sect1 id="scripts"><title>Features and configuration of the default scripts</title>
@@ -474,29 +483,32 @@ make install</screen>
 						<listitem><para>different users using different numbers and different announcements are supported</para></listitem>
 						<listitem><para>incoming calls are saved and sent to the user by email</para></listitem>
 						<listitem><para>the delay until a call is accepted and the maximum record length are freely adjustable</para></listitem>
-						<listitem><para>silence is detected and the call terminated after an adjustable silence time</para></listitem>
-						<listitem><para>incoming fax calls are automatically detected by the CNG/CED signals and received</para></listitem>
+						<listitem><para>silence is detected and the call terminated after an adjustable silence period</para></listitem>
+						<listitem><para>incoming fax calls are automatically detected and received</para></listitem>
 						<listitem><para>comfortable, menu-controlled remote inquiry functions are supported telling you
-							the date/time when the call was received and the called and calling numbers (currently only german).</para></listitem>
+							the date/time when the call was received and the called and calling numbers.</para></listitem>
 						<listitem><para>record your own announcement via the remote inquiry menu</para></listitem>
-						<listitem><para>nearly each setting is configurable globally but can be overwritten for each user also</para></listitem>
+						<listitem><para>nearly each setting is configurable globally but can be overwritten for each user</para></listitem>
 					</itemizedlist>
 				</listitem>
 				<listitem>
 					<para>fax machine</para>
 					<itemizedlist>
-						<listitem><para>different users using different numbers are supported for incoming faxes</para></listitem>
+						<listitem><para>different users using different numbers are supported</para></listitem>
 						<listitem><para>incoming faxes are stored and sent to the user by email</para></listitem>
-						<listitem><para>command line tool for sending PostScript documents as fax included</para></listitem>
+						<listitem><para>command line tool for faxing PostScript documents included</para></listitem>
 						<listitem><para>number of tries and delays for sending faxes freely configurable</para></listitem>
 						<listitem><para>currently supports only one ISDN controller for outgoing faxes</para></listitem>
 					</itemizedlist>
 				</listitem>
 			</itemizedlist>
+			
+			<para>As my native language is german, all waves distributed with &cs; are in german only. If someone wants to
+			provide waves in english (or any other language), please contact me. Thx!</para>
 		</sect2>
 
 		<sect2 id="howscriptswork"><title>How the scripts work</title>
-			<para>Here follows a rough overview of how the scripts work generally. I will only explain
+			<para>Here follows a rough overview of how the scripts work in general. I will only explain
 			the behaviour which is important for the user here. If you want to understand the internals,
 			please refer to @ref userguidescriptchapter</para>
 
@@ -514,23 +526,23 @@ make install</screen>
 
 			<para>So you'll normally get your incoming calls as a mail to a specified address -
 			but they're also saved in the local filesystem to be on the safe side.
-			It's your task to delete old files you don't need any more - perhaps via
-			some script called by a cronjob.</para>
+			It's your task to delete old files you don't need any more. For further instructions,
+			please see <xref linkend="deleteoldfiles"/>.</para>
 
-			<para>There's also the possibility to do a remote inquiry on the answering machine
-			via a normal phone. The caller is presented a menu where he can choose to record
+			<para>There's also the possibility to do a remote inquiry on the answering machine.
+			The caller is presented a menu where he can choose to record
 			his announcement or to hear the saved voice calls. He will be told how many calls
 			are available, from whom and when they were received and so on. He'll also be
 			able to delete recorded calls he doesn't need any more.</para>
 
-			<para>Another script will check a special queue directory for fax send jobs
+			<para>Another script will check special queue directories for fax send jobs
 			regularly. To put jobs in this directory, a special commandline tool is also
 			provided. See <xref linkend="usingscripts"/> for further details on this.</para>
 		</sect2>
 
 		<sect2 id="script_config"><title>Script configuration</title>
 			<para>There are some important options which the scripts need to know before you can use them -
-			things like numbers and some details of how to handle the calls.</para>
+			things like the users' numbers and some details of how to handle the calls.</para>
 
 			<para>These options are read from two configuration files. Each configuration file is divided into
 			one or more sections. A section begins with the section name in square brackets like <literal>[section]</literal> 
@@ -541,8 +553,8 @@ make install</screen>
 			valid system user).</para>
 
 			<para>The <literal>[GLOBAL]</literal>-section defines some global options like
-			pathnames and default settings for options users can change on their own. The user-sections
-			hold all the options which belong to the particular user.</para>
+			pathnames and default settings for options users can override. The user-sections
+			hold all the options which belong to a particular user.</para>
 
 			<para>All options for the two files are described in short below. For all details, please see the comments
 			in the sample configuration files installed with &cs;.</para>
@@ -553,7 +565,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/fax.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/fax.conf</filename> (depending on the installation).</para>
 
-				<variablelist><title>available options for [GLOBAL] section in fax config</title>
+				<variablelist><title>Available options for [GLOBAL] section in fax config</title>
 					<varlistentry id="fax_spool_dir">
 						<term><option>spool_dir="/path/to/spooldir/"</option></term>
 						<listitem><para>This directory is used to archive sent (or failed) jobs. It must exist and
@@ -562,18 +574,19 @@ make install</screen>
 							<variablelist>
 								<varlistentry>
 									<term><filename>spooldir/done/</filename></term>
-									<listitem><para>Successfully finished jobs are moved to this directory.</para></listitem>
+									<listitem><para>Jobs finished successfully are moved to this directory.</para></listitem>
 								</varlistentry>
 								<varlistentry>
 									<term><filename>spooldir/failed/</filename></term>
-									<listitem><para>A job which has failed finally ends up here.</para></listitem>
+									<listitem><para>Job which have failed finally end up here.</para></listitem>
 								</varlistentry>
 							</variablelist>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_user_dir">
 						<term><option>fax_user_dir="/path/to/userdir/"</option></term>
-						<listitem><para>This directory is used to save faxes to. It must exist and
+						<listitem><para>This directory is used to store fax jobs and received documents
+							to. It must exist and
 							the user &cs; runs as must have write permission to it. It will contain
 							one subdirectory for each configured user (named like his userid). The
 							following subdirectories are used below the user-specific dir:</para>
@@ -592,8 +605,8 @@ make install</screen>
 					<varlistentry id="fax_send_tries">
 						<term><option>send_tries="10"</option></term>
 						<listitem><para>When a fax can't be sent to the destination for any reason, it's tried for several times.
-						This setting limits the number of tries. If all tries failed, the job will be considered
-						failed, moved to the failed dir (see <xref linkend="fax_spool_dir"/>) and the user will get a mail.</para>
+						This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir 
+						(see <xref linkend="fax_spool_dir"/>) and the user will get a mail.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="fax_send_delays">
@@ -651,7 +664,7 @@ make install</screen>
 						</listitem>
 					</varlistentry>
 				</variablelist>
-				<variablelist><title>available options for user sections in fax config</title>
+				<variablelist><title>Available options for user sections in fax config</title>
 					<varlistentry>
 						<term><option>outgoing_MSN</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="fax_outgoing_MSN"/> above</para></listitem>
@@ -697,18 +710,18 @@ make install</screen>
 					<varlistentry id="fax_action">
 						<term><option>fax_action="MailAndSave"</option></term>
 						<listitem><para>Here you can define what action will be taken when a call is received.
-								Currently, three possible actions are supported:
+								Currently, two possible actions are supported:
 								<variablelist>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
-										<listitem><para>the received call will be mailed to the given address (see
+										<listitem><para>The received call will be mailed to the given address (see
 											<xref linkend="fax_email"/> above) and saved to the user_dir (see <xref linkend="fax_user_dir"/>)
 											</para>
 										</listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>SaveOnly</option></term>
-										<listitem><para>the call will be only saved to the user_dir (see <xref linkend="fax_user_dir"/>)</para>
+										<listitem><para>The call will be only saved to the user_dir (see <xref linkend="fax_user_dir"/>)</para>
 										</listitem>
 									</varlistentry>
 								</variablelist>
@@ -723,7 +736,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/answering_machine.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (depending on the installation).</para>
 
-				<variablelist><title>available options for [GLOBAL] section in answering machine config</title>
+				<variablelist><title>Available options for [GLOBAL] section in answering machine config</title>
 					<varlistentry id="voice_audio_dir">
 						<term><option>audio_dir="/path/to/audiodir/"</option></term>
 						<listitem><para>The answering machine script uses several wave files, for example
@@ -742,7 +755,7 @@ make install</screen>
 								<varlistentry>
 									<term><filename>user_dir/username/</filename></term>
 									<listitem><para>Here the user may provide his own audio_files
-									(see also option <xref linkend="voice_user_audio_files"/> above).
+									(see also option <xref linkend="voice_user_audio_files"/> below).
 									The user defined announcement is also saved here.</para></listitem>
 								</varlistentry>
 								<varlistentry>
@@ -769,10 +782,10 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="voice_announcement">
 						<term><option>announcement="announcement.la"</option></term>
-						<listitem><para>Sets the default name for the announcement files for the users.
-							The announcement is searched in user_dir/username/announcement then. If not found,
-							a global announcement containing the called MSN will be played. This value can
-							be overwritten in the user sections individually.</para>
+						<listitem><para>Sets the default name to use for user announcements.
+							The announcements are searched in <filename>user_dir/username/announcement</filename> 
+							then. If not found, a global announcement containing the called MSN will be played. 
+							This value can be overwritten in the user sections individually.</para>
 						</listitem>
 					</varlistentry>
 					<varlistentry id="voice_record_length">
@@ -813,7 +826,7 @@ make install</screen>
 							These numbers are used to differ between users - so the same number must not appear in more
 							than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
 							are allowed. The answering machine script does also automatic fax detection, so a fax can
-							also be sent to this number. When this list is set to <literal>*</literal>,
+							be sent to this number. When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
 							This is only useful for a setup with only one user which wants to receive any call.</para>
 						</listitem>
@@ -844,20 +857,20 @@ make install</screen>
 								<variablelist>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
-										<listitem><para>the received call will be mailed to the given address (see
-											<xref linkend="voice_email"/> above) and saved to the user_dir (see <xref linkend="voice_user_dir"/>)
+										<listitem><para>The received call will be mailed to the given address (see
+											<xref linkend="voice_email"/> above) and saved to the <filename>user_dir</filename>
+											(see <xref linkend="voice_user_dir"/>)
 											</para>
 										</listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>SaveOnly</option></term>
-										<listitem><para>the call will be only saved to the user_dir (see <xref linkend="voice_user_dir"/>)</para>
-										</listitem>
+										<listitem><para>The call will be only saved to the <filename>user_dir</filename> 
+										(see <xref linkend="voice_user_dir"/>)</para></listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>None</option></term>
-										<listitem><para>only the announcement will be played - no voice file will
-											be recorded</para>
+										<listitem><para>Only the announcement will be played - no recording is done.</para>
 										</listitem>
 									</varlistentry>
 								</variablelist>
@@ -880,7 +893,7 @@ make install</screen>
 			scripts in <filename>/etc/cron.daily</filename> and they will be called
 			automatically once a day.</para>
 
-			<para>An example for a bash script you can use is also in the &cs; distribution.
+			<para>An example for a bash script you can use is included in the &cs; distribution.
 			Just copy <filename>capisuite.cron</filename> to <filename>/etc/cron.daily/capisuite</filename>
 			and assure it has correct permissions (owner root, executable bit set).</para>
 
@@ -922,7 +935,7 @@ make install</screen>
 			right format into the send queue
 			from which it's collected by another &cs; script and sent to the
 			destination. If the sending was completed successfully or failed finally
-			after trying for some times, the according user will get an email
+			after trying for some time, the according user will get an email
 			telling him what has happened.</para>
 
 			<para>The following options are recognized by <command>capisuitefax</command>:</para>
@@ -933,7 +946,8 @@ make install</screen>
 			<variablelist>
 				<varlistentry>
 					<term><option>-a id</option></term>
-					<listitem><para>Abort the job with the given id. To get a job id, use the <option>-l</option> option.</para></listitem>
+					<listitem><para>Abort the job with the given id. To get a job id, use the <option>-l</option> 
+					option.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-d dialstring</option></term>
@@ -944,7 +958,7 @@ make install</screen>
 					<listitem><para>Show a short commandline help</para></listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><option>-</option></term>
+					<term><option>-l</option></term>
 					<listitem><para>Shows the jobs which are currenty in the send queue.</para></listitem>
 				</varlistentry>
 				<varlistentry>
@@ -2185,9 +2199,29 @@ def idle(capi):<co id="idle_ex2_4"/>
 	</sect1>
 
 </chapter>
-<chapter id="develguide"><title>Developers Guide</title>
-<para></para>
-</chapter>
+<appendix id="acknowledgements"><title>Acknowledgements</title>
+	<para>&cs; started as diploma thesis in winter semester 2002/03. I want to thank the following people for helping me with it:</para>
+	
+	<itemizedlist>
+		<listitem><para>Karsten Keil from SuSE Linux AG (my tutor for the thesis) for his invaluable support and patience when answering me
+		many ISDN questions, doing tests and for his suggestions concerning the architecture of &cs;</para></listitem>
+
+		<listitem><para>Prof. Dr. Wolfgang J&uuml;rgensen from the UAS Landshut (my tutor from the UAS) for his help in ISDN
+		questions during the thesis and for teaching me the ISDN basics in his lecture before</para></listitem>
+		
+		<listitem><para>Prof. Dr. Peter Scholz from the UAS Landshut (second tutor from the UAS) for his support and his suggestions</para></listitem>
+
+		<listitem><para>my girl friend Claudia and her sister Bethina for proof-reading my thesis</para></listitem>
+
+		<listitem><para>Peter Reinhart from SuSE for proof-reading my thesis</para></listitem>
+
+		<listitem><para>many colleagues from SuSE for helping me with technical problems, esp. Andreas Jaeger, Andreas Schwab, Thorsten Kukuk and Andi Kleen</para></listitem>
+		
+		<listitem><para>Achim Bohnet for being the first one from the community trying to compile the CVS version and making me quite some suggestions
+		how to improve it</para></listitem>
+	</itemizedlist>
+</appendix>
+
 <appendix id="capicodes"><title>CAPI 2.0 Error Codes</title>
  <para>The CAPI interface used here has its own coding of standard ISDN
  error codes. Most of the errors described in <xref linkend="capicodes_general"/>
