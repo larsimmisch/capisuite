@@ -69,11 +69,12 @@ class PythonScript
 		*/
 		virtual void final();
 		
-  		/** @brief return a prefix containing this pointer and date for log messages
+  		/** @brief return a prefix containing this pointer, Python script name and date for log messages
+		    @param verbose controls verbosity, default is true which means to log filename etc., false means only this pointer
 
       		    @return constructed prefix as stringstream
   		*/
-		string prefix();
+		string prefix(bool verbose=true);
 
 		string filename, ///< name of the python script to read
 		       functionname; ///< name of the function to call

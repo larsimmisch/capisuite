@@ -1,3 +1,9 @@
+2004-03-20  Gernot Hillier  <gernot@hillier.de>
+	* src/application/pythonscript.h: extend prefix() so that it can create
+	  a short prefix, too; use short prefix for Python traceback (fixes bug
+	  #63, reported anonymously)
+	* src/application/pythonscript.cpp: Likewise.
+
 2004-03-09  Hartmut Goebel  <h.goebel@crazy-compilers.com>
 	* src/application/idlescript.cpp: Reduced delay until
 	  idlescript.py is called the first time after startup.

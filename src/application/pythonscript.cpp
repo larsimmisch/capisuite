@@ -32,13 +32,16 @@ PythonScript::~PythonScript()
 }
 
 string
-PythonScript::prefix()
+PythonScript::prefix(bool verbose)
 {
 	stringstream s;
 	time_t t=time(NULL);
 	char* ct=ctime(&t);
 	ct[24]='\0';
-	s << ct << " Pythonscript " << filename << "," << functionname << "," << hex << this << ": ";
+	if (verbose)
+		s << ct << " Pythonscript " << filename << "," << functionname << "," << hex << this << ": ";
+	else
+		s << ct << " Pythonscript " << hex << this << ": ";
 	return (s.str());
 }
 
@@ -102,11 +105,11 @@ PythonScript::run() throw (ApplicationError)
 				throw ApplicationError("unable to convert traceback to char*","PythonScript::run()");
 
                         error << prefix() << "A python error occured. See traceback below." << endl;
-			error << prefix() << "Python traceback: ";
+			error << prefix(false) << "Python traceback: ";
 			for (int i=0;i<length-1;i++) {
 				error << traceback[i];
 				if (traceback[i]=='\n')
-					error << prefix() << "Python traceback: ";
+					error << prefix(false) << "Python traceback: ";
 			}
 			error << endl;
 
