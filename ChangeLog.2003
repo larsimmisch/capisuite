@@ -1,0 +1,66 @@
+2003-12-31  Gernot Hillier  <gernot@hillier.de>
+	* src/modules/connectmodule.{h,cpp} (ConnectModule): throw
+	  CapiExternalError only when connection's already up, otherwise
+	  use CapiWrongState
+	* scripts/incoming.py (voiceIncoming): include recorded msg length
+	  and host name were file is stored in sent mail (closes bug #6,
+	  thx to Achim Bohnet and Thomas Niesel for the feature requests)
+	* scripts/cs_helpers.pyin (sendMIMEMail): use 16 bit ouput when
+	  converting sound files from la to wav. Thx to Holger Krull for
+	  the fix (closes bug #51)!
+
+2003-12-28  Gernot Hillier  <gernot@hillier.de>
+	* nearly all files (history block): disabled the automatic
+	  adding of CVS log messages to source files as we now have
+	  this nice ChangeLog file
+	* src/modules/audioreceive.{h,cpp} (AudioReceive,mainLoop),
+	  src/modules/audiosend.{h,cpp} (AudioSend,mainLoop),
+	  src/modules/callmodule.{h,cpp} (CallModule,mainLoop),
+	  src/modules/calloutgoing.{h,cpp} (mainLoop),
+	  src/modules/connectmodule.{h,cpp} (ConnectModule,mainLoop),
+	  src/modules/disconnectmodule.{h,cpp} (only comment fixes),
+	  src/modules/faxreceive.{h,cpp} (FaxReceive,mainLoop),
+	  src/modules/faxsend.{h,cpp} (FaxSend,mainLoop),
+	  src/modules/readDTMF.{h,cpp} (ReadDTMF,mainLoop),
+	  src/modules/switch2faxG3.{h,cpp} (Switch2FaxG3,mainLoop):
+	  rework of exception handling stuff; many modules were not
+	  declaring thrown exceptions correctly any more after the
+	  re-structuring to not throw exceptions on any disconnect
+
+2003-12-21  Gernot Hillier  <gernot@hillier.de>
+
+	* src/backend/connection.cpp (buildBconfiguration): accept
+	  color faxes now by setting bit 10 in B3configuration
+
+2003-12-02  Gernot Hillier  <gernot@hillier.de>
+
+	* scripts/idle.py (idle): fix a wrong call of ConfigParser::get
+	  instead of cs_helpers::get, this means fax_numbers must not be
+	  defined if a user
+
+2003-12-01  Gernot Hillier  <gernot@hillier.de>
+
+	* scripts/incoming.py (faxIncoming): confused "hiRes and "loRes".
+	  Thx to Ingo Göppert <Ingo.Goeppert@gmx.de> for the report.
+
+2003-10-19  Gernot Hillier  <gernot@hillier.de>
+
+	* docs/manual.docbook (creating_alaw): add note how to convert vbox
+	  to inversed A-Law files (thx to Thomas Niesel)
+	* docs/manual-de.docbook (creating_alaw): see above
+	* docs/manual.docbook (require_soft): updated link to jpeg2ps (thx to
+	  Achim Bohnet)
+	* docs/manual-de.docbook (require_soft): see above
+	* scripts/cs_helpers.pyin (sendMIMEMail): better wording for some error
+	  messages
+
+2003-10-05  Gernot Hillier  <gernot@hillier.de>
+
+	* started ChangeLog
+	* docs/manual.docbook (require_soft): add note that glibc-locales are
+	  necessary if AVM drivers are used for faxing. They're needed for
+	  iconv() in Connection::convertToCP437. Thx to M. Koelbl for reporting
+	  the problem.
+	* docs/manual-de.docbook (require_soft): add same note
+	* suse/capisuite-8.{0,1,2}.spec: add dependancy to glibc-locale
+
