@@ -1,3 +1,9 @@
+0.4.3 (NN):
+===========
+	* scripts & core: support color fax reception
+
+	* added missing file "unbekannt.la" to install targets in Makefiles (oops)
+ 
 0.4.2 (CVS tag CAPISUITE_042):
 ==============================
 	* manual now available as PDF  
