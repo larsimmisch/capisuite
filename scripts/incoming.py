@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.1 $
+#    version              : $Revision: 1.2 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -57,25 +57,25 @@ def callIncoming(call,service,call_from,call_to):
 		capisuite.error("Error occured during config file reading: "+e+" Disconnecting...")
 		capisuite.reject(call,0x34A9)
 		return
-        # setuid to the user and answer the call with the right service
+        # answer the call with the right service
 	if (curr_user==""):
 		capisuite.log("call from "+call_from+" to "+call_to+" ignoring",1,call)
 		capisuite.reject(call,1)
 		return
 	try:
 		try:
-			userdata=pwd.getpwnam(curr_user)
 			if (curr_service==capisuite.SERVICE_VOICE):
 				udir=config.get("GLOBAL","voice_user_dir")+curr_user+"/"
 			elif (curr_service==capisuite.SERVICE_FAXG3):
 				udir=config.get("GLOBAL","fax_user_dir")+curr_user+"/"
 			if (not os.access(udir,os.F_OK)):
+				userdata=pwd.getpwnam(curr_user)
 				os.mkdir(udir)
 				os.chown(udir,userdata[2],userdata[3])
 			if (not os.access(udir+"received/",os.F_OK)):
+				userdata=pwd.getpwnam(curr_user)
 				os.mkdir(udir+"received/")
 				os.chown(udir+"received/",userdata[2],userdata[3])
-			os.setuid(userdata[2])
 		except KeyError:
 			capisuite.error("user "+curr_user+" is not a valid system user. Disconnecting",call)
 			capisuite.reject(call,0x34A9)
@@ -114,6 +114,9 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		cs_helpers.writeDescription(filename,
 		  "call_from=\""+call_from+"\"\ncall_to=\""+call_to+"\"\ntime=\""
 		  +time.ctime()+"\"\ncause=\"0x%x/0x%x\"\n" % (cause,causeB3))
+		userdata=pwd.getpwnam(curr_user)
+		os.chown(filename,userdata[2],userdata[3])
+		os.chown(filename[:-3]+"txt",userdata[2],userdata[3])
 
 		mailaddress=cs_helpers.getOption(config,curr_user,"fax_email")
 		if (mailaddress=="" or mailaddress==None):
@@ -179,6 +182,9 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		cs_helpers.writeDescription(filename,
 		  "call_from=\""+call_from+"\"\ncall_to=\""+call_to+"\"\ntime=\""
 		  +time.ctime()+"\"\ncause=\"0x%x/0x%x\"\n" % (cause,causeB3))
+		userdata=pwd.getpwnam(curr_user)
+		os.chown(filename,userdata[2],userdata[3])
+		os.chown(filename[:-2]+"txt",userdata[2],userdata[3])
 
 		mailaddress=cs_helpers.getOption(config,curr_user,"voice_email")
 		if (mailaddress=="" or mailaddress==None):
@@ -341,14 +347,21 @@ def newAnnouncement(call,userdir,curr_user,config):
 			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"beep.la"))
 	userannouncement=userdir+cs_helpers.getOption(config,curr_user,"announcement")
 	os.rename(userdir+"announcement-tmp.la",userannouncement)
+	userdata=pwd.getpwnam(curr_user)
+	os.chown(userannouncement,userdata[2],userdata[3])
+
 	capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"ansage-gespeichert.la"))
 
 #
 # History:
 #
 # $Log: incoming.py,v $
-# Revision 1.1  2003/02/19 08:19:54  gernot
-# Initial revision
+# Revision 1.2  2003/02/21 11:02:17  gernot
+# - removed os.setuid() from incoming script
+#   -> fixes Bug #527
+#
+# Revision 1.1.1.1  2003/02/19 08:19:54  gernot
+# initial checkin of 0.4
 #
 # Revision 1.11  2003/02/17 11:13:43  ghillie
 # - remoteinquiry supports new and old messages now
