@@ -1,5 +1,5 @@
-0.4.1 (tag 0.4.1):
-==================
+0.4.1 (tag CAPISUITE_041):
+==========================
 	* cron script: redirect error output to /dev/null
 
         * core: cosmetical code improvements to make old gcc-2.95 more happy
@@ -17,15 +17,15 @@
 
 Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs 
 
-0.4 (tag CAPISUITE_04):
-=======================
+0.4 (first public release, tag CAPISUITE_04):
+=============================================
 	* added cron script for cleaning up spool dirs
 	* fixed bug in rc.capisuite (was also started when not configured)
 	* scripts: remote inquiry supports new and old messages now
 	* scripts: capisuitefax can show sendqueue and delete jobs now
 
-0.3.2 (tag CAPISUITE_032):
-==========================
+0.3.2 (internal release):
+========================
 	* core: finally got rid of the CommonC++ library:
 		- threading implemented using native pthread_* calls
 		- rewritten CapiSuite::parseConfigFile() to use STL string routines
@@ -34,8 +34,8 @@ Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs
 	           progs like sendmail
 	* scripts: minor fixes 
 		
-0.3.1 (tag CAPISUITE_031):
-==========================
+0.3.1 (internal release):
+=========================
 	* dist: included spec and init file in CVS and dist
 	* scripts: use different sendqueues for each user 
 	* core: fixed some bugs: 
@@ -48,16 +48,16 @@ Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs
 	* scripts: fixed a typo in incoming.py
 	* docs: added ISDN/CAPI error codes to manual 
 
-0.3 (tag CAPISUITE_03):
+0.3 (internal release):
 =======================
 	* split up script configuration in two files (anwering machine, fax),
 	  some new features configurable now (e.g. actions)
 
-0.2.1 (tag CAPISUITE_021):
-==========================
+0.2.1 (internal release):
+=========================
 	* many document improvements (new DocBook manual)
 
-0.2 (tag CAPISUITE_02):
+0.2 (internal release):
 =======================
 	* log improvements: log-level configurable (see capisuite.conf), appending log-file instead of re-creating
 	* configure allows to set docdir with --with-docdir 
@@ -72,7 +72,7 @@ Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs
 	* new python commands: capisuite.log and capisuite.error let scripts write messages to the CapiSuite log
 	  and error log
 	 
-0.1 (tag CAPISUITE_01):
+0.1 (internal release):
 =======================
 	* "make install" and "make dist" work now, use config.h
 	* added main docu page for doxygen
@@ -84,8 +84,8 @@ Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs
 	* idle script will be disabled after 10 subsequent errors
 	* B3 disconnect cause now returned by disconnect() python function
 
-0.03 (tag CAPISUITE_003):
-=========================
+0.03 (internal release):
+========================
 
 	* improvement in idle script handling, own class for it (IdleScript)
 	* new classes for Python script handling (PythonScript) and derived classes 
@@ -104,8 +104,8 @@ Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs
 	  are avoided
 	* exception handling generally improved
 
-0.02 (tag CAPISUITE_002):
-=========================
+0.02 (internal release):
+========================
 
 	* many bug fixes as usual (SEGV, ...)
 	* service constants SERVICE_VOICE, SERVICE_FAXG3 and SERVICE_OTHER 
@@ -113,8 +113,8 @@ Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs
 	* audio_send and audio_receive return length in seconds now
 	* added support for idle script which can initiate outgoing calls
 
-0.01 (tag CAPISUITE_001):
-=========================
+0.01 (internal release):
+========================
 
 	* changed name from CapiCom to CapiSuite (name conflict with MS crypto API)
 	* added doxygen-created documentation for classes and python exported functions
