@@ -1,5 +1,23 @@
-CapiSuite
-=========
+			      CapiSuite 
+			      =========
+
+http://www.capisuite.de/
+
+CapiSuite is an ISDN telecommunication suite providing easy to use
+telecommunication functions which can be controlled from Python
+scripts. Currently, mainly voice functions and fax sending/receiving
+are supported.
+
+It uses a CAPI-compatible driver for accessing the ISDN-hardware, so
+you'll need an Eicon or AVM card with the according driver.
+
+CapiSuite is distributed with scripts providing a multi-user answering
+machine with automatic fax recognition, remote inquiry and fax
+send/receive functions.
+
+For further information, please have a look at the manual section
+available online or in the download packages. Please test it and post
+your feedback to the bug tracker and/or the mailing lists. Thank you!
 
 For the documentation see the created HTML documents situated in
 docs/manual/index.html or in the installed version see
