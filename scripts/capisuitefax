@@ -4,7 +4,7 @@
 #            ---------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.1 $
+#    version              : $Revision: 1.2 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -153,6 +153,9 @@ for i in args:
 	cs_helpers.writeDescription(newname,"dialstring=\""+dialstring+"\"\n"
 	  +"starttime=\""+time.ctime()+"\"\ntries=\"0\"\n"
 	  +"user=\""+user+"\"\n")
+	os.chmod(newname,0600)
+	os.chmod(newname[:-3]+"txt",0600)
+
 	print i,"successful enqueued as",newname,"for",dialstring
 
 

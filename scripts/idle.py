@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.3 $
+#    version              : $Revision: 1.4 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -32,10 +32,10 @@ def idle(capi):
 		udir=config.get("GLOBAL","fax_user_dir")+user+"/"
 		sendq=udir+"sendq/"
 		if (not os.access(udir,os.F_OK)):
-			os.mkdir(udir)
+			os.mkdir(udir,0700)
 			os.chown(udir,userdata[2],userdata[3])
 		if (not os.access(sendq,os.F_OK)):
-			os.mkdir(sendq)
+			os.mkdir(sendq,0700)
 			os.chown(sendq,userdata[2],userdata[3])
 
 		files=os.listdir(sendq)
@@ -136,6 +136,10 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.4  2003/03/13 11:09:58  gernot
+# - use stricted permissions for saved files and created userdirs. Fixes
+#   bug #544
+#
 # Revision 1.3  2003/03/09 11:48:10  gernot
 # - removed wrong unlock operation (lock not acquired at this moment!)
 #
