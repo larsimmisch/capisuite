@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.10 $
+    $Revision: 1.11 $
 */
 
 /***************************************************************************
@@ -1065,7 +1065,8 @@ Connection::convertToCP437(string &text)
 
 	if (iconv(conv,&from_buf_tmp,&from_length,&to_buf_tmp,&to_length)==(size_t)-1) {
 		char msg[200];
-		throw CapiExternalError(string("error during string conversion (iconv): ")+strerror_r(errno,msg,200),"Connection::convertToCP437");
+		error << prefix() << "WARNING: error during string conversion (iconv): " << strerror_r(errno,msg,200) << endl;
+		return;
 	}
 
 	if (iconv_close(conv)!=0)
@@ -1080,6 +1081,9 @@ Connection::convertToCP437(string &text)
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.11  2003/06/29 06:18:13  gernot
+- don't take a wrong character too serious...
+
 Revision 1.10  2003/06/28 12:49:47  gernot
 - convert fax headline to CP437, so that german umlauts and other special
   characters will work now
