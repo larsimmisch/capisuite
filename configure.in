@@ -1,5 +1,5 @@
 AC_INIT(src/main.cpp)
-AM_INIT_AUTOMAKE(capisuite,0.4.cvs)
+AM_INIT_AUTOMAKE(capisuite,0.4.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_LANG_CPLUSPLUS

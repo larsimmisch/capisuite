@@ -1,21 +1,21 @@
-0.4.1 (tag NN):
-===============
+0.4.1 (tag 0.4.1):
+==================
 	* cron script: redirect error output to /dev/null
 
         * core: cosmetical code improvements to make old gcc-2.95 more happy
-        * core: fixed quite some problems when doing "make install" to an arbitrary
-                prefix, thanks to Achim Bohnet for pointing me to these
+        * core: fixed problems when doing "make install" to an arbitrary prefix
         * core: moved "capisuite" to <prefix>/sbin instead of bin
 
-	* scripts: fixed bug #527 in incoming.py that lead to idle.py doing
-	           nothing after a while and so no faxes were sent any more
+	* scripts: fixed idle.py freezing which lead to CapiSuite not sending 
+                   faxes any more after some time (#527)
 	* scripts: fixed remote inquiry: mixed new and old messages sometimes
-	* scripts: stricter permissions of received files and dirs, thx to 
-                   Achim Bohnet for reporting bug #544
-	* scripts: dial_prefix implemented, closes bug #537, reported by Achim 	
-	* scripts: better check for options read from config files, any missing
-                   option either has a default now or produces an error message
-		   -> fixes bug #531, thx to Dieter Pelzel(?) for reporting
+	* scripts: stricter permissions of received files and dirs (#544) 
+	* scripts: new option dial_prefix implemented (#537) 	
+	* scripts: better check for options read from config files, (#531)
+	           many options are optional now with a resonable default 
+	* scripts: capisuitefax shebang corrected (#536)
+
+Thanks goes mainly to Achim Bohnet and Dieter Pelzel for reporting bugs 
 
 0.4 (tag CAPISUITE_04):
 =======================
