@@ -1,18 +1,6 @@
 0.5 (CVS nn):
 =============
 
-	* core: support for ISDN interfaces with DDI (means you only have one
-	  base number (not a list of MSNs) and can define your extensions
-	  how you like; in Germany used in the "Anlagenanschluss"). We now have
-	  three new options in capisuite.conf. Many thanks goes to Jörg Fester
-	  for paying and supporting me to develop this feature. They use
-	  CapiSuite in their product (see http://www.x-manage.de).
-
-	* scripts: received voice calls are now converted to 16 bit WAV files
-	  instead of 8 bit; this leads to a dramatically better playback quality
-	  for the sound files attached to the sent mails (thx to Holger Krull
-	  for the fix; closes bug #51)
-
 	* scripts: the mails sent with received voice and fax calls will now
 	  contain some general information like length of calls, number of
 	  pages, etc. (thx to Achim Bohnet and Thomas Niesel for the feature
@@ -28,21 +16,6 @@
 
 	* core: accept incoming color faxes now
 
-	* scripts/idle.py (idle): fixed a bug which under some circumstances
-	  caused an error message when fax_numbers was not set for a user
-
-	* scripts: fixed a bug which lead to a connection abort when the
-	  answering machine recognized an incoming fax call (thx to Andreas
-	  Scholz and Harald Jansen)
-
-        * scripts: added new non-error ISDN cause (0x349f) to fax send routine.
-          It was wrongly understood as an error before and therefore leading to
-	  repeated fax sends (thx to Stefan Brandner for reporting)
-
-	* Makefiles: fixed "make" to not trying to create directories any more -
-	  this prevented normal users to call "make" sometimes (thx to Steffen
-	  Barszus for the detailled report)
-
 	* scripts: added new options "fax_email_from" and "voice_email_from" to
 	  answering_machine.conf and fax.conf (thx to Achim Bohnet for submitting
 	  a patch with this feature!; closes bug #46)
@@ -50,6 +23,36 @@
 	* started a detailed ChangeLog file from 2003-10-05. From now on, NEWS
 	  should only contain important changes from a user's point of view, while
 	  ChangeLog records all changes in detail.
+
+0.4.4 (CVS tag NN):
+===================
+
+        * Makefiles: fixed "make" to not trying to create directories any more -
+          this prevented normal users to call "make" sometimes (thx to Steffen
+          Barszus for the detailled report)
+
+        * scripts: added new non-error ISDN cause (0x349f) to fax send routine.
+          It was wrongly understood as an error before and therefore leading to
+          repeated fax sends (thx to Stefan Brandner for reporting)
+
+        * scripts: fixed a bug which lead to a connection abort when the
+          answering machine recognized an incoming fax call (thx to Andreas
+          Scholz and Harald Jansen)
+
+        * scripts: fixed a bug which under some circumstances caused an error
+          message when fax_numbers was not set for a user
+
+        * scripts: received voice calls are now converted to 16 bit WAV files
+          instead of 8 bit; this leads to a dramatically better playback quality
+          for the sound files attached to the sent mails (thx to Holger Krull
+          for the fix; closes bug #51)
+
+        * core: support for ISDN lines with DDI (means you only have one base
+	  number - not a list of MSNs - and can define extensions how you like;
+	  in Germany used in the "Anlagenanschluss"). We now have three new
+	  DDI_* options in capisuite.conf. Many thanks goes to Jörg Fester and
+	  the x-dot GmbH for paying and supporting me to develop this feature.
+	  They use CapiSuite in their product (see http://www.x-manage.de).
 
 0.4.3 (CVS tag CAPISUITE_043):
 ==============================
