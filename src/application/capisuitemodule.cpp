@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -18,6 +18,7 @@
 // Connection object! (connection can be already deleted while the python script is still running
 
 #include <string>
+#include <unistd.h> // for sleep()
 #include "../backend/connection.h"
 #include "../modules/audiosend.h"
 #include "../modules/audioreceive.h"
@@ -964,8 +965,11 @@ capisuitemodule_init () throw (ApplicationError)
 /* History
 
 $Log: capisuitemodule.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/02/21 23:21:44  gernot
+- follow some a little bit stricter rules of gcc-2.95.3
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.21  2003/01/31 11:26:46  ghillie
 - add "extern capisuiteInstance"

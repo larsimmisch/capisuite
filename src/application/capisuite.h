@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -20,6 +20,7 @@
 #include <Python.h>
 #include <map>
 #include <queue>
+#include <fstream>
 #include "../backend/applicationinterface.h"
 #include "applicationexception.h"
 #include "capisuitemodule.h"
@@ -171,8 +172,11 @@ class CapiSuite: public ApplicationInterface
 /* History
 
 $Log: capisuite.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/02/21 23:21:44  gernot
+- follow some a little bit stricter rules of gcc-2.95.3
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.8  2003/01/31 11:25:53  ghillie
 - moved capisuiteInstance from header to cpp (mustn't be defined in

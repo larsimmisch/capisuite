@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -33,7 +33,7 @@ void* capi_exec_handler(void* arg)
 	instance->run();
 }
 
-Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiMsgError, CapiError)
+Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)
 :debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0),usedCIPMask(0)
 {
 	if (debug_level >= 2)
@@ -874,8 +874,11 @@ Capi::getInfo(bool verbose) throw (CapiMsgError)
 /* History
 
 $Log: capi.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/02/21 23:21:44  gernot
+- follow some a little bit stricter rules of gcc-2.95.3
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.28  2003/02/10 14:20:52  ghillie
 merged from NATIVE_PTHREADS to HEAD

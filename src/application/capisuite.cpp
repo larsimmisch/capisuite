@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -312,7 +312,7 @@ CapiSuite::readConfiguration()
 		if (t[i]<'0' || t[i]>'9')
 			throw ApplicationError("Invalid idle_script_interval given.","main()");
 
-	if (config["log_file"]!="" and config["log_file"]!="-") {
+	if (config["log_file"]!="" && config["log_file"]!="-") {
 		debug = new ofstream(config["log_file"].c_str(),ios::app);
 		if (! (*debug)) {
 			cerr << "Can't open log file. Writing to stdout." << endl;
@@ -326,7 +326,7 @@ CapiSuite::readConfiguration()
 	if (t.size()!=1 && (t[0]<'0' || t[0]>'3'))
 		throw ApplicationError("Invalid log_level given.","main()");
 
-	if (config["log_error"]!="" and config["log_error"]!="-") {
+	if (config["log_error"]!="" && config["log_error"]!="-") {
 		error = new ofstream(config["log_error"].c_str(),ios::app);
 		if (! (*error)) {
 			cerr << "Can't open error log file. Writing to stderr." << endl;
@@ -400,8 +400,11 @@ CapiSuite::help()
 /* History
 
 $Log: capisuite.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/02/21 23:21:44  gernot
+- follow some a little bit stricter rules of gcc-2.95.3
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.14  2003/02/17 16:49:24  ghillie
 - cosmetic...
