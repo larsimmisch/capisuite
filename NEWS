@@ -1,5 +1,5 @@
-0.4.2 (NN):
-===========
+0.4.2 (CVS tag CAPISUITE_042):
+==============================
 	* manual now available as PDF  
 
 	* scripts: fixed an overflow in cs_helpery.py which caused hangs for
