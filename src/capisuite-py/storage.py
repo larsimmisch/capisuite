@@ -48,6 +48,9 @@ class ItemStorage:
         """
         pass
 
+    # Hartmut: What about returning an open filehandle? This would allow 
+    # passing file-like-objects if some day the coure will be implemented
+    # in Python.
     def getItem(self,queue,id):
         """
         Get entry with name 'id' from the queue 'queue'. Must return a file name
@@ -62,7 +65,8 @@ class ItemStorage:
         """
         pass
 
-    def getNewItemName(self,queue):
+    # Hartmut: Is this really needed? Do we need 'stale' IDs?
+    def getNewItemId(self,queue):
         """
         Return a new uniqe name for an item to be stored in the 'queue'.
         """

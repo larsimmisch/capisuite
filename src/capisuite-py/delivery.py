@@ -40,6 +40,8 @@ class UserDelivery:
         """
         pass
 
+    # Hartmut: We should define and document all allowed convertions.
+    # Otherwise this will become hell.
     def sendFile(self,recipient,subject,information,file,format):
         """
         Send the 'file' together with the given 'information' (multi-line
