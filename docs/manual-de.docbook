@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="de">
-<title>CapiSuite 0.4.1a</title>
+<title>CapiSuite 0.4.2</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -623,9 +623,9 @@ make install</screen>
 			Er bekommt gesagt, wieviele Anrufe vorhanden sind, von wem und wann sie empfangen wurden usw.
             Darüber hinaus kann er aufgenommene Anrufe, die er nicht mehr benötigt, löschen.</para>
 
-			<para>Ein anderes Skript prüft regelmäßig ein spezielles Queue-Verzeichnis nach ausgehenden 
-            Fax-Aufträgen. Es gibt ein spezielles Kommandozeilen-Tool, um Aufträge in diesem Verzeichnis 
-            abzulegen. Siehe <xref linkend="usingscripts"/> für weitere Details hierzu.</para>
+			<para>Ein anderes Skript prüft regelmäßig ein spezielles Queue-Verzeichnis nach ausgehenden
+            Fax-Aufträgen. Mit Hilfe des Kommandozeilen-Tools <command>capisuitefax</command> werden Aufträge in
+	    diesem Verzeichnis abgelegt. Weitere Details dazu finden ich in <xref linkend="usingscripts"/>.</para>
 		</sect2>
 
 		<sect2 id="script_config"><title>Skript-Konfiguration</title>
@@ -644,8 +644,9 @@ make install</screen>
 			gültiger System-Benutzer ist).</para>
 
 			<para>Der Abschnitt <literal>[GLOBAL]</literal> definiert einige globale Einstellungen wie
-			Pfadnamen und Standard-Einstellungen für Optionen, die die Benutzer überschreiben können. 
-            Die Benutzer-Abschnitte enthalten alle Optionen, die zu einem bestimmten Benutzer gehören.
+			Pfadnamen und Standard-Einstellungen für Optionen, die in Benutzer-Sektionen überschrieben
+			werden können. Die Benutzer-Abschnitte enthalten alle Optionen, die zu einem bestimmten
+			Benutzer gehören.
             </para>
 
 			<para>Alle Optionen für die beiden Dateien werden weiter unter kurz beschrieben. Alle Details
@@ -660,7 +661,7 @@ make install</screen>
 				  <filename>/usr/local/etc/capisuite/fax.conf</filename> (hängt von der Installation
                   ab).</para>
 
-				<variablelist id="options_fax_global"><title>Verfügbare Optionen für den Abschnitt [GLOBAL] in der Fax-Konfiguration</title>
+				<sect4 id="options_fax_global"><title>Der Abschnitt [GLOBAL]</title><variablelist>
 					<varlistentry id="fax_spool_dir">
 						<term><option>spool_dir="/path/to/spooldir/"</option></term>
 						<listitem><para>Dieses Verzeichnis wird verwendet für die Archivierung von
@@ -810,8 +811,8 @@ make install</screen>
                             standardmäßig keine Kopfzeile verwendet.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
-				<variablelist id="options_fax_user"><title>Verfügbare Optionen für die Benutzer-Abschnitte in der Fax-Konfiguration</title>
+				</variablelist></sect4>
+				<sect4 id="options_fax_user"><title>Die Benutzer-Abschnitte</title><variablelist>
 					<varlistentry>
 						<term><option>outgoing_MSN</option></term>
 						<listitem><para>Benutzerspezifischer Wert für die globale Option 
@@ -872,7 +873,7 @@ make install</screen>
                             werden sie an den System-Account auf dem System, auf dem &cs; läuft, geschickt.
                             Die Adresse wird auch für Status-Reports für versendete Fax-Aufträge benutzt.
 							Wenn Sie überhaupt nicht möchten, dass E-Mails verschickt werden, verwenden Sie
-							die action Option (siehe <option>fax_action</option>).</para>
+							die action-Option (siehe <option>fax_action</option>).</para>
 							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird die Mail 
                             an den System-Account geschickt.</para>
 						</listitem>
@@ -886,16 +887,17 @@ make install</screen>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
 										<listitem><para>Der empfangene Anruf wird an die angegebene 
-                                            Adresse (siehe <option>fax_email</option>) geschickt 
-                                            und im fax_user_dir (siehe <option>fax_user_dir</option>) 
+                                            Adresse (siehe <option>fax_email</option>) geschickt
+                                            und im <option>fax_user_dir</option> (siehe <xref linkend="options_fax_global"/>)
                                             gespeichert.</para>
 										</listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>SaveOnly</option></term>
-										<listitem><para>Der empfangene Anruf wird nur im fax_user_dir 
-                                            (siehe <option>fax_user_dir</option>) gespeichert.
-                                            </para>
+										<listitem><para>Der empfangene Anruf wird nur im
+											<option>fax_user_dir</option> (siehe
+											<xref linkend="options_fax_global"/>) gespeichert.
+                                            					</para>
 										</listitem>
 									</varlistentry>
 								</variablelist>
@@ -903,7 +905,7 @@ make install</screen>
 							<para>Diese Option ist zwingend erforderlich.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
+				</variablelist></sect4>
 			</sect3>
 			<sect3 id="script_config_voice"><title>Konfiguration des Anrufbeantworters</title>
 				<para>Diese Datei enthält alle verfügbaren Einstellungen für den Anrufbeantworter.</para>
@@ -912,16 +914,17 @@ make install</screen>
 				  <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (hängt von der
                   Installation ab).</para>
 
-				<variablelist id="options_voice_global"><title>Verfügbare Optionen für den Abschnitt [GLOBAL] in der Anrufbeantworter-Konfiguration</title>
+				<sect4 id="options_voice_global"><title>Der Abschnitt [GLOBAL]</title>
+					<variablelist>
 					<varlistentry id="voice_audio_dir">
 						<term><option>audio_dir="/path/to/audiodir/"</option></term>
 						<listitem><para>Das Anrufbeantworter-Skript nutzt verschiedene WAV-Dateien, 
-                            z.B. eine globale Ansage, wenn der Benutzer keine eigene hat, sowie einige 
-							gesprochene Worte für die Fernabfrage und das dabei verwendete Menü. Diese 
-                            Audio-Dateien werden in diesem Verzeichnis gesucht. Wenn user_audio_files 
-                            aktiviert ist (siehe <option>user_audio_files</option>), kann jeder Benutzer
-							seine eigenen Audio-Schnipsel in seinem user_dir (siehe 
-                            <option>voice_user_dir</option>) verwenden.</para>
+							z.B. eine globale Ansage, wenn der Benutzer keine eigene hat, sowie einige
+							gesprochene Worte für die Fernabfrage und das dabei verwendete Menü. Diese
+							Audio-Dateien werden in diesem Verzeichnis gesucht. Wenn user_audio_files
+							aktiviert ist (siehe <option>user_audio_files</option>), kann jeder Benutzer
+							seine eigenen Audio-Schnipsel in seinem user_dir (siehe
+							<option>voice_user_dir</option>) verwenden.</para>
 						 <para>Diese Option ist zwingend erforderlich.</para>
 						</listitem>
 					</varlistentry>
@@ -936,7 +939,7 @@ make install</screen>
 								<varlistentry>
 									<term><filename>user_dir/username/</filename></term>
 									<listitem><para>Hier kann der Benutzer seine eigenen Audio-Dateien
-									(siehe <option>user_audio_files</option>) ablegen. Die 
+									(siehe <option>user_audio_files</option>) ablegen. Die
 									benutzerdefinierte Ansage wird ebenfalls hier gespeichert.
                                     </para></listitem>
 								</varlistentry>
@@ -953,10 +956,10 @@ make install</screen>
 						<term><option>user_audio_files="0"</option></term>
 						<listitem>
 							<para>Wenn dies auf <literal>1</literal> gesetzt wird, kann jeder Benutzer
-                                seine eigenen Audio-Dateien in seinem Benutzerverzeichnis verwenden
-								(siehe <option>voice_user_dir</option>). Wenn dies auf 
-                                <literal>0</literal> gesetzt wird, wird nur das audio_dir (siehe 
-                                <option>voice_audio_dir</option>) durchsucht.
+								seine eigenen Audio-Dateien in seinem Benutzerverzeichnis verwenden
+								(siehe <option>voice_user_dir</option>). Wenn dies auf
+								<literal>0</literal> gesetzt wird, wird nur das audio_dir (siehe
+								<option>voice_audio_dir</option>) durchsucht.
 							</para>
 							<para>Diese Option ist optional. Wenn nichts angegeben wird, werden keine
                             benutzerspezifischen Audio-Dateien verwendet (0).</para>
@@ -1004,9 +1007,9 @@ make install</screen>
                             Timeout 5 Sekunden.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
-				<variablelist id="options_voice_user"><title>Verfügbare Optionen für die Benutzer-Abschnitte in der Anrufbeantworter-Konfiguration</title>
-					<varlistentry>
+				</variablelist></sect4>
+				<sect4 id="options_voice_user"><title>Verfügbare Optionen für die Benutzer-Abschnitte in der Anrufbeantworter-Konfiguration</title>
+				  <variablelist><varlistentry>
 						<term><option>voice_delay</option></term>
 						<listitem><para>Benutzerspezifischer Wert für die globale Option 
                         im Abschnitt <option>[GLOBAL]</option> oben</para></listitem>
@@ -1108,7 +1111,7 @@ make install</screen>
 							<para>Diese Option ist zwingend erforderlich.</para>
 						</listitem>
 					</varlistentry>
-				</variablelist>
+				</variablelist></sect4>
 			</sect3>
 		</sect2>
 		<sect2 id="deleteoldfiles"><title>Alte Dateien löschen</title>
@@ -1169,8 +1172,8 @@ make install</screen>
 		</sect2>
 		<sect2 id="usingscripts_remoteinquiry"><title>Eine Fernabfrage machen</title>
 			<para>Um eine Fernabfrage zu machen, geben Sie bitte Ihre PIN (siehe
-            <option>voice_pin</option>) ein, während die Ansage des Anrufbeantworters abgespielt wird.
-            Nach einigen Sekungen bekommen Sie ein "Sprach-Menü", das Ihnen sagt, wie Sie Ihre eigene Ansage
+			<xref linkend="options_voice_user"/>) ein, während die Ansage des Anrufbeantworters abgespielt wird.
+			Nach einigen Sekungen bekommen Sie ein "Sprach-Menü", das Ihnen sagt, wie Sie Ihre eigene Ansage
 			für den Anrufbeantworter aufnehmen können oder wie Sie empfangene Anrufe abspielen können.
             </para>
 		</sect2>
@@ -1183,18 +1186,18 @@ make install</screen>
 			an welche Nummer verschickt werden soll. Es fügt dann den in das richtige Format konvertierten
             Job in die Send-Queue ein, von wo aus er von einem anderen &cs;-Skript genommen und an den 
             Empfänger verschickt wird. Wenn das Versenden erfolgreich beendet wurde oder nach mehreren 
-            Versuchen endgültig fehlgeschlagen ist, erhält der entsprechende Benutzer ein E-Mail, die ihm
+            Versuchen endgültig fehlgeschlagen ist, erhält der/die entsprechende Benutzer(in) ein E-Mail, die ihm/ihr
 			mitteilt, was passiert ist.</para>
 
 			<para><command>capisuitefax</command> kennt die folgenden Optionen:</para>
 
-			<screen>capisuitefax [-q] [-n] -d dialstring file1 [file2...]</screen>
+			<screen>capisuitefax [-q] [-n] [-u username] -d dialstring file1 [file2...]</screen>
 			<screen>capisuitefax [-q] -a id</screen>
 			<screen>capisuitefax [-h] [-l]</screen>
 			<variablelist>
 				<varlistentry>
 					<term><option>-a id</option></term>
-					<listitem><para>Bricht den Auftrag mit der angegebenen ID ab. Um die ID eines 
+					<listitem><para>Bricht den Auftrag mit der angegebenen ID ab. Um die ID eines
                     Auftrags zu ermittelen, können Sie die Option <option>-l</option>
 					verwenden.</para></listitem>
 				</varlistentry>
@@ -1223,10 +1226,19 @@ make install</screen>
                     </para></listitem>
 				</varlistentry>
 				<varlistentry>
+					<term><option>-u user</option></term>
+					<listitem><para>
+						Fax als anderer Benutzer versenden. Nur möglich, wenn <command>capisuitefax</command>
+						als Benutzer <literal>root</literal> aufgerufen wird. Diese Option ist hauptsächlich
+						für Erweiterungen, z. B. zum Faxen im Netzwerk, nützlich.
+					</para></listitem>
+				</varlistentry>
+				<varlistentry>
 					<term><option>file1 [file2...]</option></term>
 					<listitem><para>Eine oder mehrere PostScript-Dateien, die an diesen Empfänger 
-                    verschickt werden sollen (mehr als eine PostScript-Datei erzeugt mehrere separate 
-                    Fax-Aufträge).</para></listitem>
+						verschickt werden sollen. Mehrere PostScript-Dateien erzeugen mehrere separate
+						Fax-Aufträge).
+					</para></listitem>
 				</varlistentry>
 			</variablelist>
 		</sect2>
@@ -1395,7 +1407,7 @@ You divided by zero, message was: integer division or modulo by zero</screen>
 			<screen>&gt;&gt;&gt; import time
 &gt;&gt;&gt; # was ist in time?
 &gt;&gt;&gt; dir(time)
-['__doc__', '__file__', '__name__', 'accept2dyear', 'altzone', 'asctime', 'clock', 'ctime', 'daylight', 'gmtime', 'localtime', 'mktime', 'sleep', 'strftime', 'strptime', 'struct_time', 'time', 'timezone', 'tzname']
+['__doc__', '__file__', '__name__', 'accept2dyear', ...]
 &gt;&gt;&gt; # Was machen all diese Funktionen? Python sagt es uns...
 &gt;&gt;&gt; print time.__doc__
 This module provides various functions to manipulate time values.
@@ -1417,8 +1429,8 @@ ctime() -- convert time in seconds to string
 ctime(seconds) -> string
 
 Convert a time in seconds since the Epoch to a string in local time.
-This is equivalent to asctime(localtime(seconds)). When the time tuple is
-not present, current time as returned by localtime() is used.
+This is equivalent to asctime(localtime(seconds)). When the time tuple
+is not present, current time as returned by localtime() is used.
 
 &gt;&gt;&gt; time.time()
 1044380131.186987
@@ -1429,7 +1441,7 @@ not present, current time as returned by localtime() is used.
 500
 &gt;&gt;&gt; import pwd
 &gt;&gt;&gt; pwd.getpwuid(500)
-('gernot', 'x', 500, 100, 'Gernot Hillier', '/home/gernot', '/bin/bash')</screen>
+('hans', 'x', 500, 100, 'Hans Meier', '/home/gernot', '/bin/bash')</screen>
 
 			<para>Ok, ich hoffe, Sie haben einen kleinen Eindruck von Python bekommen. Viel Spaß damit.
 			Ich hatte ihn... :-)</para>
@@ -1660,21 +1672,21 @@ not present, current time as returned by localtime() is used.
 				erstellt wird, wenn Sie "in Datei drucken" auswählen). Jetzt können Sie GhostScript aufrufen,
 				um sie in ein SFF zu konvertieren:</para>
 
-				<screen><command>gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax -sOutputFile=outfile.sff myfile.ps</command></screen>
+				<screen><command>gs -dNOPAUSE -dBATCH -sDEVICE=cfax -sOutputFile=outfile.sff file.ps</command></screen>
 
 				<para>Wenn Sie sich nicht sicher sind, ob es funktioniert hat, können Sie
                 <command>sffview</command> wie weiter unten beschrieben verwenden.</para>
 			</sect3>
 			<sect3 id="view_sff"><title>Ansehen / konvertieren von SFF</title>
 				<para>Um einfach ein empfangenes SFF anzusehen, können Sie das
-                <command>sffview</command>-Programm verwenden. Dies ist ein einfaches, aber sehr 
+                <command>sffview</command>-Programm verwenden. Dies ist ein einfaches, aber sehr
                 nützliches Tool zum Ansehen von SF-Dateien, ohne sie konvertieren zu müssen.
 				Starten Sie es einfach und Sie bekommen ein GUI, wo Sie die gewünschte Datei öffnen können.
                 </para>
 
 				<para>Wenn Sie eine Fax-Datei in ein gebräuchlicheres Format konvertieren möchten,
                 empfehle ich <command>sfftobmp</command>. Es unterstützt einige Ausgabe-Formate wie
-				JPEG, TIFF, PBM oder BMP. Ich bevorzuge mehrseitige TIFF-Dateien, da dies das einzige 
+				JPEG, TIFF, PBM oder BMP. Ich bevorzuge mehrseitige TIFF-Dateien, da dies das einzige
 				Format ist, das in der Lage ist, mehrere Seiten in einer Datei zu speichern. Um SFF in ein
 				mehrseitiges TIFF zu konvertieren, rufen Sie auf:</para>
 
@@ -1711,8 +1723,8 @@ cp /usr/local/share/capisuite/beep.la .</screen>
             Installation passt.</para>
 
 			<para>Kopieren Sie das hier gezeigte Beispiel jetzt in eine Datei namens
-            <filename>example.py</filename> in diesem Verzeichnis. Vergessen Sie nicht, die dritte
-            Zeile zu ändern.</para>
+				<filename>example.py</filename> in diesem Verzeichnis. Vergessen Sie nicht, den Pfad
+				<literal>my_path</literal> zu ändern.</para>
 
 			<example><title>example.py</title>
 			<programlisting>import capisuite<co id="incoming_ex1_1"/>
@@ -2191,9 +2203,11 @@ def idle(capi):<co id="idle_ex2_4"/>
 		destination=job[4:-4]
 		capisuite.log("sending "+job+" to destination "+destination,1)<co id="idle_ex2_5"/>
 		try:
-			(call,result)=capisuite.call_faxG3(capi,1,my_number,destination,60,my_stationID,my_headline)<co id="idle_ex2_6"/>
+			(call,result)=capisuite.call_faxG3(capi,1,my_number,destination,
+			  60,my_stationID,my_headline)<co id="idle_ex2_6"/>
 			if (result!=0):<co id="idle_ex2_7"/>
-				capisuite.log("job "+job+" failed at call setup with reason "+str(hex(result)),1)
+				capisuite.log("job "+job+" failed at call setup with reason "
+				  +str(hex(result)),1)
 				os.rename(my_path+job,my_path+"failed-"+job)<co id="idle_ex2_9"/>
 				return<co id="idle_ex2_10"/>
 			capisuite.fax_send(call,my_path+job)<co id="idle_ex2_11"/>
@@ -2206,7 +2220,8 @@ def idle(capi):<co id="idle_ex2_4"/>
 			os.rename(my_path+job,my_path+"done-"+job)
 			return
 		else:
-			capisuite.log("job "+job+" failed during send with reasons "+str(hex(result))+","+str(hex(resultB3)),1)
+			capisuite.log("job "+job+" failed during send with reasons "
+			  +str(hex(result))+","+str(hex(resultB3)),1)
 			os.rename(my_path+job,my_path+"failed-"+job)</programlisting>
 		</example>
 
@@ -2378,7 +2393,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 
 				<para>Nach dem Verbindungsabbau und dem Protokollieren wird ein eine Beschreibungsdatei
                 geschrieben (wenn die aufgenommene Datei existiert), bei beiden Dateien wird der Eigentümer
-				auf den richtigen Benutzer geändert und die aufgenommene Nachricht wird an ihn gemailt.
+				auf den richtigen Benutzer geändert und die aufgenommene Nachricht wird an ihn/sie gemailt.
                 </para>
 			</sect3>
 			<sect3 id="default_incoming_4"><title>Funktion <function>remoteInquiry</function></title>
@@ -2657,7 +2672,7 @@ def idle(capi):<co id="idle_ex2_4"/>
            <listitem><para><literal>3304</literal> - Another application got that call</para></listitem>
            <listitem><para><literal>3311</literal> - T.30 (fax) error: Connection not successful (remote station is not a G3 fax device)</para></listitem>
            <listitem><para><literal>3312</literal> - T.30 (fax) error: Connection not successful (training error)</para></listitem>
-           <listitem><para><literal>3313</literal> - T.30 (fax) error: Disconnect before transfer (remote station doesn' support transfer mode, e.g. wrong resolution)</para></listitem>
+           <listitem><para><literal>3313</literal> - T.30 (fax) error: Disconnect before transfer (remote station doesn't support transfer mode, e.g. wrong resolution)</para></listitem>
            <listitem><para><literal>3314</literal> - T.30 (fax) error: Disconnect during transfer (remote abort)</para></listitem>
            <listitem><para><literal>3315</literal> - T.30 (fax) error: Disconnect during transfer (remote procedure error)</para></listitem>
            <listitem><para><literal>3316</literal> - T.30 (fax) error: Disconnect during transfer (local transmit data underflow)</para></listitem>
