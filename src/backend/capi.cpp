@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -239,43 +239,39 @@ Capi::facility_req (_cdword address, _cword FacilitySelector, _cstruct FacilityR
 
 
 void
-Capi::setListenFaxG3 (_cdword Controller) throw (CapiMsgError)
+Capi::setListenFaxG3 (_cdword controller) throw (CapiMsgError,CapiError)
 {
 	usedCIPMask|=0x00020010;
-
-	if (!Controller) {
+	if (!controller) {
 		unsigned char buf[64];
-		for (int i=1;i<=numControllers;i++) {
-			unsigned info = CAPI20_GET_PROFILE(i, buf);
-			if (info!=0)
-				throw (CapiMsgError(info,"Error in CAPI20_GET_PROFILE: "+Capi::describeParamInfo(info),"Capi::setListenFaxG3()"));
-
-			if ((buf[8] & 0x10 && buf[12] & 0x10 && buf[16] & 0x10) // is controller able to handle faxG3?
-			 || (buf[8] & 0x10 && buf[12] & 0x10 && buf[16] & 0x20)) //faxG3ext
+		for (int i=1;i<=numControllers;i++)
+			if (profiles[i-1].fax || profiles[i-1].faxExt)
 				listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
-		}
 	}
-	else
-		listen_req(Controller, usedInfoMask, usedCIPMask); // can throw CapiMsgError
+	else {
+		if (profiles[controller-1].fax || profiles[controller-1].faxExt)
+			listen_req(controller, usedInfoMask, usedCIPMask); // can throw CapiMsgError
+		else
+			throw(CapiError("Chosen controller doesn't support fax services","Capi::setListenFaxG3"));
+	}
 }
 
 void
-Capi::setListenTelephony (_cdword Controller) throw (CapiMsgError)
+Capi::setListenTelephony (_cdword controller) throw (CapiMsgError,CapiError)
 {
 	usedCIPMask|=0x00010012;
-	if (!Controller) {
+	if (!controller) {
 		unsigned char buf[64];
-		for (int i=1;i<=numControllers;i++) {
-			unsigned info = CAPI20_GET_PROFILE(i, buf);
-			if (info!=0)
-				throw (CapiMsgError(info,"Error in CAPI20_GET_PROFILE: "+Capi::describeParamInfo(info),"Capi::setListenTelephony()"));
-
-			if (buf[8] & 0x02 && buf[12] & 0x02 && buf[16] & 0x01) // is controller able to handle transparent?
+		for (int i=1;i<=numControllers;i++)
+			if (profiles[i-1].transp)
 				listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
-		}
 	}
-	else
-		listen_req(Controller, usedInfoMask, usedCIPMask); // can throw CapiMsgError
+	else {
+		if (profiles[controller-1].transp)
+			listen_req(controller, usedInfoMask, usedCIPMask); // can throw CapiMsgError
+		else
+			throw(CapiError("Chosen controller doesn't support voice (transparent) services","Capi::setListenTelephony"));
+	}
 }
 
 void
@@ -915,6 +911,10 @@ Capi::getInfo(bool verbose)
 /* History
 
 $Log: capi.cpp,v $
+Revision 1.4  2003/04/04 09:14:02  gernot
+- setListenTelephony() and setListenFaxG3 now check if the given controller
+  supports this service and throw an error otherwise
+
 Revision 1.3  2003/04/03 21:16:03  gernot
 - added new readProfile() which stores controller profiles in attributes
 - getInfo() only creates the string out of the stored values and doesn't

@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -89,25 +89,33 @@ class Capi {
 
 		/** @brief Tell capi that we want to _additionally_ listen to Fax G3 calls
 
-		    This method enables listening to fax calls from the analog network (coded as Bearer Capability 3.1kHz audio and
-		    from ISDN coded as fax group 3. The previously set listen mask is not cleared, so that the application
-		    can call this method after another listen request w/o loosing the other services.
+		    This method enables listening to fax calls from the analog network (coded as Bearer Capability
+		    3.1kHz audio and from ISDN coded as fax group 3. The previously set listen mask is not cleared,
+		    so that the application can call this method after another listen request w/o loosing the other
+		    services.
+
+		    It will also check if this controller is able to handle this service and throw an error otherwise.
 
 		    @param Controller Nr. of Controller (0 = all available controllers)
 		    @throw CapiMsgError Thrown by listen_req, see there for details
+		    @throw CapiError Thrown if the given controller can't handle fax group 3
 		*/
-  		void setListenFaxG3 (_cdword Controller=0) throw (CapiMsgError);
+  		void setListenFaxG3 (_cdword Controller=0) throw (CapiError,CapiMsgError);
 
   		/** @brief Tell capi that we want to _additionally_ listen to Telephony calls
 
-		    This method enables listening to speech calls from the analog network (coded as Bearer Capability 3.1kHz audio) and
-		    from ISDN (coded as Bearer Capability Speech or High Layer Compatibility telephony). The previously set listen mask
-		    is not cleared, so that the application can call this method after another listen request w/o loosing the other services.
+		    This method enables listening to speech calls from the analog network (coded as Bearer Capability
+		    3.1kHz audio) and from ISDN (coded as Bearer Capability Speech or High Layer Compatibility telephony).
+		    The previously set listen mask is not cleared, so that the application can call this method after
+		    another listen request w/o loosing the other services.
+
+		    It will also check if this controller is able to handle this service and throw an error otherwise.
 
 		    @param Controller Nr. of Controller (0 = all available controllers)
 		    @throw CapiMsgError Thrown by listen_req, see there for details
+		    @throw CapiError Thrown if the given controller can't handle fax group 3
 		*/
-  		void setListenTelephony (_cdword Controller=0) throw (CapiMsgError);
+  		void setListenTelephony (_cdword Controller=0) throw (CapiError,CapiMsgError);
 
 		/** @brief Static Returns some info about the installed Controllers
 
@@ -364,7 +372,7 @@ class Capi {
 		/** @brief Thread body - endless loop, will be blocked until message is received and then call readMessage()
     		*/
     		virtual void run(void);
-		
+
   		/** @brief return a prefix containing this pointer and date for log messages
 
       		    @return constructed prefix as string
@@ -425,6 +433,10 @@ class Capi {
 /*  History
 
 $Log: capi.h,v $
+Revision 1.3  2003/04/04 09:14:02  gernot
+- setListenTelephony() and setListenFaxG3 now check if the given controller
+  supports this service and throw an error otherwise
+
 Revision 1.2  2003/04/03 21:16:03  gernot
 - added new readProfile() which stores controller profiles in attributes
 - getInfo() only creates the string out of the stored values and doesn't
