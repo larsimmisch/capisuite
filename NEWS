@@ -3,7 +3,10 @@
 	* scripts: fixed a bug in idle.py which caused a fax send delay of one 
 	  hour when daylight saving time is in effect
 
-	* scripts: attachments to sent e-mails now get a valid filename 
+	* scripts: attachments to sent e-mails now get a valid filename
+
+	* scripts: the *_email settings from fax.conf and answering_machine.conf
+	  now allow to set multiple addresses to send the mails to
 
 0.4.1a (tag CAPISUITE_041a):
 ============================

@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.4 2003/03/20 09:12:42 gernot Exp $
+# $Id: fax.confin,v 1.5 2003/04/10 20:54:44 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -128,12 +128,11 @@ fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 #   You can also use the special entry "*" which stands for accepting ALL
 #   incoming calls as fax (use with care!)
 #
-# fax_email="name@domain.de" (optional, defaults to empty string)
-#   If given, this string indicates an email-address where the received faxes
-#   and voice calls will be sent to. If it is empty, the recorded calls and
-#   faxes will be sent to the user on the current system. It's also used to
-#   send status reports for sent fax jobs to. If you don't want to get emails,
-#   see the "action" option below
+# fax_email="<mailaddress1>,<mailaddress2>,..." (optional, defaults to empty string)
+#   If given, this string indicates email-addresses where the received faxes
+#   will be sent to. If it is empty, they will be sent to the user on the current
+#   system. They're also used to send status reports for sent fax jobs to. If you
+#   don't want to get emails, see the "action" option below
 #
 # fax_action="<action>" (MANDATORY)
 #   Here you can define what action will be taken when a fax is received.

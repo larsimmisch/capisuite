@@ -1,4 +1,4 @@
-# $Id: answering_machine.confin,v 1.3 2003/03/20 08:56:21 gernot Exp $
+# $Id: answering_machine.confin,v 1.4 2003/04/10 20:54:44 gernot Exp $
 #
 # This is the configuration file for the answering machine scripts distributed
 # with CapiSuite
@@ -93,19 +93,18 @@ record_silence_timeout="5"
 #
 # Additionally, the following options are possible:
 #
-# voice_numbers="<num1>,<num2>" (optional, if not set this user can't receive)
+# voice_numbers="<num1>,<num2>,..." (optional, if not set this user can't receive)
 #
 #   This list contains the numbers on which this user wants to receive incoming
 #   voice calls. The values are separated by commas. You can also use the special 
 #   entry "*" which stands for accepting ALL incoming calls (use with care!).
 #
-# voice_email="name@domain.de" (optional, defaults to empty string)
+# voice_email="<mailaddress1>,<mailaddress2>,..." (optional, defaults to empty string)
 #
-#   If given, this string indicates an email-address where the received faxes
+#   If given, this string indicates email-addresses where the received faxes
 #   and voice calls will be sent to. If it is empty, the recorded calls and
-#   faxes will be sent to the user on the current system. It's also used to
-#   send status reports for sent fax jobs to. If you don't want to get emails,
-#   see the "action" option below
+#   faxes will be sent to the user on the current system. If you don't want to
+#   get emails, see the "action" option below
 #
 # pin="<PIN number>" (optional, defaults to empty)
 #

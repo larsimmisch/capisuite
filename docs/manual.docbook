@@ -760,10 +760,10 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="fax_email">
 						<term><option>fax_email=""</option></term>
-						<listitem><para>If given, this string indicates an email-address where the received faxes and
-							voice calls will be sent to. If it is empty, they will be sent to the user account on the
-							system &cs; is running on. The address is also used to send status reports
-							for sent fax jobs to. If you don't want emails to be sent at all, use the
+						<listitem><para>If given, this string indicates email-addresses where the received faxes will
+							be sent to. More addresses are separated by commas. If it is empty, they will be sent
+							to the user account on the system &cs; is running on. The address is also used to send
+							status reports for sent fax jobs to. If you don't want emails to be sent at all, use the
 							action option (see <xref linkend="fax_action"/>).</para>
 							<para>This option is optional. If not given, the mail is sent to the system account.</para>
 						</listitem>
@@ -906,11 +906,10 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="voice_email">
 						<term><option>voice_email=""</option></term>
-						<listitem><para>If given, this string indicates an email-address where the received faxes and
+						<listitem><para>If given, this string indicates email-addresses where the received faxes and
 							voice calls will be sent to. If it is empty, they will be sent to the user account on the
-							system &cs; is running on. The address is also used to send status reports
-							for sent fax jobs to. If you don't want emails to be sent at all, use the
-							action option (see <xref linkend="voice_action"/>).</para>
+							system &cs; is running on. More addresses are separated by commas. If you don't want emails
+							to be sent at all, use the action option (see <xref linkend="voice_action"/>).</para>
 							<para>This option is optional. If not set, the calls are mailed to the system account.</para>
 						</listitem>
 					</varlistentry>
