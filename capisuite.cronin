@@ -30,8 +30,8 @@ for i in @spooldir@/users/*/received @spooldir@/done @spooldir@/failed; do
    test -r $i/cronjob.conf && . $i/cronjob.conf
    
    test "$MAX_DAYS" -gt 0 2> /dev/null || continue
-   find $i/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \;
-   find $i/. -name "*voice-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \; 
+   find $i/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \; 2>/dev/null
+   find $i/. -name "*voice-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \; 2>/dev/null
 done;
 
 exit 0
