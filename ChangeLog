@@ -1,3 +1,9 @@
+2004-07-15  Gernot Hillier  <gernot@hillier.de>
+	* configure.in: support new parameter in ALERT_REQ of newer capi4linux
+	  versions, thx to Steffen Barszus for reporting and the fix
+	* src/backend/capi.cpp (Capi::alert_req): Likewise.
+	* acinclude.m4 (CS_TEST_CAPI4LINUX): Likewise. 
+
 2004-06-10  Gernot Hillier  <gernot@hillier.de>
 	* src/backend/connection.cpp (info_ind_called_party_nr): prevent 
 	  CapiSuite from crashing when a too high DDIBaseLength was configured,

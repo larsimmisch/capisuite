@@ -19,6 +19,7 @@
 #include "connection.h"
 #include "applicationinterface.h"
 #include "capi.h"
+#include "../../config.h"
 
 void* capi_exec_handler(void* arg)
 {
@@ -117,7 +118,12 @@ Capi::alert_req(_cdword plci) throw (CapiMsgError)
 	if (debug_level >= 2) {
 	    	debug << prefix() << ">ALERT_REQ: ApplId 0x" << hex << applId << ", MsgNr 0x" << messageNumber << ", PLCI 0x" << plci << endl;
 	}
-	unsigned info=ALERT_REQ(&CMSG, applId, messageNumber++, plci, NULL, NULL, NULL, NULL);
+	unsigned info=ALERT_REQ(&CMSG, applId, messageNumber++, plci, 
+	    NULL, NULL, NULL, NULL
+	#ifdef HAVE_NEW_CAPI4LINUX
+	    , NULL
+	#endif
+	    );
 	if (debug_level >= 2) {
 	    	debug << prefix() << "info: " << info << endl;
 	}

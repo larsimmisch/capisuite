@@ -39,6 +39,18 @@ AC_TRY_COMPILE([#include <string>],
 )
 ]) dnl CS_TEST_GCC
 
+AC_DEFUN([CS_TEST_CAPI4LINUX],
+[AC_MSG_CHECKING([for new ALERT_REQ signature in capiutils.h])
+AC_TRY_COMPILE([#include <capiutils.h>],
+  [ALERT_REQ (NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL);],
+  [
+    AC_DEFINE([HAVE_NEW_CAPI4LINUX],1,[we have new ALERT_REQ implementation])
+    AC_MSG_RESULT([yes])
+  ],
+  AC_MSG_RESULT([no])
+)
+]) dnl CS_TEST_CAPI4LINUX
+
 # PGAC_CHECK_PYTHON_DIRS
 # -----------------------
 # Determine the name of various directory of a given Python installation.
