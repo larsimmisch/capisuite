@@ -1,5 +1,6 @@
-0.4.3 (NN):
-===========
+0.4.3 (CVS tag CAPISUITE_043):
+==============================
+
 	* scripts & core: support color fax reception (bug #22, thx to
 	  Axel Schneck)
 
@@ -23,6 +24,11 @@
 	* core: fax headline is now converted to the right charset internally,
 	  so that special characters like german umlauts are working now
 	  (thx to Eckhard Rüggeberg for reporting)
+
+	* scripts: Sander Roest found a workaround for the odd Python error 
+	  "cannot unmarshal code objects in restricted execution mode" which mainly
+	  hit Redhat users for any reason beyond my understanding and prevented
+	  CapiSuite from sending mails sometimes/always...
 
 0.4.2 (CVS tag CAPISUITE_042):
 ==============================
