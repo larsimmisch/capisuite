@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.12 $
+    $Revision: 1.13 $
 */
 
 /***************************************************************************
@@ -1028,7 +1028,7 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 			B3config=new unsigned char [1+2+2+1+faxStationID.size()+1+faxHeadline.size()]; // length + 1 byte for the length itself
 			int i=0;
 			B3config[i++]=2+2+1+faxStationID.size()+1+faxHeadline.size();  // length
-			B3config[i++]=0; B3config[i++]=0; // resolution = standard
+			B3config[i++]=0; B3config[i++]=4; // resolution = standard; accept color faxes
 			B3config[i++]=0; B3config[i++]=0; // format: SFF
 			B3config[i++]=faxStationID.size();
 			for (unsigned j=0;j<faxStationID.size();j++)
@@ -1082,6 +1082,10 @@ Connection::convertToCP437(string &text)
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.13  2003/12/21 21:15:10  gernot
+* src/backend/connection.cpp (buildBconfiguration): accept
+  color faxes now by setting bit 10 in B3configuration
+
 Revision 1.12  2003/07/20 19:08:19  gernot
 - added missing include of errno.h
 
