@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.7 2003/04/25 10:34:28 gernot Exp $
+# $Id: fax.confin,v 1.8 2003/06/19 14:56:20 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -19,7 +19,7 @@
 #
 # The file is split in sections starting with "[sectionname]". The section
 # [GLOBAL] contains all options common for all users. For each different user,
-# an own section is used which must at least contain "fax_numbers"
+# an own section is used.
 #
 # Nearly all options are available in the [GLOBAL] section and
 # the user sections. The defaults from the global section can be overwritten in
@@ -75,7 +75,8 @@ send_controller="1"
 # outgoing_MSN (optional, default is empty)
 #
 # The MSN (number) to use for outgoing calls. You can also leave this empty.
-# Then the first number of fax_numbers will be used as outgoing MSN.
+# Then the first number of fax_numbers will be used as outgoing MSN. If this 
+# one is empty, too, the user can't send faxes.
 outgoing_MSN=""
 
 # outgoing_timeout (optional, defaults to 60)
