@@ -275,7 +275,7 @@ deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
 					<para>Now, issue the following commands:</para>
 
 					<screen>apt-get update            # add package list from repository
-apt-get install capisuite # install and resolve denpendencies</screen>
+apt-get install capisuite # install and resolve dependencies</screen>
 
 					<para>When a new package is available, <command>apt-get update</command> grabs the new
 					package listing and</para>
@@ -469,7 +469,7 @@ make install</screen>
 			As soon as you have configured the default scripts, simply run
 			<command>rccapisuite restart</command>.</para>
 
-			<para>For debug puposes, you can also start &cs; manually at any time
+			<para>For debug purposes, you can also start &cs; manually at any time
 			by just calling
 
 			<screen><command>/path/to/capisuite</command></screen></para>
@@ -569,7 +569,7 @@ make install</screen>
 			able to delete recorded calls he doesn't need any more.</para>
 
 			<para>Another script will check special queue directories for fax send jobs
-			regularly. To put jobs in this directory, a special commandline tool is also
+			regularly. To put jobs in this directory, the commandline tool <command>capisuitefax</command> is
 			provided. See <xref linkend="usingscripts"/> for further details on this.</para>
 		</sect2>
 
@@ -586,7 +586,7 @@ make install</screen>
 			valid system user).</para>
 
 			<para>The <literal>[GLOBAL]</literal>-section defines some global options like
-			pathnames and default settings for options users can override. The user-sections
+			pathnames and default settings for options that can be overridden in the user-sections. The user-sections
 			hold all the options which belong to a particular user.</para>
 
 			<para>All options for the two files are described in short below. For all details, please see the comments
@@ -764,7 +764,7 @@ make install</screen>
 							be sent to. More addresses are separated by commas. If it is empty, they will be sent
 							to the user account on the system &cs; is running on. The address is also used to send
 							status reports for sent fax jobs to. If you don't want emails to be sent at all, use the
-							action option (see <option>fax_action</option>).</para>
+							action option (see option <option>fax_action</option>) below.</para>
 							<para>This option is optional. If not given, the mail is sent to the system account.</para>
 						</listitem>
 					</varlistentry>
@@ -776,7 +776,7 @@ make install</screen>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
 										<listitem><para>The received call will be mailed to the given address (see
-											<option>fax_email</option> above) and saved to the fax_user_dir (see <xref linkend="options_fax_global"/>)
+											<option>fax_email</option> above) and saved to the <option>fax_user_dir</option> (see <xref linkend="options_fax_global"/>)
 											</para>
 										</listitem>
 									</varlistentry>
@@ -1033,7 +1033,7 @@ make install</screen>
 			from which it's collected by another &cs; script and sent to the
 			destination. If the sending was completed successfully or failed finally
 			after trying for some time, the according user will get an email
-			telling him what has happened.</para>
+			telling him/her what has happened.</para>
 
 			<para>The following options are recognized by <command>capisuitefax</command>:</para>
 
@@ -1056,7 +1056,7 @@ make install</screen>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-l</option></term>
-					<listitem><para>Shows the jobs which are currenty in the send queue.</para></listitem>
+					<listitem><para>Shows the jobs which are currently in the send queue.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-n</option></term>
@@ -1076,8 +1076,8 @@ make install</screen>
 				</varlistentry>
 				<varlistentry>
 					<term><option>file1 [file2...]</option></term>
-					<listitem><para>One or more PostScript files to send to this destination (more than
-					one PostScript file will produce several separate fax jobs)</para></listitem>
+					<listitem><para>One or more PostScript files to send to this destination. More than
+					one PostScript file will produce several separate fax jobs.</para></listitem>
 				</varlistentry>
 			</variablelist>
 		</sect2>
@@ -1090,7 +1090,7 @@ make install</screen>
 		<para>In the last chapter you've seen how to use the default scripts distributed with &cs;.
 		But the main goal in developing &cs; was not to provide a perfect ready-to-use
 		application. I intended to develop a tool where you can write your <emphasis>own</emphasis>
-		applications very easy. I'll show you how to do this in the next sections.</para>
+		applications very easyly. I'll show you how to do this in the next sections.</para>
 
 
 	<sect1 id="ug_python"><title>Introduction to Python</title>
@@ -1864,7 +1864,7 @@ def faxIncoming(call):
 					<literal>os.unlink</literal>.</para>
 				</callout>
 				<callout arearefs="incoming_ex4_6">
-					<para>Fax handling was realized in a seperate function which is called here.</para>
+					<para>Fax handling was realized in a separate function which is called here.</para>
 				</callout>
 				<callout arearefs="incoming_ex4_7">
 					<para>So far, this connection is in voice mode (which was set by using
@@ -2155,14 +2155,14 @@ def idle(capi):<co id="idle_ex2_4"/>
 				one is entered. If a valid PIN is entered, it starts the <function>remoteInquiry</function>. After three wrong attempts, it will disconnect.</para>
 
 				<para>After disconnecting and logging, a description file is written (if the recorded file exists), both files will be 
-				<command>chown</command>'ed to the right user and the recorded message will be mailed to him.</para>
+				<command>chown</command>'ed to the right user and the recorded message will be mailed to him/her.</para>
 			</sect3>
 			<sect3 id="default_incoming_4"><title>function <function>remoteInquiry</function></title>
 				<para>The <function>remoteInquiry</function> starts by creating a lock file and acquiring an exclusive
 				lock on it to prevent two parallel remote inquiries for the same user. If the lock can't be acquired, an error message is
 				played and the function returns. If locking has succeeded, a list of the recorded voice calls is compiled by listing the 
 				user directory, filtering and sorting it. Now, a file called <filename>last_inquiry</filename> is read when it exists.
-				It contains the number of the last heard message. With this information, the old messages can be filtered out to a seperate
+				It contains the number of the last heard message. With this information, the old messages can be filtered out to a separate
 				list and thus the caller can listen to messages he doesn't know already first.</para>
 
 				<para>The number of new messages is said, followed by a small menu where the caller can choose to either record an announcment
@@ -2184,13 +2184,13 @@ def idle(capi):<co id="idle_ex2_4"/>
 				</itemizedlist>
 
 				<para>At the end, the caller will be informed that no more messages are available and the connection will be finished, followed
-				by releasing the lock file and deleting ir.</para>
+				by releasing the lock file and deleting it.</para>
 			</sect3>
 			<sect3 id="default_incoming_5"><title>function <function>newAnnouncement</function></title>
 				<para><function>newAnnouncement</function> presents some instructions to the caller first. Then, the new announcement will be 
-				recorded to a temporary file. To give the user the ability to check it, it will be played, followed by a menu allowing him to
+				recorded to a temporary file. To give the user the ability to check it, it will be played, followed by a menu allowing him/her to
 				save it or to repeat the recording. If the user has chosen to save it, it will be moved from the temporary file to
-				<filename>announcement.la</filename> in the users voice directory and <command>chown</command>'ed to him. The call will be
+				<filename>announcement.la</filename> in the users voice directory and <command>chown</command>'ed to him/her. The call will be
 				finished with an approval to the caller that it has been saved succesfully.</para>
 			</sect3>
 		</sect2>
@@ -2370,7 +2370,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 			<listitem><para><literal>3304</literal> - Another application got that call</para></listitem>
 			<listitem><para><literal>3311</literal> - T.30 (fax) error: Connection not successful (remote station is not a G3 fax device)</para></listitem>
 			<listitem><para><literal>3312</literal> - T.30 (fax) error: Connection not successful (training error)</para></listitem>
-			<listitem><para><literal>3313</literal> - T.30 (fax) error: Disconnect before transfer (remote station doesn' support transfer mode, e.g. wrong resolution)</para></listitem>
+			<listitem><para><literal>3313</literal> - T.30 (fax) error: Disconnect before transfer (remote station doesn't support transfer mode, e.g. wrong resolution)</para></listitem>
 			<listitem><para><literal>3314</literal> - T.30 (fax) error: Disconnect during transfer (remote abort)</para></listitem>
 			<listitem><para><literal>3315</literal> - T.30 (fax) error: Disconnect during transfer (remote procedure error)</para></listitem>
 			<listitem><para><literal>3316</literal> - T.30 (fax) error: Disconnect during transfer (local transmit data underflow)</para></listitem>
