@@ -1,6 +1,0 @@
-# run_capisuite_daemon:
-#	set 'y' to activate the boot/shutdown script
-#	/etc/init.d/capisuite (Don't forget to
-#	configure the files in /etc/capisuite/
-#
-run_capisuite_daemon=n
