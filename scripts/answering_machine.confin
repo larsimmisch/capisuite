@@ -1,4 +1,4 @@
-# $Id: answering_machine.confin,v 1.1 2003/02/19 08:19:54 gernot Exp $
+# $Id: answering_machine.confin,v 1.2 2003/02/21 13:12:19 gernot Exp $
 #
 # This is the configuration file for the answering machine scripts distributed
 # with CapiSuite
@@ -120,6 +120,6 @@ record_silence_timeout="5"
 # voice_action="MailAndSave"
 # voice_delay="10"
 # record_length="60"
-# voice_email="" # sent to gernot@localhost
+# voice_email=""
 # pin="99*45"
 

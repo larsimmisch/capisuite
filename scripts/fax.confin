@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.1 2003/02/19 08:19:54 gernot Exp $
+# $Id: fax.confin,v 1.2 2003/02/21 13:12:19 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -137,6 +137,6 @@ fax_headline="Fax sent by CapiSuite (http://www.capisuite.de)"
 # fax_numbers="11,12"
 # fax_stationID="+49 89 123456"
 # fax_headline="Gernot Hillier - sent by CapiSuite"
-# fax_email="" # sent to gernot@localhost
+# fax_email=""
 # fax_action="MailAndSave"
 
