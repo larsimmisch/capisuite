@@ -2,6 +2,7 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
+build-stamp
 stamp-h1
 config.*
 configure
@@ -9,3 +10,11 @@ configure.scan
 autoscan.log
 capisuite.cron
 rc.capisuite
+COPYING
+INSTALL
+depcomp
+install-sh
+missing
+mkinstalldirs
+py-compile
+

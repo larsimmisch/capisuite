@@ -1,0 +1,7 @@
+capisuite
+capisuite.postinst.debhelper
+capisuite.postrm.debhelper
+capisuite.prerm.debhelper
+capisuite.substvars
+files
+
