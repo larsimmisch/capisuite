@@ -19,10 +19,10 @@ SEND_Q = 'sendq'
 RECEIVED_Q = 'received'
 
 __known_sections__ = ('GLOBAL',
-                      'Mail Fax Sent',
-                      'Mail Fax Failed',
-                      'Mail Fax Received',
-                      'Mail Voice Received')
+                      'MailFaxSent',
+                      'MailFaxFailed',
+                      'MailFaxReceived',
+                      'MailVoiceReceived')
 
 # capi return codes:
 # 34D8 = Incompatible destination
