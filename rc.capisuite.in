@@ -82,23 +82,9 @@ case "$1" in
 	# answering machine. Otherwise exit.
 	# IMPORTANT: Change this or comment it out if you want to use
 	#            your own CapiSuite scripts.
-	# todo: change these tests since they are not longer valid due to
-	# [Mail...] sections. Consider using capisuite-checkconfig!
-	while read -r sec rest ; do
-	        if [ "${sec:0:1}" = "[" -a "$sec" != "[GLOBAL]" ]; then
-	                configured_fax=yes
-	                break
-	        fi
-	done < <(cat @pkgsysconfdir@/fax.conf)
-	while read -r sec rest ; do
-	        if [ "${sec:0:1}" = "[" -a "$sec" != "[GLOBAL]" ]; then
-	                configured_voice=yes
-	                break
-	        fi
-	done < <(cat @pkgsysconfdir@/answering_machine.conf)
-	test "$configured_fax" -o "$configured_voice" || configured=no
-	# end check for configured users
-
+	if [ ! @sbindir@/capisuite-checkconfig -t >/dev/null ] ; then
+		configured=no
+	fi
 	## Start daemon with startproc(8). If this fails
 	## the return value is set appropriately by startproc.
 	if [ $configured = "yes" ]; then

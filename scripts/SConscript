@@ -17,8 +17,10 @@ user_scripts = [env.FileSubst('capisuitefax', 'capisuitefax.in'),]
 env.AddPostAction(user_scripts, Chmod('$TARGETS',  0755))
 
 # these are meant to be used by the admin
-sbin_scripts = [File('capisuite-checkconfig'),]
-#env.AddPostAction(sbin_scripts, Chmod('$TARGETS',  0755))
+sbin_scripts = [
+    env.FileSubst('capisuite-checkconfig', 'capisuite-checkconfig.in'),
+    ]
+env.AddPostAction(sbin_scripts, Chmod('$TARGETS',  0755))
 
 # config files
 configs = [

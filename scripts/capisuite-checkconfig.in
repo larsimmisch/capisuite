@@ -1,6 +1,32 @@
 #!/usr/bin/python
+"""capisuite-checkconfig - capisuite tool for checking config files
 
-import sys, os, os.path
+Usage:
+capisuite-checkconfig
+          Check some parameters and print content of config.
+
+capisuite-checkconfig file1 [file2...]
+          Print contents of the given config files.
+          
+capisuite-checkconfig -t
+          Test if capisuite is configured (returns non zero if not).
+          
+capisuite-checkconfig [ -h | --help ]
+          Print this usage information.
+"""
+
+__author__    = "Hartmut Goebel <h.goebel@crazy-compilers.com>"
+__copyright__ = "Copyright (c) 2004-2005 by Hartmut Goebel"
+__version__   = "$Revision: 0.0 $"
+__credits__   = "This is part of www.capisuite.de; thanks to Gernot Hillier"
+__license__ = """
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+"""
+
+import sys, os, getopt
 
 def error(*msgs):
     for m in msgs:
@@ -15,8 +41,7 @@ try:
 except Exception, e:
     error("failed to import capisuite's python modules", str(e))
 
-
-# Sompe helper functions, if you don't know what they do, just skip to
+# Some helper functions, if you don't know what they do, just skip to
 # the easy part
     
 def test_nextfile(user, path, queue, prefix):
@@ -106,12 +131,81 @@ def checkGlobalConfig(file=None):
         print "Rerun as 'root' to create them."
         print
 
+def do_test_if_configured():
+    """
+    Test whether capisuite is configured. This includes:
+    - config files must exist
+    - Some sections must exist
+    - at least one user must be configured in fax and voice config
+    - ... further tests to come
+    """
+
+    def test_configfile(filename, required_sections):
+        cfg = capisuite.config.CSConfigParser()
+        try:
+            config = cfg.read(filename)
+        except IOError, err:
+            print >> sys.stderr, "ERROR: Can't read", filename
+            return 0
+        all_sections = cfg.sections()
+        for sect in required_sections:
+            if not sect in all_sections:
+                print >> sys.stderr, "Missing section", sect, "in", filename
+                return 0
+        for sect in all_sections:
+            if not sect in required_sections:
+                return 1
+        print >> sys.stderr, "Warning: Missing a user section in", filename
+        return 0
+    
+    # Read global configuration
+    #try:
+    #    config = capisuite.config.readConfig(configfile)
+    #except IOError, err:
+    #    return 10
+
+    configured_fax = \
+           test_configfile(os.path.join("@pkgsysconfdir@", "fax.conf"),
+                           ('GLOBAL',
+                            'MailFaxReceived', 'MailFaxSent', 'MailFaxFailed'))
+    configured_voice = \
+           test_configfile(os.path.join("@pkgsysconfdir@", "answering_machine.conf"),
+                           ('GLOBAL', 'MailVoiceReceived'))
+    return configured_fax or configured_voice
+
+#----------- usage -----------#
+
+def usage(error=''):
+    print __doc__
+    if error:
+        print
+        print "ERROR:", error
+    sys.exit(1)
+
 #----------- main -----------#
 
-if len(sys.argv) == 1:
+test_if_configured = 0
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "c:t", ['config=','test'])
+except getopt.GetoptError, e:
+    usage(e.msg)
+    sys.exit(1)
+
+for option, param in opts:
+    # commands
+    if option in ('-h','--help'): usage()
+    elif option in ('-t','--test'): test_if_configured = 1
+
+if test_if_configured:
+    if not do_test_if_configured():
+        print 'capisuite seams to be not configured!'
+        sys.exit(10)
+    else:
+        print 'capisuite seams to be configured!'
+        sys.exit(0)
+elif len(args) == 0:
     checkGlobalConfig()
-elif 0:
-    checkGlobalConfig(sys.argv[1])
 else:
     config = capisuite.config.readGlobalConfig(sys.argv[1])
     sections = config.sections()
@@ -125,7 +219,7 @@ else:
         print
     print 'known users:',
     print config.listUsers()
+
 # todo: these checks:
 # - are all users valid system users?
 # - do all voice-users have 'voice_delay' set?
-# - option --configured to chekc if any fax or voice user is configured
