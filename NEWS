@@ -7,8 +7,7 @@
 	  Makefiles (thx to Wolfgang Dollendorf)
 
 	* scripts: added missing "+.la" which is necessary for the remote inquiry 
-          of recorded international calls
-	  (bug #27)
+          of recorded international calls (bug #27)
 
 	* scripts: fax_numbers may be now left empty in fax.conf. This makes
 	  it possible to use one MSN for receiving/sending faxes and voice  
