@@ -1,6 +1,6 @@
 dist_pkgdata_DATA = 0.la 1.la 2.la 3.la 4.la 5.la 6.la 7.la 8.la 9.la ..la am.la \
 	von.la beep.la erklaerung.la fuer.la keine-weiteren-nachrichten.la \
-	nachricht-gelöscht.la nachricht.la nachrichten.la neue-nachricht.la \
+	nachricht-geloescht.la nachricht.la nachrichten.la neue-nachricht.la \
 	neue-nachrichten.la uhr.la um.la anrufbeantworter-von.la \
 	bitte-nachricht.la fuer-neue-ansage-9.la zum-abhoeren-1.la \
 	bitte-neue-ansage-komplett.la neue-ansage-lautet.la wenn-einverstanden-1.la \

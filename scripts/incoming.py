@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.8 $
+#    version              : $Revision: 1.9 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -359,7 +359,7 @@ def remoteInquiry(call,userdir,curr_user,config):
 					os.remove(filename)
 					os.remove(filename[:-2]+"txt")
 					del curr_msgs[i]
-					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht-gelöscht.la"))
+					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht-geloescht.la"))
 				elif (cmd=="4"):
 					if (curr_msgs[i]>lastinquiry):
 						lastinquiry=curr_msgs[i]
@@ -407,6 +407,10 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.9  2003/06/27 07:51:09  gernot
+# - replaced german umlaut in filename "nachricht-gelöscht.la", can cause
+#   problems on Redhat, thx to Herbert Hübner for reporting
+#
 # Revision 1.8  2003/06/16 10:21:05  gernot
 # - define filename in any case (thx to Axel Schneck for reporting and
 #   analyzing...)
