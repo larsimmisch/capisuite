@@ -3,5 +3,5 @@
 # Thx to Achim Bohnet <ach@mpe.mpg.de>
 
 bootstrap:
-	autoreconf
-	automake -a
+	-autoreconf
+	automake -a --copy
