@@ -34,7 +34,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 subdir = src/capisuite-py
-DIST_COMMON = $(pkgpython_PYTHON) $(srcdir)/Makefile.am \
+DIST_COMMON = $(python_module_PYTHON) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -52,8 +52,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(pkgpythondir)"
-pkgpythonPYTHON_INSTALL = $(INSTALL_DATA)
+am__installdirs = "$(DESTDIR)$(python_moduledir)"
+python_modulePYTHON_INSTALL = $(INSTALL_DATA)
 py_compile = $(top_srcdir)/py-compile
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -156,7 +156,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 pkgsysconfdir = @sysconfdir@/capisuite
-pkgpython_PYTHON = __init__.py config.py consts.py core.py exceptions.py \
+python_module_PYTHON = __init__.py config.py consts.py core.py exceptions.py \
     fax.py fileutils.py voice.py
 
 EXTRA_DIST = config.py.in
@@ -193,28 +193,28 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 uninstall-info-am:
-install-pkgpythonPYTHON: $(pkgpython_PYTHON)
+install-python_modulePYTHON: $(python_module_PYTHON)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkgpythondir)" || $(mkdir_p) "$(DESTDIR)$(pkgpythondir)"
-	@list='$(pkgpython_PYTHON)'; dlist=''; for p in $$list; do\
+	test -z "$(python_moduledir)" || $(mkdir_p) "$(DESTDIR)$(python_moduledir)"
+	@list='$(python_module_PYTHON)'; dlist=''; for p in $$list; do\
 	  if test -f "$$p"; then b=; else b="$(srcdir)/"; fi; \
 	  if test -f $$b$$p; then \
 	    f=$(am__strip_dir) \
 	    dlist="$$dlist $$f"; \
-	    echo " $(pkgpythonPYTHON_INSTALL) '$$b$$p' '$(DESTDIR)$(pkgpythondir)/$$f'"; \
-	    $(pkgpythonPYTHON_INSTALL) "$$b$$p" "$(DESTDIR)$(pkgpythondir)/$$f"; \
+	    echo " $(python_modulePYTHON_INSTALL) '$$b$$p' '$(DESTDIR)$(python_moduledir)/$$f'"; \
+	    $(python_modulePYTHON_INSTALL) "$$b$$p" "$(DESTDIR)$(python_moduledir)/$$f"; \
 	  else :; fi; \
 	done; \
 	test -z "$$dlist" || \
-	PYTHON=$(PYTHON) $(py_compile) --basedir "$(DESTDIR)$(pkgpythondir)" $$dlist
+	PYTHON=$(PYTHON) $(py_compile) --basedir "$(DESTDIR)$(python_moduledir)" $$dlist
 
-uninstall-pkgpythonPYTHON:
+uninstall-python_modulePYTHON:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkgpython_PYTHON)'; dlist=''; for p in $$list; do\
+	@list='$(python_module_PYTHON)'; dlist=''; for p in $$list; do\
 	  f=$(am__strip_dir) \
-	  rm -f "$(DESTDIR)$(pkgpythondir)/$$f"; \
-	  rm -f "$(DESTDIR)$(pkgpythondir)/$${f}c"; \
-	  rm -f "$(DESTDIR)$(pkgpythondir)/$${f}o"; \
+	  rm -f "$(DESTDIR)$(python_moduledir)/$$f"; \
+	  rm -f "$(DESTDIR)$(python_moduledir)/$${f}c"; \
+	  rm -f "$(DESTDIR)$(python_moduledir)/$${f}o"; \
 	done
 tags: TAGS
 TAGS:
@@ -254,7 +254,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile all-local
 installdirs:
-	for dir in "$(DESTDIR)$(pkgpythondir)"; do \
+	for dir in "$(DESTDIR)$(python_moduledir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -299,7 +299,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-pkgpythonPYTHON
+install-data-am: install-python_modulePYTHON
 
 install-exec-am:
 
@@ -325,17 +325,17 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-pkgpythonPYTHON
+uninstall-am: uninstall-info-am uninstall-python_modulePYTHON
 
 .PHONY: all all-am all-local check check-am clean clean-generic \
 	distclean distclean-generic distdir dvi dvi-am html html-am \
 	info info-am install install-am install-data install-data-am \
 	install-exec install-exec-am install-info install-info-am \
-	install-man install-pkgpythonPYTHON install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-man install-python_modulePYTHON install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am uninstall uninstall-am uninstall-info-am \
-	uninstall-pkgpythonPYTHON
+	uninstall-python_modulePYTHON
 
 
 config.py: config.py.in
