@@ -139,19 +139,28 @@
                 Eicon-Karten. Wenn Sie eine der passiven Karten von AVM nutzen, müssen Sie sich deren
 				CAPI-Treiber herunterladen und installieren.</para>
 
+				<para>Mit der neuen Linux-Version 2.6 und dem mISDN-Projekt, das in den neuen Kerneln
+				bereits enthalten ist, wird künftig für die meisten Karten, die heute vom HiSax-Treiber
+				unterstützt werden, auch ein CAPI-konformer Treiber zur Verfügung stehen. Leider wird
+				auch mISDN keine Faxprotokoll-Implementierung enthalten und deshalb wird das Faxen mit
+				&cs; (oder jedem anderen Linux-Programm) und passiven Karten weiterhin nicht möglich
+				sein; Fax-Unterstützung für passive Karten gibt es derzeit nur in den Binärtreibern von AVM.
+				</para>
+
+				<para>Es gibt keine Möglichkeit, &cs; mit der alten ISDN4Linux-Schnittstelle
+				und den passenden Treibern zum Laufen zu bringen. Vermutlich wird es die auch
+				wegen dem oben angesprochenen mISDN-Projekt nie geben, das wohl bald HiSax/ISDN4Linux
+				ablösen wird.</para>
+
 				<para>Es gibt auch einige Distributionen (z.B. aktuelle Versionen von SuSE), bei denen
 				die Capi4Linux-Treiber von AVM bereits dabei sind - Sie müssen sie dann nur noch
 				aktivieren (unter SuSE mit YaST2). Wenn Sie eine aktive Karte von AVM besitzen
-				(z.B. die B1, C2 oder C4), dann haben Sie bereits alles benötigte installiert.</para>
+				(z.B. die B1, C2 oder C4), dann haben Sie bereits alles benötigte installiert.
+				SuSE bietet in neueren Versionen auch ein kleines grafisches Frontend zum Einrichten
+				von &cs; als Bestandteil von YaST an.</para>
 
-				<para>Nein, es gibt momentan keine Möglichkeit, &cs; mit der alten ISDN4Linux-Schnittstelle
-                zum Laufen zu bringen. Vermutlich wird es die auch nie geben, weil das ISDN4Linux-Projekt 
-                eine CAPI-kompatible Schnittstelle in naher Zukunft zur Verfügung stellen wird - dann werden
-                alle unterstützten ISDN-Karten mit &cs; funktionieren. Wenn Sie trotzdem ein Backend für
-				ISDN4Linux schreiben möchten, melden Sie sich einfach bei mir - ich wäre überglücklich, Ihnen
-                dabei zu helfen.</para>
 
-				<para>&cs; wurde hauptsächlich mit ISDN-Karten von AVM getestet, insbesondere mit der 
+				<para>&cs; wurde hauptsächlich mit ISDN-Karten von AVM getestet, insbesondere mit der
                 Fritz!PCI, der Fritz!USB und der B1 auf der i386-Plattform, aber es sollte mit anderen
 				CAPI-kompatiblen Treibern für andere Karten oder auf anderen Plattformen keine Probleme
                 geben. Trotzdem müssen nicht von allen CAPI-kompatiblen Karten alle Features unterstützt
@@ -259,7 +268,7 @@
                                         <varlistentry>
                                                 <term>glibc Locales</term>
                                                 <listitem><para>Wenn Sie eine AVM-ISDN-Karte für den Versand oder Empfang von Faxen benutzen
-							wollen, so benötigen Sie die sogenannten "glibc locales", damit CapiSuite Ihre Faxkopf-
+							wollen, so benötigen Sie die sogenannten "glibc locales", damit &cs; Ihre Faxkopf-
 							zeile in das historische CP437-Encoding übersetzen kann, das AVM-Treiber erwarten. Diese
 							Locales sind Teil der Basis-C-Bibliothek glibc, die Teil jedes heutigen Linux-Systems ist.
 							Manche Distributoren verpacken jedoch die Locales in separate Installationspakete, die Sie
@@ -280,9 +289,7 @@
 			<para>Wenn Sie viele Zeilen erhalten, funktioniert Ihr CAPI-Treiber. Wenn Sie nur eine
 			Fehlermeldung erhalten, müssen Sie einen CAPI-kompatiblen Treiber installieren. Bitte schauen
             Sie in der Dokumentation Ihres ISDN-Kartenherstellers, Ihrer Linux-Distribution und/oder
-			auf einer ISDN-Mailingliste deswegen nach. Wenn Sie wirklich niemanden finden können, der Ihnen
-			dabei hilft, können Sie <emphasis>als letzten Ausweg</emphasis> mich auf der
-            &cs;-Mailingliste um Rat fragen.</para>
+			auf einer ISDN-Mailingliste deswegen nach.</para>
 
 			<para>Der Rest der Installation hängt davon ab, ob Sie Binär- oder Source-Pakete verwenden, um
 			&cs; zu installieren. Wenn die die &cs;-Sourcen nicht ändern möchten, empfehle ich, die 
@@ -290,17 +297,18 @@
             </para>
 
 			<para>Sie können sowohl die Binär- als auch die Source-Pakete im Download-Bereich unter
-			<ulink url="http://www.capisuite.de/download"/> herunterladen. Wenn Sie selbst Pakete für
+			<ulink url="http://www.capisuite.de"/> herunterladen. Wenn Sie selbst Pakete für
             andere Distributionen erstellt haben, schicken Sie mir diese bitte und ich werde sie dorthin
             kopieren...</para>
 
 			<sect3 id="install_bin"><title>Installation der Binär-Pakete</title>
 
 				<para>Wenn Sie Binär-Pakete für Ihre Distribution und Plattform bekommen können, empfehle
-				ich, diese zu verwenden. Ich erstelle regelmäßig RPM-Pakete für SuSE Linux, da dies die 
+				ich, diese zu verwenden. Ich erstelle regelmäßig RPM-Pakete für SuSE Linux, da dies die
                 Distribution ist, die ich verwende (und nebenbei ist es die Firma, die mich dafür bezahlt
-				und dabei unterstützt hat, &cs; als Diplomarbeit zu schreiben ;-) ). Debian-Pakete
-				werden von Achim Bohnet gepflegt.</para>
+				und dabei unterstützt hat, &cs; als Diplomarbeit zu schreiben ;-) ). Es gibt auch
+				Pakete für andere Distributionen, die von anderen Usern gepflegt werden - Links
+				dazu finden sich ebenfalls im Download-Bereich meiner Homepage.</para>
 
 				<para>Wenn es Ihnen gelungen ist, &cs; auf einem nicht erwähnten System zu installieren,
 				lassen Sie es mich bitte wissen und ich werde die Beschreibung hier aufnehmen. Wenn Sie
@@ -311,7 +319,7 @@
 				<para>Jetzt sollte alles soweit sein, dass wir loslegen können. Lesen Sie also weiter im
 				<xref linkend="csglobal"/>.</para>
 
-				<sect4 id="install_bin_rpm"><title>Installation der RPM-Pakete (SuSE)</title>
+				<sect4 id="install_bin_rpm"><title>Installation der RPM-Pakete (SuSE, RedHat)</title>
 					<para>Um die &cs;-RPM-Pakete zu installieren, können Sie entweder Ihr
                     Lieblings-Setup-Tool verwenden - entweder von Ihrem Distributor oder aus der Community -
                     oder Sie können es manuell (als root) machen:</para>
@@ -321,11 +329,9 @@
 
 				<sect4 id="install_bin_debian"><title>Installation der Debian-Pakete</title>
 
-					<para>Dank Achim Bohnet haben wir auch Binär- und Source-Pakete von &cs; und der 
-					benötigten Tools für Debian (woody).</para>
-
-					<para>Um darauf zuzugreifen, fügen Sie bitte folgende Zeilen zu Ihrer Datei
-                    <filename>/etc/apt/sources.list</filename>:</para>
+					<para>Um die von Achim Bohnet gebauten Debian-(Woody)-Pakete zu installieren,
+					 fügen Sie bitte folgende Zeilen zu Ihrer Datei
+					 <filename>/etc/apt/sources.list</filename> hinzu:</para>
 
 					<screen>deb     http://www.mpe.mpg.de/~ach/debian ./
 deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
@@ -381,10 +387,10 @@ make install</screen>
 				<para>Wenn Sie ganz innovativ sein und immer die neuesten Features testen wollen,
 				können Sie sich die aktuellen Sorucen von &cs; aus dem CVS-Repository holen.</para>
 
-				<para><emphasis>Dies ist nicht empfohlen, wenn Sie nicht die neuesten Features testen
+				<para><emphasis>Dies wird nicht empfohlen, wenn Sie nicht die neuesten Features testen
 				oder bei der Entwicklung von &cs; helfen wollen! Die Sourcen im CVS können OK sein,
-				können aber auch nicht funktionieren oder noch nicht mal kompilieren. Es ist Ihr eigenes
-                Risiko!</emphasis></para>
+				können aber auch nicht funktionieren, Ihren Rechner in die Luft jagen oder noch nicht
+				mal kompilieren. Es ist Ihr eigenes Risiko!</emphasis></para>
 
 				<para>Sie müssen die üblichen Entwicklungs-Tools installiert und lauffähig haben, wie z.B.
 				autoconf, autoheader, automake, GNU make, gcc/g++ und alle Komponenten, die oben beschrieben
@@ -516,9 +522,35 @@ make install</screen>
 						die nicht durch Ihre eigenen änderungen an den Skripten verursacht wurden, an das
 						&cs;-Team.</para></listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><option>DDI_length="0"</option></term>
+					<listitem><para>Wenn Ihre ISDN-Karten mit einem Anlagenanschluss verbunden ist,
+						benutzen Sie normalerweise auch DDI. DDI heißt, Sie haben nur eine
+						Hauptrufnummer und können Ihre Durchwahlen nach Belieben selbst festlegen.
+						In diesem Fall müssen Sie die Länge Ihrer Durchwahlen hier festlegen.
+						Wenn Sie zum Beispiel 1234-000 bis 1234-999 benutzen, dann ist Ihre DDI_length 3.
+						Wenn hier 0 gesetzt ist, dann ist DDI deaktiviert.</para>
+
+						<para>Sollten Sie jetzt nur Bahnhof verstanden haben, dann haben Sie vermutlich
+						kein DDI und können die Einstellung so belassen, wie sie ist.</para>
+				</varlistentry>
+
+				<varlistentry>
+					<term><option>DDI_base_length="0"</option></term>
+					<listitem><para>Diese Option wird nur benutzt, wenn DDI_length nicht 0 ist.
+					Hier wird die Länge der Basisrufnummer festgelegt - im obigen Beispiel wäre das
+					4.</para>
+				</varlistentry>
+
+				<varlistentry>
+					<term><option>DDI_stop_numbers=""</option></term>
+					<listitem><para>Wenn Sie ülicherweise Durchwahlen einer bestimmten Länge verwenden,
+					aber auch einige kürzere Ausnahmen haben (beispielsweise die "-0" für die Zentrale),
+					dann können Sie diese Ausnahmen hier durch Kommata getrennt auflisten.</para>
+				</varlistentry>
 			</variablelist>
 		</sect2>
-		<sect2 id="startcs"><title>Start von CapiSuite</title>
+		<sect2 id="startcs"><title>Start von &cs;</title>
 			<para>Da &cs; ein Daemon ist, wird es normalerweise beim Systemstart aktiviert. Sie müssen
 			lediglich den Aufruf von
 
@@ -671,8 +703,8 @@ make install</screen>
 
 			<para>Jede Datei muss einen speziellen Abschnitt namens <literal>[GLOBAL]</literal> haben
             und einen Abschnitt für jeden angerufenen Benutzer namens 
-            <literal>[&lt;username&gt;]</literal> (wo <literal>&lt;username&gt;</literal> ein
-			gültiger System-Benutzer ist).</para>
+            <literal>[&lt;username&gt;]</literal>, wobei <literal>&lt;username&gt;</literal> ein
+			gültiger System-Benutzer sein muss.</para>
 
 			<para>Der Abschnitt <literal>[GLOBAL]</literal> definiert einige globale Einstellungen wie
 			Pfadnamen und Standard-Einstellungen für Optionen, die in Benutzer-Sektionen überschrieben
@@ -845,7 +877,7 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="fax_email_from">
 						<term><option>fax_email_from="&lt;Mailadresse&gt;"</option></term>
-						<listitem><para>Hier kann die Mailadresse gesetzt werden, die CapiSuite
+						<listitem><para>Hier kann die Mailadresse gesetzt werden, die &cs;
 							als Absender bei der Mailzustellung des Faxdokumentes angibt.</para>
 							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird
 							standardmäßig der Empfänger auch als Absender verwendet (wenn
@@ -1056,7 +1088,7 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="voice_email_from">
 						<term><option>voice_email_from="&lt;Mailadresse&gt;"</option></term>
-						<listitem><para>Hier kann die Mailadresse gesetzt werden, die CapiSuite
+						<listitem><para>Hier kann die Mailadresse gesetzt werden, die &cs;
 							als Absender bei der Mailzustellung der aufgezeichneten
 							Sprachnachricht angibt.</para>
 							<para>Diese Option ist optional. Wenn nichts angegeben wird, wird
@@ -1703,7 +1735,7 @@ is not present, current time as returned by localtime() is used.
 				<para>Die zweite Möglichkeit, eine invertierte A-Law-Datei zu erzeugen, ist, eine normale 
 				WAV-Datei mit Ihrem Lieblings-Sound-Tool aufzunehmen und sie mit <command>sox</command>
 				in das Zielformat zu konvertieren. Sie erzielen die besten Ergebnisse, wenn Ihre WAV-Dateien
-				bereits das Format 8kHz, Mono, 8 Bit haben. <command>sox</command> kann auch andere
+				bereits das Format 8kHz, Mono, 16 Bit haben. <command>sox</command> kann auch andere
 				WAV-Dateien wenn nötig konvertieren, aber dies resultiert normalerweise in einer schlechteren
 				Qualität. Empfehlenswert ist auch, die Aufnahme auf maximal 50% der maximalen Amplitude
 				zu normalisieren.</para>
@@ -1729,7 +1761,7 @@ is not present, current time as returned by localtime() is used.
 				<para>Sie können aber auch <command>sox</command> verwenden, um die A-Law-Dateien
 				in das gebräuchlichere WAV-Format zu konvertieren, indem die aufrufen:</para>
 
-				<screen><command>sox myfile.la outfile.wav</command></screen>
+				<screen><command>sox myfile.la -w outfile.wav</command></screen>
 
 				<para>Die erzeugte Datei <filename>outfile.wav</filename> kann mit fast jedem
 				Audio-Player problemlos abgespielt werden.</para>
@@ -1742,7 +1774,7 @@ is not present, current time as returned by localtime() is used.
 			einige kleine Tools gefunden, die Peter Schäfer geschrieben hat und die wir hier verwenden
 			werden.</para>
 
-			<para>CapiSuite kann auch Farbfaxe empfangen, welche in einem speziellen Dateiformat abgelegt
+			<para>&cs; kann auch Farbfaxe empfangen, welche in einem speziellen Dateiformat abgelegt
 			werden, das ich CFF genannt habe.</para>
 
 			<sect3 id="create_sff"><title>Erzeugen eines SFF</title>
@@ -1785,19 +1817,19 @@ is not present, current time as returned by localtime() is used.
 			<sect3 id="cff"><title>Farbfaxe - das CFF-Format</title>
 				<para>Es gibt eine Erweiterung zum Fax-Standard, die die Übertragung von farbigen
 				Dokumenten erlaubt. Sie wird nur selten benutzt, aber da einige User sie trotzdem
-				benötigten, habe ich den Empfang solcher Dokumente mittlerweile in CapiSuite realisiert.
+				benötigten, habe ich den Empfang solcher Dokumente mittlerweile in &cs; realisiert.
 				</para>
 
 				<para>Das CFF-Format (ich weiß nicht sicher, ob das ein offizieller Name für das Format ist)
-				scheint eine JPEG-Datei mit spezieller Kodierung zu sein. Die meisten Programme, die
-				JPEG-Dateien unterstützen, sollten CFF-Dateien ebenfalls öffnen können. Eventuell müssen
-				Sie die Datei von <filename>.cff</filename> in <filename>.jpg</filename> umbenennen, bevor
-				Sie sie öffnen können.</para>
+				besteht prinzipiell aus einem oder mehreren zusammengehängten JPEG-Bildern. Die meisten
+				Programme, die JPEG-Dateien öffnen können, sollten zumindest in der Lage sein, die erste
+				Seite eines solchen Dokuments anzuzeigen. Mit meinem Patch, der in <xref linkend="require_soft"/>
+				beschrieben ist, ist das Tool jpeg2ps in der Lage, CFF in PostScript zu konvertieren, so dass
+				Sie alle Seiten mit einem normalen PostScript-Betrachter ansehen können.</para>
 
 				<para>Leider kenne ich momentan keinen Weg, dieses Format manuell zu erzeugen.
-				Daher unterstützt CapiSuite bis jetzt nur den Empfang solcher Dokumente. Wenn Sie
-				mehr darüber wissen sollten oder den JPEG-Standard gut kennen, dann kontaktieren
-				Sie mich bitte!</para>
+				Daher unterstützt &cs; bis jetzt nur den Empfang solcher Dokumente. Wenn Sie
+				ein solches Tool kennen oder realisieren wollen, kontaktieren Sie mich bitte!</para>
 			</sect3>
 		</sect2>
 	</sect1>
@@ -1966,11 +1998,20 @@ def callIncoming(call,service,call_from,call_to):
 
 			<calloutlist>
 				<callout arearefs="incoming_ex2_1">
-					<para>&cs; sagt dem Skript, dass die Gegenstelle aufgelegt hat, indem die 
-					Exception namens <literal>CallGoneError</literal> ausgelöst wird. Sie sollten
-					deshalb Ihren Code immer in ein <literal>try</literal>-Statement einfassen
-					und die ausgelöste Exception am Ende Ihres Skripts (oder früher, wenn nötig) behandeln.
-                    Diese Exception kann durch ein &cs;-Kommando ausgelöst werden.</para>
+					<para>Wenn die Gegenstelle unerwartet auflegt, löst &cs; die Exception
+					<literal>CallGoneError</literal> aus. Sie sollten deshalb Ihren Code
+					immer in ein <literal>try</literal>-Statement einfassen und die ausgelöste
+					Exception am Ende Ihres Skripts (oder früher, wenn nötig) behandeln.
+					Diese Exception kann durch jedes &cs;-Kommando, das eine bestehende
+					Verbindung erwartet, (wie audio_send()) ausgelöst werden. Seit &cs; 0.5
+					wird sie nicht mehr beim normalen Verbindungsabbau ausgelöst - also
+					zum Beispiel wenn die Gegenstelle <emphasize>während</emphasize>
+					audio_receive() auflegt. In diesem Fall endet die entsprechende Funktion
+					einfach normal. Die Exception wird erst beim Aufruf der
+					<emphasize>nächsten</emphasize> &cs;-Funktion ausgelöst. Der Grund für
+					diese Änderung war, eine Exception wirklich nur im Fehlerfall auszulösen
+					und ansonsten den normalen Ablauf im Skript nicht zu verlassen. Für
+					die meisten Skripte sollte diese Änderung allerdins unerheblich sein.</para>
 				</callout>
 				<callout arearefs="incoming_ex2_2">
 					<para>Wir schauen uns die angerufene Nummer an (ersetzen Sie bitte
@@ -1998,9 +2039,9 @@ def callIncoming(call,service,call_from,call_to):
 				</callout>
 				<callout arearefs="incoming_ex2_4">
 					<para>Dies ist der Exception-Handler für <literal>CallGoneError</literal> - die
-					Exception, die  &cs; auslöst, wenn der Anruf vom anderen Gespächspartner beendet wird.
-					Sie sollten hier auch <literal>disconnect</literal> aufrufen, um zu warten bis
-					der Anruf vollständig beendet wurde.</para>
+					Exception, die  &cs; auslöst, wenn der Anruf vom anderen Gespächspartner
+					unerwartet beendet wird. Sie sollten hier auch <literal>disconnect</literal>
+					aufrufen, um zu warten bis der Anruf vollständig beendet wurde.</para>
 				</callout>
 			</calloutlist>
 
@@ -2016,7 +2057,7 @@ def callIncoming(call,service,call_from,call_to):
             was natürlich nicht sinnvoll ist. Wir sollten wirklich für jeden neuen Anruf einen neuen Namen 
             wählen. Dies ist nicht so einfach, wie es sich anhört - sie müssen sicherstellen, dass der
             verwendete Algorithmus auch noch mit mehreren Anrufen, die zur selben Zeit ankommen, 
-            funktioniert. Glücklicherweise hatte der hilfsbereite Programmierer von &cs; das selbe Problem, 
+            funktioniert. Glücklicherweise hatte der hilfsbereite Programmierer von &cs; das selbe Problem,
             sodass wir seinen (hmmm... meinen?) Code verwenden könenn.</para>
 
 			<para>Das Python-Modul <filename>cs_helpers.py</filename> enthält einige hilfreiche 
@@ -2186,12 +2227,14 @@ def faxIncoming(call):
 			</calloutlist>
 
 			<para>Glückwunsch. Sie haben mein kleines Tutorial beendet. Jetzt sind Sie dran - Sie können
-			ein bisschen mit dem erstellten Skript herumspielen und versuchen, es noch weiter zu 
-            vervollständigen. Es gibt noch viel zu tun - empfangene Anrufe per E-Mail an den Benutzer 
-            schicken, Verbindungen protokollieren, ... Wenn Sie dieses Skript vervollständigen wollen,
-			ist der <xref linkend="command_reference"/> hilfreich. Sie können auch hier weiter lesen, um
-            einen kurzen Blick auf das Idle-Skript zu werfen, gefolgt von einem schnellen überblick über die
-			Struktur der Standard-Skripte, die mit &cs; geliefert werden.</para>
+			ein bisschen mit dem erstellten Skript herumspielen und versuchen, es noch weiter zu
+			vervollständigen. Viele der oben benutzten Kommandos liefern nützliche Rückgabewerte, die wir bisher
+			der Einfachkeit halber nicht ausgewertet haben. Außerdem gibt es noch anderes zu tun -
+			empfangene Anrufe per E-Mail an den Benutzer schicken, Verbindungen protokollieren, ...
+			Wenn Sie dieses Skript vervollständigen wollen, ist der <xref linkend="command_reference"/>
+			hilfreich. Sie können auch hier weiter lesen, um einen kurzen Blick auf das Idle-Skript zu werfen,
+			gefolgt von einem schnellen überblick über die Struktur der Standard-Skripte, die mit &cs;
+			geliefert werden.</para>
 		</sect2>
 	</sect1>
 
@@ -2316,7 +2359,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 		except capisuite.CallGoneError:
 			(result,resultB3)=capisuite.disconnect(call)
 			
-		if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):<co id="idle_ex2_13"/>
+		if (result in (0,0x3400,0x3480,0x3490,0x349f) and resultB3==0):<co id="idle_ex2_13"/>
 			capisuite.log("job "+job+" was successful",1)
 			os.rename(my_path+job,my_path+"done-"+job)
 			return
@@ -2400,9 +2443,9 @@ def idle(capi):<co id="idle_ex2_4"/>
                 ob alles OK war.</para>
 			</callout>
 			<callout arearefs="idle_ex2_13">
-				<para>Erlaubte Werte für den physikalischen Verbindungsabbau sind 0,0x3400,0x3480 und 
-                0x3490. Diese bedeuten alle "kein Fehler aufgetreten, Verbindung wurde normal beendet". Der
-                logische Wert darf nur 0 sein, wenn alles OK ist. Weitere Informationen zu den Fehler-Codes
+				<para>Erlaubte Werte für den physikalischen Verbindungsabbau sind 0,0x3400,0x3480, 0x3490 und
+                0x349f. Diese bedeuten alle "kein Fehler aufgetreten, Verbindung wurde normal beendet". Der
+                logische Wert kann nur 0 sein, wenn alles OK ist. Weitere Informationen zu den Fehler-Codes
 				finden Sie im <xref linkend="command_reference"/>.</para>
 			</callout>
 		</calloutlist>
@@ -2447,29 +2490,31 @@ def idle(capi):<co id="idle_ex2_4"/>
 				Sie iteriert dann über alle Abschnitte, die die konfigurierten Benutzer repräsentieren
                 (außer <literal>GLOBAL</literal>), um zu prüfen, ob die angerufene Nummer zu 
                 irgendeinem Benutzer gehört. Wenn eine übereinstimmumg gefunden wurde, wird der Benutzer und
-				der definierte Service unter <literal>curr_user</literal> und 
+				der definierte Service unter <literal>curr_user</literal> und
                 <literal>curr_service</literal> gespeichert.</para>
 
-				<para>Wenn keine übereinstimmumg gefunden wurde (<literal>curr_user</literal> ist
-                leer), wird der Anruf abgewiesen und die Funktion verlassen. Andernfalls wird das Verzeichnis
-				für eingehende Faxe oder Sprach-Daten ermittelt und erzeugt, falls es noch nicht existiert.
-                </para>
+				<para>Wenn keine Übereinstimmumg gefunden wurde (<literal>curr_user</literal> ist
+                leer), wird der Anruf abgewiesen und die Funktion verlassen. Andernfalls wird der Anruf mit dem
+				richtigen Service (Fax oder Sprache) angenommen und entweder
+				<function>faxIncoming</function> oder <function>voiceIncoming</function>
+				aufgerufen.</para>
 
-				<para>Zuletzt wird noch ein Log-Eintrag erzeugt, der Anruf mit dem richtigen Service (Fax
-				oder Sprache) angenommen und entweder <function>faxIncoming</function> oder 
-                <function>voiceIncoming</function> aufgerufen. Die Funktion definiert außerdem einen
+				<para>Die Funktion definiert außerdem einen
 				Exception-Handler für <literal>capisuite.CallGoneError</literal>.</para>
 			</sect3>
 			<sect3 id="default_incoming_2"><title>Funktion <function>faxIncoming</function></title>
-				<para><function>faxIncoming</function> ist ziemlich einfach: sie erzeugt einen
-                eindeutigen Dateinamen, ruft <function>capisuite.fax_receive</function> auf, 
-                baut die Verbindung ab und protokolliert den Grund des Verbindungsabbaus. Danach prüft sie,
-                ob wirklich ein Fax erfolgreich empfangen wurde (d.h. ob die Datei existiert). Wenn ja, 
-                erzeugt sie eine Beschreibungsdatei dafür, ändert den Eigentümer der Datei auf den richtigen
-				Benutzer und verschickt die Datei als Mail.</para>
+				<para>Zuerst wird das Verzeichnis für eingehende Faxdaten bestimmt und erzeugt,
+				falls es nocht nicht existiert. Die Existenz des angegebenen Users wird überprüft
+				und ein Log-Eintrag erzeugt.</para>
+
+				<para>Dann wird, falls nötig, in den Faxmodus umgeschaltet, ein eindeutiger Dateiname
+				erzeugt und die Funktion <function>capisuite.fax_receive</function> aufgerufen. Das
+				Resultat des anschließenden Verbindungsabbaus wird protokolliert. Zum Schluss wird
+				überprüft, ob das Fax erfolgreich empfangen wurde, und wenn ja wird die Datei dem
+				entsprechenden User übereignet und ihm als Mail zugestelt.</para>
 			</sect3>
 			<sect3 id="default_incoming_3"><title>Funktion <function>voiceIncoming</function></title>
-				<para><function>voiceIncoming</function> hat viel mehr Aufgaben zu erledigen, wie 
+				<para><function>voiceIncoming</function> hat viel mehr Aufgaben zu erledigen, wie
                 Fax-Erkennung und Wechsel in den Fax-Modus, die Fernabfrage starten usw.</para>
 
 				<para>Sie fängt mit dem Bestimmen des zu verwendenden Verzeichnisses und dem Erzeugen
@@ -2646,6 +2691,12 @@ def idle(capi):<co id="idle_ex2_4"/>
                     zu jedem ausgehenden Auftrag gehören.</para></listitem>
 				</varlistentry>
 				<varlistentry>
+					<term><function>escape</function></term>
+					<listitem><para>Maskiert Sonderzeichen in einem Dateinamen; d.h. schließt ihn in
+					Anführungszeichen ein. Damit kann der Dateiname auch problemlos in Kommandozeilen benutzt
+					werden, wenn er Sonderzeichen oder Leerzeichen enthält.</para></listitem>
+				</varlistentry>
+				<varlistentry>
 					<term><function>getOption</function></term>
 					<listitem><para>Liest eine Option aus dem angegebenen Benutzerabschnitt oder nimmt
                     den globalen Abschnitt, wenn keiner gefunden wurde.</para></listitem>
@@ -2718,15 +2769,15 @@ def idle(capi):<co id="idle_ex2_4"/>
     für ihre Hilfe danken:</para>
 	
 	<itemizedlist>
-		<listitem><para>Karsten Keil von SuSE Linux AG (mein Betreuer der Arbeit) für seine 
+		<listitem><para>Karsten Keil von der SuSE Linux AG (mein Betreuer der Arbeit) für seine
         unschätzbare Unterstützung und Geduld beim Beantworten meiner vielen ISDN-Fragen, beim Testen
 		und für seine Vorschäge bzgl. der Architektur von &cs;</para></listitem>
 
-		<listitem><para>Prof. Dr. Wolfgang Jürgensen vom UAS Landshut (mein Betreuer vom UAS) 
-        für seine Hilfe bei ISDN-Fragen während der Arbeit und dass er mir vorher in seiner Vorlesung die
-        ISDN-Grundlagen beigebracht hat</para></listitem>
-		
-		<listitem><para>Prof. Dr. Peter Scholz vom UAS Landshut (zweiter Betreuer vom UAS) 
+		<listitem><para>Prof. Dr. Wolfgang Jürgensen von der Fachhochschule Landshut (mein Betreuer von der FH)
+        für seine Hilfe bei ISDN-Fragen während der Arbeit und für die Vermittlung der ISDN-Grundlagen in seiner
+	Vorlesung</para></listitem>
+
+		<listitem><para>Prof. Dr. Peter Scholz von der FH Landshut (zweiter Betreuer der FH)
         für seine Unterstützung und seine Vorschläge</para></listitem>
 
 		<listitem><para>meiner Freundin Claudia und ihrer Schwester Bethina für das Korrekturlesen
@@ -2736,10 +2787,15 @@ def idle(capi):<co id="idle_ex2_4"/>
 
 		<listitem><para>vielen Kollegen bei SuSE für ihre Hilfe bei technischen Problemen, insbesondere
         Andreas Jaeger, Andreas Schwab, Thorsten Kukuk und Andi Kleen</para></listitem>
-		
+
 		<listitem><para>Achim Bohnet, weil er der erste aus der Community war, der versucht hat,
         die CVS-Version zu kompilieren und der einige Verbesserungsvorschläge gemacht hat</para></listitem>
 	</itemizedlist>
+
+	<para>Seit ich &cs; veröffentlicht habe, haben viele andere Benutzer getestet, Fehler berichtet und
+	Lösungen und neuen Code zur Verfügung gestellt. Ich werde sie nicht alle hier aufzählen, aber dafür
+	jeweils in den ChangeLog- und den NEWS-Dateien, die mit &cs; ausgeliefert werden. Ein großer DANK an
+	all meine User und insbesondere die dort genannten sei trotzdem hier ausgesprochen!</para>
 </appendix>
 
 <appendix id="capicodes"><title>CAPI 2.0 Fehler-Codes</title>

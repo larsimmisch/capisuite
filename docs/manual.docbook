@@ -129,16 +129,22 @@
 				If you have one of the passive cards of AVM, you'll have to download and
 				install their CAPI drivers.</para>
 
-				<para>There are also some distributions (e.g. current versions of SuSE) which
+				<para>With the upcoming Linux 2.6 and the new mISDN project included therein,
+				also most cards which are supported by the HiSax driver today will soon have
+				a CAPI-compliant driver. Unfortunately, mISDN also won't include a fax protocol
+				implementation and therefore passive cards still won't be able to fax in &cs;
+				(or in any other program under Linux); fax support for passive cards is only
+				available in the binary drivers from AVM currently.</para>
+
+				<para>There's no way to get &cs; to work with the old ISDN4Linux interface
+				and drivers. Presumable there also never will be one because of the mISDN project
+				which will replace HiSax/ISDN4Linux soon.</para>
+
+				<para>There are some distributions (e.g. current versions of SuSE) which
 				include the Capi4Linux drivers from AVM already - you'll only have to
 				activate them (use YaST2 in SuSE Linux). If you own an active card of AVM
-				(e.g. the B1, C2 or C4), then you'll have everything you need already installed.</para>
-
-				<para>No, there's currently no way to get it working with the old ISDN4Linux interface.
-				Perhaps there never will be one as the ISDN4Linux project will provide a CAPI
-				compatible interface some near day in the future - so all supported ISDN cards
-				will work with &cs; then. If you nevertheless want to write a backend for
-				ISDN4Linux, just contact me - I'll be more than happy to help you with that.</para>
+				(e.g. the B1, C2 or C4), then you'll have everything you need already installed.
+				SuSE also provides a small frontend to configure &cs; in YaST.</para>
 
 				<para>&cs; has mainly been tested on AVM ISDN cards, esp. the Fritz!PCI, the Fritz!USB and
 				the B1 on the i386 platform but there should be no problem with other
@@ -150,7 +156,7 @@
 			<sect3 id="require_soft"><title>Software</title>
 				<para>&cs; depends on some packages which must be installed before &cs; can be used.</para>
 
-				<para>I will list them here with a short information why this packages are needed and where to
+				<para>I will list them here with a short information why these packages are needed and where to
 				find further information on how to install them. It may be always a good idea to check the
 				installation tool of your favourite distribution first and see if they're included with it before
 				trying to download and install them from the net. Don't be afraid, because there are so many -
@@ -233,7 +239,7 @@
                                         <varlistentry>
                                                 <term>glibc locales</term>
                                                 <listitem><para>If you want to use an AVM card (which most of you will do ;-) ) to send or receive
-							faxes, you'll need installed glibc locales because CapiSuite needs to convert your fax
+							faxes, you'll need installed glibc locales because &cs; needs to convert your fax
 							headline to the historic CP437 encoding which AVM drivers expect. The glibc locales are
 							a part of the default C library glibc which you definitely already have installed, but some
 							distributors make the locales installable separately. SuSE e.g. puts them in a package 
@@ -253,9 +259,7 @@
 			<para>If you get many lines of output, your CAPI driver works. If you just get
 			an error message, you'll have to install CAPI-compatible drivers. Refer
 			to the documentation of your ISDN card vendor, your Linux distribution
-			and/or some ISDN mailing lists for this, please. If you really can't find
-			anyone to support you in doing this, you may ask on the &cs; mailing
-			lists for support <emphasis>as last resort</emphasis>.</para>
+			and/or some ISDN mailing lists for this, please.</para>
 
 			<para>The rest of the installation depends on wether you use binary or source
 			packages for installing &cs;. If you don't want to change the
@@ -263,7 +267,7 @@
 			when available for your distribution and platform.</para>
 
 			<para>You can download both binary packages and sources from the download section on
-			<ulink url="http://www.capisuite.de/download"/>. If you built up your own packages
+			<ulink url="http://www.capisuite.de"/>. If you built up your own packages
 			for other distributions, please send me them and I'll copy them there...</para>
 
 			<sect3 id="install_bin"><title>Installation from binary packages</title>
@@ -271,8 +275,9 @@
 				<para>If you can get binary packages for your distribution and platform,
 				I would advise to use them. I'm building RPM packages for SuSE Linux
 				regularly, as this is the distribution I use (and BTW the company which
-				paid and supported me to write &cs; as diploma thesis ;-) ). Debian
-				packages are maintained by Achim Bohnet.</para>
+				paid and supported me to write &cs; as diploma thesis ;-) ). There are also
+				packages for other distributions available prepared by other users - please
+				see the download section for links to them.</para>
 
 				<para>If you managed to install &cs; on a system not mentioned below,
 				please tell me and I'll include the instructions here. If you have created
@@ -282,7 +287,7 @@
 				<para>Now everything should be setup ready to run. So please read on in
 				<xref linkend="csglobal"/>.</para>
 
-				<sect4 id="install_bin_rpm"><title>Installation from RPM packages (SuSE)</title>
+				<sect4 id="install_bin_rpm"><title>Installation from RPM packages (SuSE, RedHat)</title>
 					<para>To install the &cs; RPM packages you can either use your favorite setup tool -
 					either provided by your distributor or the community - or you can do manually
 					(as root):</para>
@@ -292,11 +297,8 @@
 
 				<sect4 id="install_bin_debian"><title>Installation from Debian packages</title>
 
-					<para>Thanks to Achim Bohnet, we also have binary and source packages of CapiSuite
-					and the necessary tools for Debian (woody).</para>
-
-					<para>To access them, please add the following lines to your <filename>/etc/apt/sources.list</filename>
-					:</para>
+					<para>To install the Debian (woody) packages built by Achim Bohnet, please add
+					the following lines to your <filename>/etc/apt/sources.list</filename>:</para>
 
 					<screen>deb     http://www.mpe.mpg.de/~ach/debian ./
 deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
@@ -327,7 +329,8 @@ apt-get install capisuite # install and resolve dependencies</screen>
 				everything on your own, you can get the sources from the download section.</para>
 
 				<para>Download the newest source tarball (capisuite-X.Y.tar.gz) from the
-				&cs; homepage and copy it to some location. Go there and issue the following commands:</para>
+				&cs; homepage and copy it to some location. Go there and issue the following
+				commands:</para>
 
 				<screen
 >./configure
@@ -350,8 +353,8 @@ make install</screen>
 				repository.</para>
 
 				<para><emphasis>This is not recommended unless you want to test the newest features or
-				want to help in developing &cs;! The sources in CVS may do anything,
-				may not work or not even compile. Do this on your own risk!</emphasis></para>
+				want to help in developing &cs;! The sources in CVS may not work, burn your computer
+				or may not even compile. Do this on your own risk!</emphasis></para>
 
 				<para>You'll need installed and working versions of the usual development tools like
 				autoconf, autoheader, automake, GNU make, gcc/g++ and also the components described
@@ -475,6 +478,32 @@ make install</screen>
 						messages you don't understand and which aren't caused by your
 						own script-modifications to the &cs; team.</para></listitem>
 				</varlistentry>
+				<varlistentry>
+					<term><option>DDI_length="0"</option></term>
+					<listitem><para>When your ISDN card is connected to an ISDN interface in PtP mode,
+						i.e. if you use DDI which, in understandable words mean you have only one
+						ISDN phone number and can define your own extensions as you like, you have
+						to set the length of your extension numbers here. In Germany, PtP mode is
+						called "Anlagenanschluss". Let's say you use 1234-000 till 1234-999, then your
+						DDI_length would be 3. If you set this to 0, DDI/PtP is disabled.</para>
+
+						<para>If you're not sure what all this should mean, then chances
+						are high you don't use DDI and can leave this option as it is.</para>
+				</varlistentry>
+
+				<varlistentry>
+					<term><option>DDI_base_length="0"</option></term>
+					<listitem><para>This option is only used when DDI_length is not 0. This is the length
+					of your base number - in the example above it would be 4.</para>
+				</varlistentry>
+
+				<varlistentry>
+					<term><option>DDI_stop_numbers=""</option></term>
+					<listitem><para>If you usually use extension numbers of a specified length, but also
+					want to use some shorter ones (e.g. the "-0" extension for you switchboard), then
+					you can list these shorter extensions here, separated by commas.</para>
+				</varlistentry>
+
 			</variablelist>
 		</sect2>
 		<sect2 id="startcs"><title>Startup of CapiSuite</title>
@@ -611,8 +640,8 @@ make install</screen>
 			while the options are <literal>key="value"</literal> lines.</para>
 
 			<para>Each file must have a special section called <literal>[GLOBAL]</literal> and one section
-			for each user called <literal>[&lt;username&gt;]</literal> (with <literal>&lt;username&gt;</literal> being a
-			valid system user).</para>
+			for each user called <literal>[&lt;username&gt;]</literal> <emphasize>with <literal>&lt;username&gt;</literal> being a
+			valid system user).</emphasize></para>
 
 			<para>The <literal>[GLOBAL]</literal>-section defines some global options like
 			pathnames and default settings for options that can be overridden in the user-sections. The user-sections
@@ -751,7 +780,7 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="fax_email_from">
                                                 <term><option>fax_email_from="&lt;mailaddress&gt;"</option></term>
-                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails CapiSuite sends
+                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails &cs; sends
 						 	here.</para>
 							<para>This option is optional. If you set this to an empty string, the destinator is used as 
 							originator (i.e. if "gernot" receives a fax, the mail comes from "gernot" to "gernot").</para>
@@ -918,7 +947,7 @@ make install</screen>
 					</varlistentry>
                                        <varlistentry id="voice_email_from">
                                                 <term><option>voice_email_from="&lt;mailaddress&gt;"</option></term>
-                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails CapiSuite sends
+                                                <listitem><para>You can set a default originator ("From"-address) for the e-mails &cs; sends
                                                         here.</para>
                                                         <para>This option is optional. If you set this to an empty string, the destinator is used 
 							as originator (i.e. if "gernot" receives a voice call, the mail comes from "gernot" to 
@@ -1353,7 +1382,7 @@ is not present, current time as returned by localtime() is used.
 			<para>If you have further questions, I would <emphasis>really</emphasis> advise you
 			to continue with a good book or the documentation on
 			<ulink url="http://www.python.org"/>. Please don't ask general Python
-			questions on the CapiSuite lists...</para>
+			questions on the &cs; lists...</para>
 
 		</sect2>
 	</sect1>
@@ -1526,7 +1555,7 @@ is not present, current time as returned by localtime() is used.
 				<para>The second way to create an inversed A-Law file is to record a normal WAV-file
 				with your favourite sound-tools and convert it to the destination format using
 				<command>sox</command>. You'll get the best results when your WAV file already
-				is in 8kHz, mono, 8 bit format. <command>sox</command> is able to convert
+				is in 8kHz, mono, 16 bit format. <command>sox</command> is able to convert
 				other waves if necessary but this usually will result in worse quality. You should
 				also normalize your sound file to about 50% of the maximum amplitude.</para>
 
@@ -1550,7 +1579,7 @@ is not present, current time as returned by localtime() is used.
 				<para>But you can also use sox to convert the A-Law files to the more common
 				WAV format by just invoking:</para>
 
-				<screen><command>sox myfile.la outfile.wav</command></screen>
+				<screen><command>sox myfile.la -w outfile.wav</command></screen>
 
 				<para>The created <filename>outfile.wav</filename> can be played
 				by nearly any audio player without problems.</para>
@@ -1563,7 +1592,7 @@ is not present, current time as returned by localtime() is used.
 			Finally I found some small tools written by Peter Sch&auml;fer, which we can
 			use here.</para>
 
-			<para>CapiSuite is also able to receive color fax files which will be stored in
+			<para>&cs; is also able to receive color fax files which will be stored in
 			a special file format I called CFF.</para>
 
 			<sect3 id="create_sff"><title>Creating a SFF</title>
@@ -1603,17 +1632,18 @@ is not present, current time as returned by localtime() is used.
 			</sect3>
 			<sect3 id="cff"><title>Color faxes - the CFF format</title>
 				<para>There exists an enhancement to the fax standard which allows to transfer
-				documents in color. It's not very widely used, but as some people wanted it for CapiSuite,
-				I added support for receiving this faxes with CapiSuite.</para>
+				documents in color. It's not very widely used, but as some people wanted it for &cs;,
+				I added support for receiving these faxes with &cs;.</para>
 
-				<para>The CFF format (I don't know if this is an official name for the format) seems
-				to be some sort of JPEG file with a special encoding. Most programs who can handle
-				JPEG files should be able to open it. Perhaps you must rename it from
-				<filename>.cff</filename> to <filename>.jpg</filename> first, before it will be recognized.</para>
+				<para>The CFF format (I don't know if this is an official name for the format) basically
+				consists of concatenated JPEG images. Most programs who can handle JPEG files
+				should be able to open it and display at least the first page. Together with my patch
+				described in <xref linkend="require_soft"/>, the jpeg2ps tool can convert it to
+				the PostScript format so you can open it with any usual viewer.</para>
 
 				<para>Currently, I don't know a nice way to create this format manually. Therefore,
-				CapiSuite currently only supports the reception of these files. If someone knows
-				more about it or knows the JPEG standards well, please contace me!</para>
+				&cs; currently only supports the reception of these files. If someone knows
+				such a tool or is willing to implement one, please contact me!</para>
 			</sect3>
 		</sect2>
 	</sect1>
@@ -1627,7 +1657,7 @@ is not present, current time as returned by localtime() is used.
 			<para>Let's start with a very simple case: accept all incoming calls, beep and record
 			something so we have an audio file to play with later. First of all, create a new directory
 			somewhere which must be writable to <literal>root</literal>. We also need some test audio
-			file for sending it. Let's take the beep which is distributed with &cs;.</para>
+			file for sending. Let's take the beep which is distributed with &cs;.</para>
 
 			<screen>mkdir capisuite-examples
 chmod 777 capisuite-examples # make it world-writeable
@@ -1770,12 +1800,20 @@ def callIncoming(call,service,call_from,call_to):
 
 			<calloutlist>
 				<callout arearefs="incoming_ex2_1">
-					<para>&cs; will tell the script that the other party has disconnected
-					by raising an exception named <literal>CallGoneError</literal>. So
-					you should always put your code in a <literal>try</literal> statement
-					and catch the raised exception at the end of your script (or perhaps
-					earlier if needed). This exception can be raised by call to a &cs;
-					command.</para>
+					<para>If the other party hangs up unexpectedly, &cs; will raise an
+					exception named <literal>CallGoneError</literal>. Therefore, you should
+					always put your code in a <literal>try</literal> statement and catch
+					the raised exception at the end of your script (or perhaps
+					earlier if needed). This exception can be raised by any call to a &cs;
+					command which expects a connection like audio_send(). Since &cs; 0.5, it's
+					not raised at once on normal disconnects; for example if the caller hangs up
+					<emphasize>during</emphasize> audio_receive() the function will just finish.
+					An exception will not be raised until you call the <emphasize>next</emphasize>
+					command which expects a connection. The reason for this change was to only
+					raise an exception on real errors and to make it possible to handle disconnects
+					in the normal flow of your scripts. On most scripts, this change shouldn't
+					have an effect.
+					</para>
 				</callout>
 				<callout arearefs="incoming_ex2_2">
 					<para>Have a look at the called number (please replace <literal>123</literal>
@@ -1802,9 +1840,9 @@ def callIncoming(call,service,call_from,call_to):
 				</callout>
 				<callout arearefs="incoming_ex2_4">
 					<para>This is the exception handler for <literal>CallGoneError</literal> - the
-					exception &cs; raises when the call is disconnected by the other party.
-					You should also call <literal>disconnect</literal> here to wait until
-					the call is completely disconnected.</para>
+					exception &cs; raises when the call is disconnected by the other party
+					unexpectedly. You should also call <literal>disconnect</literal> here to
+					wait until the call is completely disconnected.</para>
 				</callout>
 			</calloutlist>
 
@@ -1817,10 +1855,10 @@ def callIncoming(call,service,call_from,call_to):
 		</sect2>
 		<sect2 id="incoming_tut_unique_names"><title>Using sensible file names</title>
 			<para>We always used the same name to save the recorded message to which clearly isn't 
-			reasonable. We should really choose a new name for every new call. This isn't as simple as it may sound -
-			you must assure that the used algorithm will also work for multiple calls arriving at the
-			same time. Fortunately, the helpful programmer of &cs; had the same problem and so
-			we can use the code he (hmmm... I?) has written.</para>
+			reasonable. We should really choose a new name for every new call. This isn't as simple as
+			it may sound - you must assure that the used algorithm will also work for multiple calls
+			arriving at the same time. Fortunately, the helpful programmer of &cs; had the same problem
+			and so we can use the code he (hmmm... I?) has written.</para>
 
 			<para>The Python module <filename>cs_helpers.py</filename> contains some useful functions
 			which are needed by the default scripts provided with &cs; but may be also helpful
@@ -1978,12 +2016,14 @@ def faxIncoming(call):
 				</callout>
 			</calloutlist>
 
-			<para>Congrats. You've finished my small tutorial. Now it's up to you - you can play with
-			the created script and try to make it more complete. There's still much to do -
-			sending received calls to a user via e-mail, log connections, ... If you want to
-			complete this script, <xref linkend="command_reference"/> will be helpful.
-			You can also read on here to have a short look on the idle scripts, followed by a
-			quick overview of the structure of the default scripts shipped with &cs;.</para>
+			<para>Congrats. You've finished my small tutorial. Now it's up to you - you can
+			play with the created script and try to make it more complete. Many of the
+			commands used above also return useful informations which we didn't use here.
+			There's still much to do - sending received calls to a user via e-mail, log
+			connections, ... If you want to complete this script,
+			<xref linkend="command_reference"/> will be helpful. You can also read on here
+			to have a short look on the idle scripts, followed by a quick overview of the
+			structure of the default scripts shipped with &cs;.</para>
 		</sect2>
 	</sect1>
 
@@ -2106,7 +2146,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 		except capisuite.CallGoneError:
 			(result,resultB3)=capisuite.disconnect(call)
 
-		if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):<co id="idle_ex2_13"/>
+		if (result in (0,0x3400,0x3480,0x3490,0x349f) and resultB3==0):<co id="idle_ex2_13"/>
 			capisuite.log("job "+job+" was successful",1)
 			os.rename(my_path+job,my_path+"done-"+job)
 			return
@@ -2174,7 +2214,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 				the fax protocol which uses this "wire". You have to look on both values to see if everything was ok.</para>
 			</callout>
 			<callout arearefs="idle_ex2_13">
-				<para>Allowed values for the physical disconnection are 0,0x3400,0x3480 and 0x3490. These all mean "no error
+				<para>Allowed values for the physical disconnection are 0,0x3400,0x3480, 0x3490 and 0x349f. These all mean "no error
 				occured, call was disconnected normally". The logical value may only be 0 if everything went ok. For further
 				information on error values, please refer to <xref linkend="command_reference"/>.</para>
 			</callout>
@@ -2193,7 +2233,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 		examples or the files distributed with &cs; (read <xref linkend="default_script_overview"/> before). You will find a
 		complete reference of the available commands in <xref linkend="command_reference"/>.</para>
 
-		<para>If you have any trouble in getting your scripts up and running, please use the &cs; mailing lists. And don't forget to have 
+		<para>If you have any trouble in getting your scripts up and running, please use the &cs; mailing lists. And don't forget to have
 		fun. ;-)</para>
 	</sect1>
 
@@ -2201,28 +2241,31 @@ def idle(capi):<co id="idle_ex2_4"/>
 		<sect2 id="default_incoming"><title>incoming.py</title>
 			<para>The incoming script handles all incoming connections. It reads two configuration files containing all necessary
 			data which were described in detail in <xref linkend="script_config"/>. The overall structure will be described here
-			giving you an overview of how it is implemented.</para> 
+			giving you an overview of how it is implemented.</para>
 			
-			<para>Firstly (after importing some necessary modules), it defines the necessary function <function>callIncoming</function>
+			<para>First (after importing some necessary modules), it defines the necessary function <function>callIncoming</function>
 			which will call all other functions if needed.</para>
 
 			<sect3 id="default_incoming_1"><title>function <function>callIncoming</function></title>
 				<para>This function starts with a call to <function>cs_helpers.readConfig</function>
-				to read the configuration. It then iterates through all sections representing the configured users (except 
-				<literal>GLOBAL</literal>) to see if the called number belongs to any user. If a match is found, the user and 
+				to read the configuration. It then iterates through all sections representing the configured users (except
+				<literal>GLOBAL</literal>) to see if the called number belongs to any user. If a match is found, the user and
 				the defined service are saved to <literal>curr_user</literal> and <literal>curr_service</literal>.</para>
 
-				<para>If no match was found (<literal>curr_user</literal> is empty), the call is rejected and the function returns.
-				Otherwise the directory to use for incoming fax or voice data is determined and created if not existing yet.</para>
+				<para>If no match was found (<literal>curr_user</literal> is empty), the call is
+				rejected and the function returns. Otherwise the call is accepted and - depending
+				on the service used - <function>faxIncoming</function> or
+				<function>voiceIncoming</function> is called.</para>
 
-				<para>The last thing the function does, is to produce a log entry, accept the call with the right service (fax
-				or voice) and call either <function>faxIncoming</function> or <function>voiceIncoming</function>. It also defines
-				an exeception handler for <literal>capisuite.CallGoneError</literal>.</para>
+				<para>The function also defines an exeception handler for <literal>capisuite.CallGoneError</literal>.</para>
 			</sect3>
 			<sect3 id="default_incoming_2"><title>function <function>faxIncoming</function></title>
-				<para><function>faxIncoming</function> is quite straight forward: it creates a uniqe filename, calls
-				<function>capisuite.fax_receive</function>, disconnects and logs the disconnection reasons. Then it checks if a fax
-				have been really received succesfully (i.e. if the file exists). If yes, it creates a description file for it, 
+				<para>First of all, the directory to use for incoming fax data is determined and created
+				if not existing yet, the existence of the given user is checked and a log entry is written.</para>
+
+				<para>It then switches to fax mode if necessary, creates a uniqe filename, calls
+				<function>capisuite.fax_receive</function>, disconnects and logs the disconnection reasons.
+				Then it checks if a fax has been really received succesfully (i.e. if the file exists). If yes, it creates a description file for it,
 				<command>chown</command>'s the file to the right user and sends the file as mail.</para>
 			</sect3>
 			<sect3 id="default_incoming_3"><title>function <function>voiceIncoming</function></title>
@@ -2240,25 +2283,30 @@ def idle(capi):<co id="idle_ex2_4"/>
 				<function>read_DTMF</function> is used to see if any such signal have been found. "<literal>X</literal>" represents the fax
 				tone and triggers a switch to fax protocols and a call to <function>faxIncoming</function>. Any other received signals
 				are interpreted to be a part of the PIN for remote inquiry and so a loop which waits 3 seconds after each tone for the next
-				one is entered. If a valid PIN is entered, it starts the <function>remoteInquiry</function>. After three wrong attempts, it will disconnect.</para>
+				one is entered. If a valid PIN is entered, it starts the <function>remoteInquiry</function>. After three wrong attempts,
+				it will disconnect.</para>
 
-				<para>After disconnecting and logging, a description file is written (if the recorded file exists), both files will be 
+				<para>After disconnecting and logging, a description file is written (if the recorded file exists), both files will be
 				<command>chown</command>'ed to the right user and the recorded message will be mailed to him/her.</para>
 			</sect3>
 			<sect3 id="default_incoming_4"><title>function <function>remoteInquiry</function></title>
-				<para>The <function>remoteInquiry</function> starts by creating a lock file and acquiring an exclusive
-				lock on it to prevent two parallel remote inquiries for the same user. If the lock can't be acquired, an error message is
-				played and the function returns. If locking has succeeded, a list of the recorded voice calls is compiled by listing the 
-				user directory, filtering and sorting it. Now, a file called <filename>last_inquiry</filename> is read when it exists.
-				It contains the number of the last heard message. With this information, the old messages can be filtered out to a separate
-				list and thus the caller can listen to messages he doesn't know already first.</para>
+				<para>The <function>remoteInquiry</function> starts by creating a lock file and acquiring an
+				exclusive lock on it to prevent two parallel remote inquiries for the same user. If the lock
+				can't be acquired, an error message is played and the function returns. If locking has succeeded,
+				a list of the recorded voice calls is compiled by listing the user directory, filtering and
+				sorting it. Now, a file called <filename>last_inquiry</filename> is read when it exists.
+				It contains the number of the last heard message. With this information, the old messages can
+				be filtered out to a separate list and thus the caller can listen to messages he doesn't know
+				already first.</para>
 
-				<para>The number of new messages is said, followed by a small menu where the caller can choose to either record an announcment
-				or hear the recorded messages. If he chooses announcement recording, the function <function>newAnnouncement</function> is called,
-				otherwise <function>remoteInquiry</function> will continue.</para>
+				<para>The number of new messages is said, followed by a small menu where the caller can choose
+				to either record an announcment or hear the recorded messages. If he chooses announcement
+				recording, the function <function>newAnnouncement</function> is called, otherwise
+				<function>remoteInquiry</function> will continue.</para>
 
-				<para>Now, a loop will first iterate over the new and then the all old messages. It starts by telling the caller how much messages
-				have been found. Then all messages will be played, repeating the following steps for each one:</para>
+				<para>Now, a loop will first iterate over the new and then the all old messages. It starts by
+				telling the caller how much messages have been found. Then all messages will be played, repeating
+				the following steps for each one:</para>
 
 				<itemizedlist>
 					<listitem><para>read the description file of the current message</para></listitem>
@@ -2291,7 +2339,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 				<para>After reading the configuration by calling <function>cs_helpers.readConfig</function> and testing for the existence
 				of the archive directories needed, the userlist is compiled from the list of available sections.</para>
 
-				<para>For each user who has a valid fax setup (otherwise this user will be skipped), the send queue will be looked at. If the 
+				<para>For each user who has a valid fax setup (otherwise this user will be skipped), the send queue will be looked at. If the
 				necessary queue directories don't exist, they'll be created. After that, a list called <literal>files</literal> with the names of
 				all files in the send queue is created and filtered to only contain fax jobs.</para>
 
@@ -2337,18 +2385,24 @@ def idle(capi):<co id="idle_ex2_4"/>
 			active jobs, <function>abortjob</function> to abort a job or the given files are processed and put to the queue.</para>
 
 			<para>To process a job, the existence of it and its format will be checked. Currently, only PostScript is allowed. The &cs; core
-			itself only supports the SF format. Therefore, the files are coverted from PostScript to it by calling
-			<command>ghostscript</command>. Finally, the description file for this job is created containing the given parameters like the 
+			itself only supports the SF format. Therefore, the files are converted from PostScript to it by calling
+			<command>ghostscript</command>. Finally, the description file for this job is created containing the given parameters like the
 			destination number.</para>
 		</sect2>
 		<sect2 id="default_helpers"><title>cs_helpers.py</title>
 			<para>The <filename>cs_helpers.py</filename> script contains many small helper functions used in the other scripts. These are:</para>
-			
+
 			<variablelist>
 				<varlistentry>
 					<term><function>readConfig</function></term>
 					<listitem><para>Reads either the configuration files described in <xref linkend="script_config"/> or an arbitrary
 					config file like the description files accompanying each received file or job to send.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><function>escape</function></term>
+					<listitem><para>"Escapes" a file name - this means puts it into quotation marks to be able to
+					call external tools with it as parameter savely and correctly even if the name contains
+					special characters or whitespaces.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><function>getOption</function></term>
@@ -2406,14 +2460,14 @@ def idle(capi):<co id="idle_ex2_4"/>
 </chapter>
 <appendix id="acknowledgements"><title>Acknowledgements</title>
 	<para>&cs; started as diploma thesis in winter semester 2002/03. I want to thank the following people for helping me with it:</para>
-	
+
 	<itemizedlist>
 		<listitem><para>Karsten Keil from SuSE Linux AG (my tutor for the thesis) for his invaluable support and patience when answering me
 		many ISDN questions, doing tests and for his suggestions concerning the architecture of &cs;</para></listitem>
 
 		<listitem><para>Prof. Dr. Wolfgang J&uuml;rgensen from the UAS Landshut (my tutor from the UAS) for his help in ISDN
 		questions during the thesis and for teaching me the ISDN basics in his lecture before</para></listitem>
-		
+
 		<listitem><para>Prof. Dr. Peter Scholz from the UAS Landshut (second tutor from the UAS) for his support and his suggestions</para></listitem>
 
 		<listitem><para>my girl friend Claudia and her sister Bethina for proof-reading my thesis</para></listitem>
@@ -2421,10 +2475,18 @@ def idle(capi):<co id="idle_ex2_4"/>
 		<listitem><para>Peter Reinhart from SuSE for proof-reading my thesis</para></listitem>
 
 		<listitem><para>many colleagues from SuSE for helping me with technical problems, esp. Andreas Jaeger, Andreas Schwab, Thorsten Kukuk and Andi Kleen</para></listitem>
-		
+
 		<listitem><para>Achim Bohnet for being the first one from the community trying to compile the CVS version and making me quite some suggestions
 		how to improve it</para></listitem>
+
+		<listitem><para>Achim Bohnet and Herbert H&uuml;bner for providing binary RPMs for
+		RedHat and Debian</para></listitem>
 	</itemizedlist>
+
+	<para>Since I published &cs;, many other people tested it, reported errors and sent me bug
+	fixes or new code to include. I won't mention them all here, but I'm including all names in the
+	ChangeLog and NEWS files distributed with &cs;. A general THANK YOU to all of my users and
+	especially those named there!</para>
 </appendix>
 
 <appendix id="capicodes"><title>CAPI 2.0 Error Codes</title>
@@ -2434,7 +2496,7 @@ def idle(capi):<co id="idle_ex2_4"/>
  to know the codes shown in <xref linkend="capicodes_connection"/>
  as they'll be used in the &cs; Python functions like <function>capisuite.disconnect</function>.</para>
 
- <para>You'll find a list of all the codes and a short description below. A detailled description of 
+ <para>You'll find a list of all the codes and a short description below. A detailled description of
  the CAPI codes can be found in the CAPI specification available at
  <ulink url="http://www.capi.org"/>.</para>
 
@@ -2443,7 +2505,7 @@ def idle(capi):<co id="idle_ex2_4"/>
  <section id="capicodes_connection"><title>CAPI errors describing connection problems</title>
 
  	<para>All errors described here indicate some problem with the connection. These errors
-	are also important for script writers as they're returned by some CapiSuite Python functions.
+	are also important for script writers as they're returned by some &cs; Python functions.
 	See <xref linkend="command_reference"/> for further details.</para>
 
 	<section id="capicodes_protocol"><title>Protocol errors</title>
@@ -2534,11 +2596,11 @@ def idle(capi):<co id="idle_ex2_4"/>
  </section>
 
  <section id="capicodes_general"><title>Internal CAPI errors</title>
- 	<para>These errors are mainly of interest for developers of the CapiSuite core. If you're a user, you normally
+ 	<para>These errors are mainly of interest for developers of the &cs; core. If you're a user, you normally
 	won't need them.</para>
 
 	<section id="capicodes_info"><title>Informative values (no error)</title>
-	<para>These values are only warnings and may appear in the extensive CapiSuite log in messages from the CAPI.</para>
+	<para>These values are only warnings and may appear in the extensive &cs; log in messages from the CAPI.</para>
 	<itemizedlist>
 		<listitem><para><literal>0000</literal> - No error, request accepted</para></listitem>
 		<listitem><para><literal>0001</literal> - NCPI not supported by current protocol, NCPI ignored</para></listitem>

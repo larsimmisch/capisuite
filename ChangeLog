@@ -1,3 +1,28 @@
+2004-01-11  Gernot Hillier  <gernot@hillier.de>
+	* docs/manual[-de].docbook: many small improvements, typos, etc.
+	* docs/manual[-de].docbook (require_hard): mention Linux 2.6 & mISDN,
+	* docs/manual[-de].docbook (install_install): don't let users ask CAPI
+	  driver related questions on the CapiSuite lists
+	* docs/manual[-de].docbook (install_bin): remove some of the special
+	  acknowledgemnts for Debian packages, also mention RedHat packages
+	* docs/manual[-de].docbook (configcs): document new DDI_* options
+	* docs/manual[-de].docbook (script_config): emphasize that users must
+	  exist in local system
+	* docs/manual[-de].docbook (playing_alaw, creating_alaw): use 16 bit wave 
+	  files
+	* docs/manual[-de].docbook (cff): update documentation of this format
+	* docs/manual[-de].docbook (incoming_tut_improving): document new 
+	  exception raising behaviour
+	* docs/manual[-de].docbook (incoming_tut_fax_recognition): mention
+	  return values which aren't used in the examples
+	* docs/manual[-de].docbook (idle_examples): add 0x349f as normal cause
+	* docs/manual[-de].docbook (default_incoming_1, default_incoming_2,
+	  default_incoming_3, default_incoming_4): update script documentation
+	  to reality ;-)
+	* docs/manual[-de].docbook (default_helpers): document escape()
+	* docs/manual[-de].docbook (acknowledgements): add link to NEWS and 
+	  ChangeLog as we won't include all contributors to the manual
+
 2004-01-10  Gernot Hillier  <gernot@hillier.de>
 	* .cvsignore: added stamp-files
 	* docs/manual-de.docbook (creating_alaw): small stylistic improvement
