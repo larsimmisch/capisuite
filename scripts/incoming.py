@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.13 $
+#    version              : $Revision: 1.14 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -418,9 +418,9 @@ def newAnnouncement(call,userdir,curr_user,config):
 #
 # History:
 #
-# $Log: incoming.py,v $
+# Old Log (for new changes see ChangeLog):
 # Revision 1.13  2003/12/01 20:53:05  gernot
-# - confused "hiRes" and "loRes". Thx to Ingo Göppert <Ingo.Goeppert@gmx.de>
+# - confused "hiRes" and "loRes". Thx to Ingo Goeppert <Ingo.Goeppert@gmx.de>
 #   for the report!
 #
 # Revision 1.12  2003/10/03 13:42:09  gernot

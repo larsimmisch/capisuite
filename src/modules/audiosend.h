@@ -2,7 +2,7 @@
     @brief Contains AudioSend - Call Module for sending an A-Law file
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -85,11 +85,7 @@ class AudioSend: public CallModule
 
 /* History
 
-$Log: audiosend.h,v $
-Revision 1.2  2003/12/28 15:00:35  gernot
-* rework of exception handling stuff; many modules were not
-  declaring thrown exceptions correctly any more after the
-  re-structuring to not throw exceptions on any disconnect
+Old Log (for new changes see ChangeLog):
 
 Revision 1.1.1.1  2003/02/19 08:19:53  gernot
 initial checkin of 0.4

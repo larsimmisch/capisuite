@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.5 $
+    $Revision: 1.6 $
 */
 
 /***************************************************************************
@@ -397,7 +397,7 @@ CapiSuite::help()
 
 /* History
 
-$Log: capisuite.cpp,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.5  2003/04/03 21:09:46  gernot
 - Capi::getInfo isn't static any longer
 

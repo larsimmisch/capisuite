@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.5 $
+    $Revision: 1.6 $
 */
 
 /***************************************************************************
@@ -440,7 +440,7 @@ class Capi {
 
 /*  History
 
-$Log: capi.h,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.5  2003/04/17 10:39:42  gernot
 - support ALERTING notification (to know when it's ringing on the other side)
 - cosmetical fixes in capi.cpp

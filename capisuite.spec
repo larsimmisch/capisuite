@@ -14,7 +14,7 @@ Name:         capisuite
 License:      GPL
 Group:        Applications/Communications
 Autoreqprov:  on
-Version:      0.4.1  
+Version:      0.5  
 Release:      0
 Requires:     sfftobmp sox tiff ghostscript-library
 Summary:      ISDN telecommunication suite providing fax and voice services 

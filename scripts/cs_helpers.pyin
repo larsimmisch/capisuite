@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.14 $
+#    version              : $Revision: 1.15 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -340,7 +340,7 @@ def sayNumber(call,number,curr_user,config):
 		for i in number:
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
-# $Log: cs_helpers.pyin,v $
+# Old Log (for new changes see ChangeLog):
 # Revision 1.14  2003/10/19 20:17:54  gernot
 # - sendMIMEMail: better wording for some error messages during file conversion
 #

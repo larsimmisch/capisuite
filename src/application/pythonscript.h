@@ -2,7 +2,7 @@
     @brief Contains PythonScript - Read a python script and call a function in own thread
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -87,7 +87,7 @@ class PythonScript
 
 /* History
 
-$Log: pythonscript.h,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.2  2003/03/21 23:09:59  gernot
 - included autoconf tests for gcc-2.95 problems so that it will compile w/o
   change for good old gcc-2.95 and gcc3

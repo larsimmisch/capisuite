@@ -2,7 +2,7 @@
     @brief Contains IncomingScript - Incoming call handling. One object for each incoming call is created.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -135,9 +135,9 @@ IdleScript::activate()
 
 /* History
 
-$Log: idlescript.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Old Log (for new changes see ChangeLog):
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.12  2003/02/10 14:17:09  ghillie
 merged from NATIVE_PTHREADS to HEAD

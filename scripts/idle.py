@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.11 $
+#    version              : $Revision: 1.12 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ def movejob(job,olddir,newdir,user):
 #
 # History:
 #
-# $Log: idle.py,v $
+# Old Log (for new changes see ChangeLog):
 # Revision 1.11  2003/12/02 18:50:09  gernot
 # - fax_numbers is really allowed to be empty now...
 #

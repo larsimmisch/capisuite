@@ -2,7 +2,7 @@
     @brief Contains ApplicationError - Exception class for errors in the application layer
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -70,9 +70,9 @@ inline ostream& operator<<(ostream &s, ApplicationError &e)
 
 /* History
 
-$Log: applicationexception.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Old Log (for new changes see ChangeLog):
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.12  2003/01/19 16:50:27  ghillie
 - removed severity in exceptions. No FATAL-automatic-exit any more.

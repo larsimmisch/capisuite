@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.7 $
+    $Revision: 1.8 $
 */
 
 /***************************************************************************
@@ -987,7 +987,7 @@ capisuitemodule_init () throw (ApplicationError)
 
 /* History
 
-$Log: capisuitemodule.cpp,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.7  2003/08/24 12:49:21  gernot
 - switch_to_faxG3: return faxInfo structure instead of None
 

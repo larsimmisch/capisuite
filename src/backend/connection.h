@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.6 $
+    $Revision: 1.7 $
 */
 
 /***************************************************************************
@@ -668,7 +668,7 @@ class Connection
 
 /*  History
 
-$Log: connection.h,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.6  2003/06/28 12:49:47  gernot
 - convert fax headline to CP437, so that german umlauts and other special
   characters will work now

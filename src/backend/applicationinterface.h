@@ -2,7 +2,7 @@
     @brief Contains ApplicationInterface - Interface class which is implemented by the main application.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -47,9 +47,9 @@ class ApplicationInterface
 
 /* History
 
-$Log: applicationinterface.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Old Log (for new changes see ChangeLog):
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.7  2002/12/05 15:55:34  ghillie
 - removed callCompleted(), application will self-determine when call is completed

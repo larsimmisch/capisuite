@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.13 $
+    $Revision: 1.14 $
 */
 
 /***************************************************************************
@@ -1081,7 +1081,7 @@ Connection::convertToCP437(string &text)
 
 /*  History
 
-$Log: connection.cpp,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.13  2003/12/21 21:15:10  gernot
 * src/backend/connection.cpp (buildBconfiguration): accept
   color faxes now by setting bit 10 in B3configuration

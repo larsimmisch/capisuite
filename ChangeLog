@@ -1,4 +1,9 @@
 2003-12-28  Gernot Hillier  <gernot@hillier.de>
+	* nearly all files (history block): disabled the automatic
+	  adding of CVS log messages to source files as we now have
+	  this nice ChangeLog file
+
+2003-12-28  Gernot Hillier  <gernot@hillier.de>
 
 	* src/modules/audioreceive.{h,cpp} (AudioReceive,mainLoop),
 	  src/modules/audiosend.{h,cpp} (AudioSend,mainLoop),

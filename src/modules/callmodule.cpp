@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -104,11 +104,7 @@ CallModule::gotDTMF()
 
 /*  History
 
-$Log: callmodule.cpp,v $
-Revision 1.4  2003/12/28 15:00:35  gernot
-* rework of exception handling stuff; many modules were not
-  declaring thrown exceptions correctly any more after the
-  re-structuring to not throw exceptions on any disconnect
+Old Log (for new changes see ChangeLog):
 
 Revision 1.3  2003/10/03 14:56:40  gernot
 - partly implementation of a bigger semantic change: don't throw

@@ -2,9 +2,7 @@ NICE:
 - ?valgrind-clean the used libs and Python?
 - support more than one send_controller
 - don't use 34xx codes, define constants instead and print meaningful messages
-- include email account check in idly.py 
-- add docbook -> html to Makefile.am
-- any solution for sending fax when having no fax config?
+- include email account check in idly.py
 
 FUTURE PLANS:
 - setuid away from root (problem: chown of recorded file to user)

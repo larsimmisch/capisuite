@@ -2,7 +2,7 @@
     @brief Contains main().
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -30,9 +30,9 @@ int main(int argc, char** argv)
 
 /*  History
 
-$Log: main.cpp,v $
-Revision 1.1  2003/02/19 08:19:52  gernot
-Initial revision
+Old Log (for new changes see ChangeLog):
+Revision 1.1.1.1  2003/02/19 08:19:52  gernot
+initial checkin of 0.4
 
 Revision 1.13  2003/02/05 15:59:38  ghillie
 - moved error handling to capisuite.cpp, so it's logged

@@ -14,7 +14,7 @@
     found in @ref python.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -61,7 +61,7 @@ void capisuitemodule_destruct_connection(void* conn);
 
 /* History
 
-$Log: capisuitemodule.h,v $
+Old Log (for new changes see ChangeLog):
 Revision 1.2  2003/02/25 13:24:21  gernot
 - remove old forward declaration
 
