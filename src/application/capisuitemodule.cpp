@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -631,35 +631,21 @@ capisuite_call(Capi *capi, unsigned short controller, string call_from, string c
 /** @brief Initiate an outgoing call with service voice and wait for successful connection
     @ingroup python
 
-    This will initiate an outgoing call and choose voice as service, so you can use the audio commands
-    (like audio_receive and audio_send) with this connection. After this command has finished, the call
-    is connected successfully or the given timeout has exceeded. See the return value.
+    This will initiate an outgoing call and choose voice as service, so you can
+    use the audio commands (like audio_receive and audio_send) with this 
+    connection. After this command has finished, the call is connected 
+    successfully or the given timeout has exceeded. The timeout is measured 
+    beginning at the moment when the call is signalled (it's "ringing") to the
+    called party. 
  
-    A python tuple (call,result) is returned by this function. It contains of 2 values:
+    A python tuple (call,result) is returned by this function. It contains:
 	- <b>call</b> reference to the created call object - use this for subsequent calls like audio_send
 	- <b>result (int)</b> result of the call establishment process.
 		- 0 = connection established
 		- 1 = connection timeout exceeded, no connection was established
 		- 2 = connection wasn't successful and no reason for this failure is available
-		- 0x3301-0x34FF: Error reported by CAPI. For a complete description see the CAPI specification
-		  and ETS 300102-1 from http://www.etsi.org or search for "ISDN cause" in Google ;-).
-	  	  Here are some important values:
-			- 0x3301 Protocol error, Layer 1
-			- 0x3302 Protocol error, Layer 2
-			- 0x3303 Protocol error, Layer 3
-			- 0x3480 normal call termination
-			- 0x3481 Unallocated (unassigned) number
-			- 0x3490 Normal call clearing
-			- 0x3491 User busy
-			- 0x3492 No user responding
-			- 0x3493 No answer from user (user alerted)
-			- 0x3495 Call rejected
-			- 0x3496 Number changed
-			- 0x349B Destination out of order
-			- 0x349C Invalid number format
-			- 0x34A2 No circuit / channel available
-			- 0x34A9 Temporary failure
-			- 0x34D8 Incompatible destination
+		- 0x3301-0x34FF: Error reported by CAPI. For a complete description see 
+		  the annex of the user manual
 
     @param args Contains the python parameters. These are:
 	- <b>capi</b> reference to object of Capi to use (given to the idle function as parameter)
@@ -686,35 +672,21 @@ capisuite_call_voice(PyObject *, PyObject *args)
 /** @brief Initiate an outgoing call with service faxG3 and wait for successful connection
     @ingroup python
 
-    This will initiate an outgoing call and choose fax group 3 as service, so you can use the fax commands
-    (like fax_send and fax_receive) with this connection. After this command has finished, the call
-    is connected successfully or the given timeout has exceeded. See the return value.
+    This will initiate an outgoing call and choose fax group 3 as service, so 
+    you can use the fax commands (like fax_send and fax_receive) with this 
+    connection. After this command has finished, the call is connected
+    successfully or the given timeout has exceeded. The timeout is measured
+    beginning at the moment when the call is signalled (it's "ringing") to the
+    called party.
 
-    A python tuple (call,result) is returned by this function. It contains of 2 values:
+    A python tuple (call,result) is returned by this function. It contains:
 	- <b>call</b> reference to the created call object - use this for subsequent calls like audio_send
 	- <b>result (int)</b> result of the call establishment process.
 		- 0 = connection established
 		- 1 = connection timeout exceeded, no connection was established
 		- 2 = connection wasn't successful and no reason for this failure is available
-		- 0x3301-0x34FF: Error reported by CAPI. For a complete description see the CAPI specification
-		  and ETS 300102-1 from http://www.etsi.org or search for "ISDN cause" in Google ;-).
-	  	  Here are some important values:
-			- 0x3301 Protocol error, Layer 1
-			- 0x3302 Protocol error, Layer 2
-			- 0x3303 Protocol error, Layer 3
-			- 0x3480 normal call termination
-			- 0x3481 Unallocated (unassigned) number
-			- 0x3490 Normal call clearing
-			- 0x3491 User busy
-			- 0x3492 No user responding
-			- 0x3493 No answer from user (user alerted)
-			- 0x3495 Call rejected
-			- 0x3496 Number changed
-			- 0x349B Destination out of order
-			- 0x349C Invalid number format
-			- 0x34A2 No circuit / channel available
-			- 0x34A9 Temporary failure
-			- 0x34D8 Incompatible destination
+		- 0x3301-0x34FF: Error reported by CAPI. For a complete 
+		  description see the annex of the user manual
 
     @param args Contains the python parameters. These are:
 	- <b>capi</b> reference to object of Capi to use (given to the idle function as parameter)
@@ -965,6 +937,11 @@ capisuitemodule_init () throw (ApplicationError)
 /* History
 
 $Log: capisuitemodule.cpp,v $
+Revision 1.3  2003/04/17 10:53:54  gernot
+- update documentation of capisuite_call_* to the new behaviour (timeout for
+  outgoing calls starts when other party gets signalled), moved error code
+  description to manual
+
 Revision 1.2  2003/02/21 23:21:44  gernot
 - follow some a little bit stricter rules of gcc-2.95.3
 
