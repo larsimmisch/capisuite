@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -152,7 +152,7 @@ Connection::~Connection()
 			;
 	}
 	plci_state=P0;
-        
+
 	pthread_mutex_lock(&send_mutex);  // assure the lock is free before destroying it
 	pthread_mutex_unlock(&send_mutex);
 	pthread_mutex_destroy(&send_mutex);
@@ -160,7 +160,7 @@ Connection::~Connection()
 	pthread_mutex_lock(&receive_mutex); // assure the lock is free before destroying it
 	pthread_mutex_unlock(&receive_mutex);
 	pthread_mutex_destroy(&receive_mutex);
-	
+
 	if (debug_level >= 1) {
 		debug << prefix() << "Connection object deleted" <<  endl;
 	}
@@ -941,11 +941,11 @@ Connection::buildBconfiguration(service_t service, string faxStationID, string f
 			B1config=NULL; // default configuration (adaptive maximum baud rate, default transmit level)
 			B2config=NULL; // no configuration available
 
-			if (faxStationID.size()>254) // if the string would be longer the struct must be coded different, but I think a ID > 254 bytes has no sence anyway
-				faxStationID=faxStationID.substr(0,254);
+			if (faxStationID.size()>20) // stationID mustn't exceed 20 characters
+				faxStationID=faxStationID.substr(0,20);
 			if (faxHeadline.size()>254)  // if the string would be longer the struct must be coded different, but I think a header > 254 bytes has no sence
 				faxHeadline=faxHeadline.substr(0,254);
-			_cstruct B3config=new unsigned char [1+2+2+1+faxStationID.size()+1+faxHeadline.size()]; // length + 1 byte for the length itself
+			B3config=new unsigned char [1+2+2+1+faxStationID.size()+1+faxHeadline.size()]; // length + 1 byte for the length itself
 			int i=0;
 			B3config[i++]=2+2+1+faxStationID.size()+1+faxHeadline.size();  // length
 			B3config[i++]=0; B3config[i++]=0; // resolution = standard
@@ -967,8 +967,12 @@ Connection::buildBconfiguration(service_t service, string faxStationID, string f
 /*  History
 
 $Log: connection.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/02/28 21:36:51  gernot
+- don't allocate new B3config in buildBconfiguration(), fixes bug 532
+- limit stationID to 20 characters
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.44  2003/02/10 14:20:52  ghillie
 merged from NATIVE_PTHREADS to HEAD
