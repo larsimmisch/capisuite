@@ -7,7 +7,7 @@ Standards-Version: 3.5.2
 
 Package: capisuite
 Architecture: any
-Depends: ${shlibs:Depends}, sfftobmp, gs, exim | mail-transport-agent
+Depends: ${shlibs:Depends}, sfftobmp, gs, exim | mail-transport-agent, sox, libtiff-tools
 Suggests: sffview
 Description: easy fax and voice box solution for ISDN/CAPI capable devices
  In the default setup CapiSuite provides a fax and voice box solution for
@@ -17,3 +17,5 @@ Description: easy fax and voice box solution for ISDN/CAPI capable devices
  applications without having to fiddle around with all the dirty
  programming details like callback functions, data buffers, protocol
  settings and so on.
+ .
+ Homepage: http://www.capisuite.de/

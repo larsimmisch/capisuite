@@ -1,9 +1,20 @@
+capisuite (0.4.1a-1) unstable; urgency=low
+
+  * new upstream release (see /usr/share/doc/capisuite/NEWS.gz).
+    Debian pkg did _not_ contain the example capisuite.cronjob,
+    that had a SECURITY bug.
+  * added missing dependencies: sox, libtiff-tools
+    (as listed in manual software requirements)
+  * include fixes from cvs as of 7-Apr-2003 (See NEWS.gz)
+
+ -- Achim Bohnet <ach@mpe.mpg.de>  Mon,  7 Apr 2003 19:11:06 +0200
+
 capisuite (0.4.1-1) unstable; urgency=low
 
   * fix changelog syntax
   * sync with cvs head 24-03-2003
   * fix Makefile.cvs: Autoreconf exists with error if required files
-    are missing. Ignore it and let automake create. Now pkg build with
+    are missing. Ignore it and let automake create them. Now pkg builds with
       cvs -d... co;
       cd capisuite
       make -f Makefile.cvs
@@ -22,7 +33,7 @@ capisuite (0.4.1-0) unstable; urgency=low
 
   * new upstream release
   * remove fix-interpreter patch. Fixed upstream
-  * remove conffiles entries.  Looks like one of the dh_*
+  * remove conffiles entries.  Looks like one of the dh_* scripts
     marks everything below /etc as a conf file automaticly
 
  -- Achim Bohnet <ach@mpe.mpg.de>  Thu, 20 Mar 2003 21:12:02 +0100
