@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.9 $
+#    version              : $Revision: 1.10 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -106,6 +106,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		capisuite.reject(call,0x34A9)
 		return
 	filename="" # assure the variable is defined...
+	faxInfo=None
 	try:
 		stationID=cs_helpers.getOption(config,curr_user,"fax_stationID")
 		if (stationID==None):
@@ -119,7 +120,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		else:
 			faxFormat="sff" # normal b&w fax
 		filename=cs_helpers.uniqueName(udir+"received/","fax",faxFormat)
-		capisuite.fax_receive(call,filename)
+		faxInfo=capisuite.fax_receive(call,filename)
 		(cause,causeB3)=capisuite.disconnect(call)
 		capisuite.log("connection finished with cause 0x%x,0x%x" % (cause,causeB3),1,call)
 
@@ -145,9 +146,16 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 			capisuite.error("Warning: No valid fax_action definition found for user "+curr_user+" -> assuming SaveOnly")
 			action="saveonly"
 		if (action=="mailandsave"):
-			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Fax received from "+call_from+" to "+call_to, faxFormat,
-			  "You got a fax from "+call_from+" to "+call_to+"\nDate: "+time.ctime()+"\n\n"
-			  +"See attached file.\nThe original file was saved to file://"+filename+"\n\n", filename)
+			mailText="You got a fax from "+call_from+" to "+call_to+"\nDate: "+time.ctime()
+			mailText+=str(faxInfo)
+			if (faxInfo!=None and len(faxInfo)>=5):
+				mailText+="Station ID: "+faxInfo[0]+"\nTransmission Details: bit rate "+str(faxInfo[1]) \
+				  +(faxInfo[2] and "loRes" or "hiRes")+(faxInfo[3] and "color" or "")+"\nPages: " \
+				  +str(faxInfo[4])
+			mailText+="\n\nSee attached file.\nThe original file was saved to file://"+filename \
+			  +" on host \""+os.uname()[1]+"\""
+			cs_helpers.sendMIMEMail(curr_user, mailaddress, "Fax received from "+call_from+" to "+call_to,
+			  faxFormat, mailText, filename)
 
 # @brief called by callIncoming when an incoming voice call is received
 #
@@ -407,6 +415,9 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.10  2003/07/20 10:30:37  gernot
+# - started implementing faxInfo output in sent mails, not working currently
+#
 # Revision 1.9  2003/06/27 07:51:09  gernot
 # - replaced german umlaut in filename "nachricht-gelöscht.la", can cause
 #   problems on Redhat, thx to Herbert Hübner for reporting
