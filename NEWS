@@ -1,3 +1,19 @@
+0.4.1a (tag CAPISUITE_041a):
+============================
+	* fixed a bug in the rc-script of CapiSuite which made 
+          "capisuite start" unfunctional in 0.4.1 (path of executable changed)
+
+	* included tests and changes for gcc-2.95, no patch necessary
+          any more to build CapiSuite with it
+
+	* CapiSuite now checks controller abilities and respects them
+          when connecting (e.g. use extended fax protocols if available)
+	  -> this also works around a severe crash with AVM drivers when
+             transmitting a fax to/from some analog devices
+
+	* fixed SECURITY bug in cronjob which allowed every CapiSuite user
+          to become root. Sorry... :-((
+
 0.4.1 (tag CAPISUITE_041):
 ==========================
 	* cron script: redirect error output to /dev/null
