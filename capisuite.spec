@@ -14,30 +14,29 @@ Name:         capisuite
 License:      GPL
 Group:        Applications/Communications
 Autoreqprov:  on
-Version:      0.3  
+Version:      0.4.1  
 Release:      0
-Requires:     sfftobmp sox
-Summary:      capisuite
+Requires:     sfftobmp sox tiff ghostscript-library
+Summary:      ISDN telecommunication suite providing fax and voice services 
 Source0:      capisuite-%{version}.tar.gz
 Source1:      rc.capisuite
-Url:          http://www.capisuite.de 
+URL:          http://www.capisuite.de 
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 PreReq:       %insserv_prereq
 
 %description
-CapiSuite is a ISDN telecommunication suite providing easy to use
+CapiSuite is an ISDN telecommunication suite providing easy to use
 telecommunication functions which can be controlled from Python scripts.
 
 It uses a CAPI-compatible driver for accessing the ISDN-hardware, so you'll
-need a Eicon or AVM card with the according driver.
+need an Eicon or AVM card with the according driver.
 
 CapiSuite is distributed with two example scripts for call incoming handling
-and fax sending. See /usr/share/capisuite/scripts and
-/usr/share/doc/packages/capisuite for further information.
+and fax sending. See /usr/share/doc/packages/capisuite for further information.
 
 Authors:
 --------
-        Gernot Hillier
+    Gernot Hillier
 
 %prep
 %setup  
@@ -60,13 +59,13 @@ rm -rf $RPM_BUILD_ROOT
 %config /etc/capisuite/capisuite.conf
 %config /etc/capisuite/fax.conf
 %config /etc/capisuite/answering_machine.conf
-/usr/bin/capisuite
+/usr/sbin/capisuite
 /usr/bin/capisuitefax
 %doc /usr/share/doc/packages/capisuite
 /usr/share/capisuite
 /usr/lib/capisuite
 /var/spool/capisuite
-/usr/%{_lib}/python2.2/site-packages/cs_helpers.py
+/usr/%{_lib}/python2.?/site-packages/cs_helpers.py
 /etc/init.d/capisuite
 /usr/sbin/rccapisuite
 
