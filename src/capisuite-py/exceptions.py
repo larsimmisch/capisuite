@@ -33,12 +33,14 @@ class JobError(Error):
 class JobLockedError(JobError): pass
 class InvalidJob(JobError): pass
 
-from ConfigParser import NoOptionError, NoSectionError, Error
+from ConfigParser import NoOptionError, NoSectionError
+from ConfigParser import Error as ConfigError
 
 class NoGlobalSectionError(NoSectionError):
     """Raised when the GLOBAL section is missing
     in a configuration file."""
 
     def __init__(self):
-        Error.__init__(self, "Invalid config file: section GLOBAL missing")
+        NoSectionError.__init__(self,
+                                "Invalid config file: section GLOBAL missing")
         self.section = 'GLOBAL'
