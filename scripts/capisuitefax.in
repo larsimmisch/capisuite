@@ -4,7 +4,7 @@
 #            ---------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.1 $
+#    version              : $Revision: 1.2 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -15,35 +15,36 @@ import getopt,os,sys,re,time,pwd,errno,fcntl
 # capisuite stuff
 import cs_helpers
 
-dialstring=""  
+dialstring=""
 abort=""
 quiet=0
 listqueue=0
 useprefix=1
 
 def usage(error=""):
-	print "capisuitefax - capisuite tool for enqueueing faxes"
-	print
-	print "usage:"
-	print "capisuitefax [-q] [-n] -d <dial> file1 [file2...] or"
-	print "capisuitefax [-q] -a <id> or"
-	print "capisuitefax [-h] [-l]"
-	print
-	print "possible options are:"
-	print
-	print "-a <id>, --abort=<id>		abort fax job with id (id is a number)"
-	print "-d <dial>, --dialstring=<dial>	send fax to this number (required)"
-	print "-h, --help			print this usage information"
-	print "-l, --list			print the jobs in the send queue"
-	print "-n, --noprefix			ignore configured dial prefix for this call (for internal calls)"
-	print "-q, --quiet			be quiet, don't output informational messages"
-	print
-	print "The given files must be in Adobe PostScript format"
+	print """capisuitefax - capisuite tool for enqueueing faxes
+
+usage:
+capisuitefax [-q] [-n] -d <dial> file1 [file2...] or
+capisuitefax [-q] -a <id> or
+capisuitefax [-h] [-l]
+
+possible options are:
+
+-a <id>, --abort=<id>		abort fax job with id (id is a number)
+-d <dial>, --dialstring=<dial>	send fax to this number
+-h, --help			print this usage information
+-l, --list			print jobs in the send queue
+-n, --noprefix			ignore configured dial prefix for this call
+				(for internal calls)
+-q, --quiet			be quiet, don't output informational messages
+
+The given files must be in Adobe PostScript format"""
 	if (error!=""):
 		print
 		print "ERROR:",error
-	sys.exit(1)    
-	
+	sys.exit(1)
+
 def showlist(config,user):
 	sendq=cs_helpers.getOption(config,"","fax_user_dir")
 	if (sendq==None):
@@ -86,18 +87,20 @@ def abortjob(config,user,job):
 
 	try:
 		lockfile=open(sendq+job[:-3]+"lock","w")
-		fcntl.lockf(lockfile,fcntl.LOCK_EX | fcntl.LOCK_NB) # lock so that it isn't deleted while sending
+		# lock so that it isn't deleted while sending
+		fcntl.lockf(lockfile,fcntl.LOCK_EX | fcntl.LOCK_NB)
 		os.unlink(sendq+job)
 		os.unlink(sendq+job[:-3]+"sff")
 		fcntl.lockf(lockfile,fcntl.LOCK_UN)
 		os.unlink(sendq+job[:-3]+"lock")
 	except IOError,err:
 		if (err.errno in (errno.EACCES,errno.EAGAIN)):
-			print "Sorry, this job is currently in transmission. Can't abort."
+			print "Job is currently in transmission. Can't abort."
 
 
 try:
-	optlist,args = getopt.getopt(sys.argv[1:], "d:a:lhqn", ['dialstring=','noprefix','help',"abort=","list","quiet"])
+	optlist,args = getopt.getopt(sys.argv[1:], "d:a:lhqn"
+	  ,['dialstring=','noprefix','help',"abort=","list","quiet"])
 
 except getopt.GetoptError, e:
 	usage(e.msg)
@@ -138,13 +141,13 @@ sendq=os.path.join(sendq,user,"sendq")+"/"
 if (not os.access(sendq,os.W_OK)):
 	print "can't write to queue dir"
 	sys.exit(1)
-	
+
 if (listqueue):
 	showlist(config,user)
-	
+
 if (abort):
-	abortjob(config,user,abort)  
-	
+	abortjob(config,user,abort)
+
 prefix=cs_helpers.getOption(config,user,"dial_prefix","")
 if (useprefix):
 	dialstring=prefix+dialstring
@@ -154,7 +157,7 @@ for i in args:
 	if (not os.access(i,os.R_OK)):
 		sys.stderr.write("can't open "+i+'\n')
 		continue
-	t=os.popen("file -b -i "+i+" 2>/dev/null")
+	t=os.popen("file -b -i "+cs_helpers.escape(i)+" 2>/dev/null")
 	filetype=t.read()
 	if (t.close()):
 		usage("can't execute \"file\"")
@@ -164,9 +167,12 @@ for i in args:
 
 	newname=cs_helpers.uniqueName(sendq,"fax","sff")
 
-	ret=(os.system("gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax -sOutputFile="+newname+" "+i))>>8
+	command="gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax -sOutputFile=" \
+	  + newname+" "+cs_helpers.escape(i)
+	ret=(os.system(command))>>8
 	if (ret):
-		sys.stderr.write("error during SFF-conversion at file "+i+'. Ghostscript not installed?\n')
+		sys.stderr.write("error during SFF-conversion at file "+i+'. \
+		Ghostscript not installed?\n')
 		sys.exit()
 
 	cs_helpers.writeDescription(newname,"dialstring=\""+dialstring+"\"\n"
@@ -176,15 +182,3 @@ for i in args:
 	os.chmod(newname[:-3]+"txt",0600)
 
 	print i,"successful enqueued as",newname,"for",dialstring
-
-
-
-
-
-
-
-
-
-
-
-
