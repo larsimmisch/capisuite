@@ -1,0 +1,8 @@
+# -*- python -*-
+
+Import('env')
+libback = env.StaticLibrary('ccbackend', source = Split("""
+    capi.cpp connection.cpp
+    """))
+
+Return('libback')

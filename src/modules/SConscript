@@ -1,0 +1,11 @@
+# -*- python -*-
+
+Import('env')
+
+libmodules = env.StaticLibrary('ccmodules', source = Split("""
+    audiosend.cpp callmodule.cpp audioreceive.cpp faxreceive.cpp
+    connectmodule.cpp switch2faxG3.cpp readDTMF.cpp calloutgoing.cpp
+    disconnectmodule.cpp faxsend.cpp
+    """))
+
+Return('libmodules')

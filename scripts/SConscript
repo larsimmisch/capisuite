@@ -1,0 +1,53 @@
+# -*- python -*-
+
+Import('env')
+
+def py_compile(target, source, env):
+    """compile python modules for .../python2.x/site-packages/"""
+    # Note: this differs from #/capisuite/SConscript.py_compile in 'dfile'
+    import py_compile, os.path
+    py_compile.compile(source[0].abspath,
+                       #cfile=target[0].abspath,
+                       dfile = os.path.join(env.subst('$python_moduledir'),
+                                            env.subst('$SOURCE.file')),  
+                       )
+
+# these ar meant to be used by users
+user_scripts = [env.FileSubst('capisuitefax', 'capisuitefax.in'),]
+env.AddPostAction(user_scripts, 'chmod 755 $TARGETS')
+
+# these are meant to be used by the admin
+sbin_scripts = [File('capisuite-checkconfig'),]
+#env.AddPostAction(sbin_scripts, 'chmod 755 $TARGETS')
+
+# config files
+configs = [
+    env.FileSubst('fax.conf', 'fax.confin'),
+    env.FileSubst('answering_machine.conf', 'answering_machine.confin')
+    ]
+
+# this is no longer needed
+# todo: check cs_helper.py into cvs instead of cs_helper.pyin
+env.FileSubst('cs_helpers.py', 'cs_helpers.pyin')
+
+pymodules = []
+for mod in Split('cs_helpers'):
+    pymodules.append(mod+'.py')
+    pymodules.append(env.Command(mod + '.pyc', mod+'.py', py_compile))
+
+#--- install ---
+
+install_pylib = env.Install('$python_moduledir', pymodules)
+Alias('install-pylib',install_pylib)
+
+for i in [env.Install('$pkgbindir',  user_scripts),
+          env.Install('$pkgsbindir', sbin_scripts),
+          env.Install('$pkglibdir',  Split('idle.py incoming.py'))]:
+    Alias('install-scripts', i)
+    Alias('install', i)
+
+Alias('install',
+      env.Install('$python_moduledir', pymodules),
+      env.Install('$pkgsysconfdir', configs),
+      env.Install('$pkglibdir', 'README'),
+      )

@@ -1,0 +1,66 @@
+# -*- python -*-
+
+Import('env')
+#EXTRA_DIST = Doxyfile.in mainpage.doxy manual.docbook manual.README
+
+
+## dist-hook: manual-html manual-pdf reference-html
+## 	mkdir $(distdir)/manual
+## 	cp -r $(srcdir)/manual/* $(distdir)/manual/
+## 	mkdir $(distdir)/reference
+## 	cp $(srcdir)/reference/* $(distdir)/reference/
+## 	cp manual.pdf $(distdir)/
+
+import re
+
+def patch_version(target, source, env):
+    """
+    Change version contained in the <title> tag.
+    This is done in-place to avoid yet another .in file.
+    """
+    text = source[0].get_contents()
+    text = re.sub(r'<title>CapiSuite [\w.]*</title>',
+                  r'<title>CapiSuite %s</title>' % env['VERSION'],
+                  text)
+    open(source[0].abspath, 'w').write(text)
+
+
+env.Append(docbuilddir=Dir('.'))
+
+manualdir = Dir('manual')
+stylesheetdir = Dir('/usr/share/sgml/docbook/xsl-stylesheets')
+
+#images = Install(Dir('images', manualdir), images)
+
+# create HTML manual
+manual_html = env.Command(File('index.html', manualdir),
+                          'manual.docbook', [
+    patch_version,
+    ['xmllint', '--noout', '--valid', '$SOURCE'],
+    ['xsltproc', '-o', '${TARGET.dir}/',
+     File('xhtml/chunk.xsl', stylesheetdir), '$SOURCE']
+    ])
+#env.Depends(manual_html, images)
+
+# copy missing images
+env.AddPostAction(manual_html, [ \
+    ['rm', '-fr', Dir('images', manualdir)],
+    ['cp', '-r', Dir('images', stylesheetdir), Dir(manualdir)]
+    ])
+
+# create PDF manual
+manual_pdf = env.Command('manual.pdf', 'manual.docbook', 
+                         'db2pdf -o ${TARGET.dir} $SOURCE'
+                         )
+
+# substitute version, capisuite_sources, srcdir
+doxyfile = env.FileSubst('Doxyfile', 'Doxyfile.in')
+ref_html = env.Command('reference/index.html', doxyfile, [ \
+                       ['doxygen', doxyfile]
+                       ])
+
+Alias('install',
+      env.Install('$docdir', manual_pdf),
+      #env.Install('$docdir', 'manual'),
+      #env.Install('$docdir', 'reference'),
+      )

@@ -115,6 +115,55 @@ fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 fax_email_from="capisuite daemon <root>"
 
 ###############################################################################
+############################# Mail settings ###################################
+###############################################################################
+
+#########
+# defined for fax receive: call_from, call_to, stationID, bitRate,
+#                          resolution color, numPages, filename, hostname
+
+[MailFaxReceived]
+subject = Received a fax from %(call_from)s to %(call_to)s
+text =
+  You got a fax from %(call_from)s to %(call_to)s
+  Station ID: %(stationID)s
+  Transmission Details: bit rate %(bitRate)i %(resolution)s %(color)s
+  Pages: %(numPages)i
+
+  See attached file.
+  The original file was saved to file://%(filename)s on host "%(hostname)s".
+
+#########
+# defined for fax send: addressee, dialstring, subject, filename, tries,
+#                       result, resultB3, filename, hostname
+
+[MailFaxSent]
+subject = Fax to %(addressee)s (%(dialstring)s) sent successfully.
+text =
+  Your fax job to %(addressee)s (%(dialstring)s) was sent successfully.
+  
+  Subject: %(subject)s
+  Filename: %(filename)s
+  Number of tries: %(tries)i
+  Last result: 0x%(result)x/0x%(resultB3)x
+  
+  It was moved to file://%(filename)s on host %(hostname)s.
+
+
+[MailFaxFailed]
+subject = Fax to %(addressee)s (%(dialstring)s) FAILED.
+text =
+  I'm sorry, but your fax job to %(addressee)s (%(dialstring)s) failed finally.
+  
+  Subject: %(subject)s
+  Filename: %(filename)s
+  Number of tries: %(tries)i
+  Last result: 0x%(result)x/0x%(resultB3)x
+  
+  It was moved to file://%(filename)s on host %(hostname)s.
+
+
+###############################################################################
 ############################# user settings ###################################
 ###############################################################################
 

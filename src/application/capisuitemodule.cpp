@@ -89,7 +89,7 @@ bool
 convertConnRef(PyObject *conn_ref, Connection** conn)
 {
 	if (!PyCObject_Check(conn_ref)) {
-		PyErr_SetString(PyExc_TypeError,"First parameter must be the call reference.");
+		PyErr_SetString(PyExc_TypeError,"Invalid call reference given.");
 		return 0;
 	}
 
@@ -112,7 +112,7 @@ bool
 convertCapiRef(PyObject *capi_ref, Capi** capi)
 {
 	if (!PyCObject_Check(capi_ref)) {
-		PyErr_SetString(PyExc_TypeError,"First parameter must be the Capi reference.");
+		PyErr_SetString(PyExc_TypeError,"Invalid Capi reference given.");
 		return 0;
 	}
 
@@ -966,7 +966,7 @@ capisuitemodule_init () throw (ApplicationError)
 {
 	PyObject *mod,*d;
 	try {
-		if ( ! ( mod=Py_InitModule3("capisuite", PCallControlMethods, "Python module for controlling CapiSuite") ) )  // m=borrowed ref
+		if ( ! ( mod=Py_InitModule3("_capisuite", PCallControlMethods, "Python module for controlling CapiSuite") ) )  // m=borrowed ref
 			throw ApplicationError("unable to init python module capisuite (InitModule failed)","capisuite_init()");
 
 		if ( ! ( d=PyModule_GetDict(mod) ) )  // d=borrowed ref

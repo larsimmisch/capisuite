@@ -1,0 +1,131 @@
+#!/usr/bin/python
+
+import sys, os, os.path
+
+def error(*msgs):
+    for m in msgs:
+        print >>sys.stderr, m,
+    print >>sys.stderr
+    sys.exit(10)
+
+try:
+    import capisuite.config
+    import capisuite.fileutils
+    from capisuite.consts import *
+except Exception, e:
+    error("failed to import capisuite's python modules", str(e))
+
+
+# Sompe helper functions, if you don't know what they do, just skip to
+# the easy part
+    
+def test_nextfile(user, path, queue, prefix):
+    path = os.path.join(path, user, queue)
+    if not os.path.exists(path):
+        print "Directory", path, "does not exist"
+        print "    ==> this is ok, if this queue has never been",
+        print "used before (e.g. never send a fax)"
+        print
+        return
+    file = os.path.join(path, prefix+"-nextnr")
+    if not os.path.exists(file):
+        print "File", file, "does not exist"
+        print "    ==> this is ok, if this queue has never been",
+        print "used before (e.g. never send a fax)"
+        print
+        return
+
+    print "Trying to read file:", file
+    num = None
+    try:
+        num = capisuite.fileutils.readCounter(file, default=None)
+    except IOError, err:
+        print >>sys.stderr, "****Failed to read/parse the *nextnr file:", err
+    except ValueError:
+        print >>sys.stderr, "****Failed to convert file content to int number"
+    else:
+        if num is None:
+            print "   ", file, 'is unset'
+        else:
+            print "   ", file, 'contains number', num
+
+
+def checkQdirs(user, basedir, queuedir):
+    path = os.path.join(basedir, user, queuedir)
+    if not os.path.exists(path):
+        if os.getuid() == 0:
+            print 'creating user queue dir', path
+            capisuite.fileutils._mkuserdir(user, basedir, user, queuedir)
+            return 1
+        else:
+            print >>sys.stderr, 'missing user queue dir', path
+            return 0
+    return 1
+
+# END helper functions ================ 
+
+def checkGlobalConfig(file=None):
+    print "Reading global configuration ...",
+    try:
+        config = capisuite.config.readGlobalConfig(file)
+    except IOError, err:
+        print
+        error("Failed to read/parse config file:", err)
+    print 'okay'
+
+    print
+    print "========= current configuration ==================="
+    for section in config.sections():
+        print "----------------", '['+section+']', "-------------"
+        options = config.options(section)
+        options.sort()
+        for option in options:
+            print option, '=', config.get(section, option)
+        print
+
+
+    print
+    print "=========== Testing User Queues and Sequence Files ====="
+    print
+
+    basedir = config.get('GLOBAL', 'fax_user_dir')
+    userdirs_missing = 0
+    for user in config.listUsers():
+        print "----------------", user, "-------------"
+        for queue in (SEND_Q, RECEIVED_Q):
+            if not checkQdirs(user, basedir, queue):
+                userdirs_missing += 1
+            else:
+                test_nextfile(user, basedir, queue, "fax")
+                if queue == RECEIVED_Q:
+                    test_nextfile(user, basedir, queue, "voice")
+
+    if userdirs_missing:
+        print
+        print 'Some user queue dirs are missing.'
+        print "Rerun as 'root' to create them."
+        print
+
+#----------- main -----------#
+
+if len(sys.argv) == 1:
+    checkGlobalConfig()
+elif 0:
+    checkGlobalConfig(sys.argv[1])
+else:
+    config = capisuite.config.readGlobalConfig(sys.argv[1])
+    sections = config.sections()
+    sections.sort()
+    for section in sections:
+        print "----------------", '['+section+']', "-------------"
+        options = config.options(section)
+        options.sort()
+        for option in options:
+            print option, '=', config.get(section, option)
+        print
+    print 'known users:',
+    print config.listUsers()
+# todo: these checks:
+# - are all users valid system users?
+# - do all voice-users have 'voice_delay' set?
+# - option --configured to chekc if any fax or voice user is configured

@@ -1,6 +1,11 @@
 0.5 (CVS nn):
 =============
 
+	* scripts: removed the special support for giving an empty voice_email/
+	  fax_email parameter. This is NOT allowed any more and will result in
+	  an error when sending the mail. Simply don't set these parameters
+	  any more if you don't need them!
+
 	* core: use shorter, more readable format for Python traceback logging
 
 	* documentation: 5 man pages are now also created: capisuite(8),
@@ -12,6 +17,22 @@
 
 	* scripts: capisuitefax now also accepts PDF files (thx to Jochen Meyer
 	  and Eckhard Rüggeberg for reporting)
+
+	* scripts: capisuitefax now submits a single job if several
+	  files are given (implemented by Hartmut Goebel, fixes bug #38)
+
+        * scripts: New script capisuite-checkconfig for checking the
+          configuration (thx to carsten@capimin.cbclass.net for the
+          idea and a first version, improved by Hartmut Goebel).
+
+	* core: major refactoring of the Python based interface has
+          been done. Now a complete new Python module library
+          implements a lot of useful functions and offers handy
+          abstractions. (planned and implemented by Hartmut Goebel)
+
+	* scripts: the mails sent can now be configured in the special sections
+	  MailFaxReceived, MailFaxSent, MailFaxFailed and MailVoiceReceived in
+	  answering_machine.conf and fax.conf (implemented by Hartmut Goebel)
 
 	* core: fixed a bug which could lead to a crash when some unexpected
 	  CAPI messages arrived (thx to Karsten Keil for analyzing)
@@ -42,8 +63,8 @@
 	  should only contain important changes from a user's point of view, while
 	  ChangeLog records all changes in detail.
 
-0.4.4 (CVS tag NN):
-===================
+0.4.4
+=====
 
         * Makefiles: fixed "make" to not trying to create directories any more -
           this prevented normal users to call "make" sometimes (thx to Steffen

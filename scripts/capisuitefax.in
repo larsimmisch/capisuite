@@ -1,4 +1,5 @@
 #!@PYTHON@
+# -*- mode: python -*-
 #
 #             capisuitefax - capisuite tool for enqueuing faxes
 #            ---------------------------------------------------
@@ -11,18 +12,10 @@
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
 
-import getopt,os,sys,re,time,pwd,errno,fcntl,string
+import getopt, os, sys, pwd, string, commands
 # capisuite stuff
-import cs_helpers
-
-dialstring=""
-addressee=""
-subject=""
-abort=""
-user=""
-quiet=0
-listqueue=0
-useprefix=1
+import capisuite.fax
+import capisuite.config 
 
 def usage(error=""):
 	print """capisuitefax - capisuite tool for enqueueing faxes
@@ -50,165 +43,163 @@ other options:
 -l, --list			print jobs in the send queue
 
 The given files must be in Adobe PostScript or PDF format"""
-	if (error!=""):
+	if error:
 		print
 		print "ERROR:",error
 	sys.exit(1)
 
-def showlist(config,user):
-	sendq=cs_helpers.getOption(config,"","fax_user_dir")
-	if (sendq==None):
-		print "ERROR: option fax_user_dir not set in fax configuration"
-		sys.exit(1)
-	sendq=os.path.join(sendq,user,"sendq")+"/"
 
-	print "ID	Nr./Addressee	Tries	Next try			Subject"
+def convert2Fax(filenames, faxname):
+	# todo: clean this up, maybe rewrite it
+	"""
+	convert file 'filename' to a SFF fax file 'faxfile'.
+	"""
+	def checkFile(fname, fname_):
+		if not os.access(fname, os.R_OK):
+			print >> sys.stderr, "can't open", fname
+			return 0
+		status, filetype = commands.getstatusoutput(
+			"file -b -i %s 2>/dev/null" % fname_)
+		if status:
+			usage("Error when executing command 'file'")
+			return 0 
+		if filetype.find("application/postscript") < 0 \
+		   and filetype.find("application/pdf") < 0:
+			print >> sys.stderr, arg, "is not a PostScript/PDF file"
+			return 0
+		return 1
 
-	files=os.listdir(sendq)
-	files=filter (lambda s: re.match("fax-.*\.txt",s),files)
-	if (not len(files)):
-		print "--- queue empty ---"
+	# todo: catch errors!
+	files = []
+	for fname in filenames:
+		fname_ = commands.mkarg(fname)
+		if not checkFile(fname, fname_):
+			return 0
+		files.append(fname_)
+	command = "gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax " \
+		  "-sOutputFile=%s %s" % (faxname, ' '.join(files))
+	ret = os.system(command) >> 8
+	if ret:
+		print >> sys.stderr, "error during SFF-conversion ot file", arg
+		print >> sys.stderr, "Ghostscript not installed?"
+		sys.exit()
 
-	for job in files:
-		control=cs_helpers.readConfig(sendq+job)
-		sys.stdout.write(re.match("fax-([0-9]+)\.txt",job).group(1))
-		sys.stdout.write("\t")
-		dest=cs_helpers.getOption(control,"GLOBAL","addressee","")
-		if (dest==""):
-			dest=control.get("GLOBAL","dialstring")
-		sys.stdout.write(dest+"\t")
-		if (len(dest)<8):
-			sys.stdout.write("\t")
-		sys.stdout.write(control.get("GLOBAL","tries")+"\t")
-		sys.stdout.write(control.get("GLOBAL","starttime")+"\t")
-		sys.stdout.write(cs_helpers.getOption(control,"GLOBAL","subject","")+"\n")
 
-	sys.exit(0)
-
-def abortjob(config,user,job):
-	sendq=cs_helpers.getOption(config,"","fax_user_dir")
-	if (sendq==None):
-		print "ERROR: option fax_user_dir not set in fax configuration"
-		sys.exit(1)
-	sendq=os.path.join(sendq,user,"sendq")+"/"
-	job="fax-"+job+".txt"
-
-	if (not os.access(sendq+job,os.W_OK)):
-		print "job to abort not valid"
-		sys.exit(1)
-
+def showQueue(config, user):
 	try:
-		lockfile=open(sendq+job[:-3]+"lock","w")
-		# lock so that it isn't deleted while sending
-		fcntl.lockf(lockfile,fcntl.LOCK_EX | fcntl.LOCK_NB)
-		os.unlink(sendq+job)
-		os.unlink(sendq+job[:-3]+"sff")
-		fcntl.lockf(lockfile,fcntl.LOCK_UN)
-		os.unlink(sendq+job[:-3]+"lock")
-	except IOError,err:
-		if (err.errno in (errno.EACCES,errno.EAGAIN)):
-			print "Job is currently in transmission. Can't abort."
+		jobs = capisuite.fax.getQueueDetails(config, user)
+	except capisuite.config.NoOptionError:
+                print "ERROR: option fax_user_dir not set in fax configuration"
+                return 10
+	if not jobs:
+		print "--- queue empty ---"
+	else:
+		format = "%s\t%s %2s\t%-24s %s"
+		print format % ('ID', 'Numb./Addr.', 'Try', 'Next try', 'Subject')
+		for entry in jobs:
+			print format % entry
+	return 0
+
+
+def abortJob(config, user, job):
+	# todo: test whether 'job' is an integer
+	try:
+		capisuite.fax.abortUserJob(config, user, jobnum=job)
+	except capisuite.fax.InvalidJob:
+		print "job to abort not valid"
+		return 1
+	except capisuite.fax.JobLockedError:
+		print "Job is currently in transmission. Can't abort."
+		return 1
+	return 0
 
 try:
-	optlist,args = getopt.getopt(sys.argv[1:], "d:a:u:lhqnA:S:"
-	  ,['dialstring=','noprefix','help',"abort=","list","quiet","user=",
-	    'addressee=','subject='])
+	optlist,args = getopt.getopt(sys.argv[1:], "d:a:u:lhqnA:S:",
+	  ['dialstring=','noprefix','help',"abort=","list","quiet","user=",
+	   'addressee=','subject='])
 
 except getopt.GetoptError, e:
 	usage(e.msg)
+	sys.exit(1)
 
 # read options
-for option,param in optlist:
-	if option in ('-d','--dialstring'): dialstring=param
-	if option in ('-A','--addressee'): addressee=param
-	if option in ('-S','--subject'): subject=param
-	if option in ('-n','--noprefix'): useprefix=0
+dialstring = addressee = subject = abort = user = ""
+quiet = listqueue = 0
+useprefix = 1
+
+for option, param in optlist:
+	# commands
 	if option in ('-h','--help'): usage()
-	if option in ('-l','--list'): listqueue=1
-	if option in ('-a','--abort'): abort=param
-	if option in ('-q','--quiet'): quiet=1
-	if option in ('-u','--user'):
-		if (os.getuid()==0):
-			user=param
+	elif option in ('-l','--list'): listqueue = 1
+	elif option in ('-a','--abort'): abort = param
+	# send options
+	elif option in ('-d','--dialstring'): dialstring = param
+	elif option in ('-A','--addressee'): addressee = param
+	elif option in ('-S','--subject'): subject = param
+	elif option in ('-n','--noprefix'): useprefix = 0
+	elif option in ('-q','--quiet'): quiet = 1
+	elif option in ('-u','--user'):
+		if not os.getuid():
+			user = param
 		else:
 			usage("--user may only used as root!")
 
-if (not abort and not listqueue and not dialstring):
+if not abort and not listqueue and not dialstring:
 	usage("No usable command given.")
 
-# filter out common separators from dialstring, check it
-dialstring=dialstring.translate(string.maketrans("",""),"-/ ()")
-for i in dialstring:
-	if ((i>'9' or i<'0') and i not in ('+*#')):
-		usage("Invalid dialstring given.")
+config = capisuite.config.readGlobalConfig()
+if not user:
+	user = pwd.getpwuid(os.getuid()).pw_name
 
-if (dialstring and len(args)==0):
-	usage("No fax files given")
+if listqueue:
+	sys.exit(showQueue(config, user))
+elif abort:
+	try:
+		jobnum = int(abort)
+	except ValueError:
+		print "Error: job id has to be a number, but is %r" % abort
+		sys.exit(1)
+	sys.exit(abortJob(config, user, jobnum))
+else:
+	# queue fax for sending
 
-# test if this user is allowed to send faxes
-config=cs_helpers.readConfig()
-if (user==""):
-	user=pwd.getpwuid(os.getuid())[0]
-if (not config.has_section(user)):
-	print "Sorry, you're no valid user for CapiSuite"
-	sys.exit(1)
+	# filter out common separators from dialstring, check it
+	dialstring = dialstring.translate(string.maketrans("",""),"-/ ()")
+	for i in dialstring:
+		if not i in '+0123456789*#':
+			usage("Invalid dialstring given, character %r is not allowed." % i)
 
-if ((cs_helpers.getOption(config,user,"outgoing_MSN","")=="") and (config.get(user,"fax_numbers","")=="")):
-	print "Sorry, you're not allowed to use fax services"
-	sys.exit(1)
+	if dialstring and len(args)==0:
+		usage("No fax files given")
 
-# test environment
-sendq=cs_helpers.getOption(config,"","fax_user_dir")
-if (sendq==None):
-	print "ERROR: option fax_user_dir not set in fax configuration"
-	sys.exit(1)
-sendq=os.path.join(sendq,user,"sendq")+"/"
-if (not os.access(sendq,os.W_OK)):
-	print "can't write to queue dir"
-	sys.exit(1)
+	# test if this user is allowed to send faxes
+	if not config.has_section(user):
+		print "Sorry, you're no valid user for CapiSuite"
+		sys.exit(1)
 
-if (listqueue):
-	showlist(config,user)
+	if not config.has_option(user, "outgoing_MSN") and \
+	   not config.has_option(user, "fax_numbers"):
+		print "Sorry, you're not allowed to use fax services"
+		sys.exit(1)
 
-if (abort):
-	abortjob(config,user,abort)
+	if useprefix:
+		dialstring = config.getUser(user, "dial_prefix", '') + dialstring
 
-prefix=cs_helpers.getOption(config,user,"dial_prefix","")
-if (useprefix):
-	dialstring=prefix+dialstring
-
-# convert and enqueue files
-for i in args:
-	if (not os.access(i,os.R_OK)):
-		sys.stderr.write("can't open "+i+'\n')
-		continue
-	t=os.popen("file -b -i "+cs_helpers.escape(i)+" 2>/dev/null")
-	filetype=t.read()
-	if (t.close()):
-		usage("can't execute \"file\"")
-	if (not re.search("application/postscript",filetype) \
-	  and not re.search("application/pdf",filetype)):
-		sys.stderr.write(i+" is not a PostScript/PDF file\n")
-		continue
-
-	newname=cs_helpers.uniqueName(sendq,"fax","sff")
-
-	command="gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax -sOutputFile=" \
-	  + newname+" "+cs_helpers.escape(i)
-	ret=(os.system(command))>>8
-	if (ret):
-		sys.stderr.write("error during SFF-conversion at file "+i+'. \
-		Ghostscript not installed?\n')
-		sys.exit()
-
-	cs_helpers.writeDescription(newname,"dialstring=\""+dialstring+"\"\n"
-	  +"starttime=\""+time.ctime()+"\"\ntries=\"0\"\n"
-	  +"user=\""+user+"\"\naddressee=\""+addressee+"\"\nsubject=\""
-	  +subject+"\"\n")
-	os.chmod(newname,0600)
-	os.chmod(newname[:-3]+"txt",0600)
-	if (os.getuid()==0):
-		user_entry=pwd.getpwnam(user)
-		os.chown(newname,user_entry[2],user_entry[3])
-		os.chown(newname[:-3]+"txt",user_entry[2],user_entry[3])
-	print i,"successful enqueued as",newname,"for",dialstring
+	# convert and enqueue files
+	jobDesc = {
+		"dialstring": dialstring,
+		#"user": user,
+		"addressee": addressee,
+		"subject": subject,
+		# todo: allow these to be specified for this jobs
+		#'stationID': ...
+		#'headline': ...
+		}
+	try:
+		jobnum = capisuite.fax.enqueueJob(config, user, args,
+						  convert2Fax, **jobDesc)
+	except IOError, e:
+		print e
+		print "can't write to queue dir"
+		sys.exit(1)
+	print "Successful enqueued as job", jobnum, "for", dialstring

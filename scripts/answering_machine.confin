@@ -86,6 +86,24 @@ record_silence_timeout="5"
 voice_email_from="capisuite daemon <root>"
 
 ###############################################################################
+############################# Mail settings ###################################
+###############################################################################
+
+# defined for voice receive: call_from, call_to, date,
+#                            msg_length, filename, hostname
+
+[MailVoiceReceived]
+subject = Received a voice call from %(call_from)s to %(call_to)s
+text =
+  You got a voice call from %(call_from)s to %(call_to)s
+  Date: %(date)s
+  Length: %(msg_length)i seconds
+
+  See attached file.
+  The original file was saved to file://%(filename)s on host "%(hostname)s".
+
+
+###############################################################################
 ############################# user settings ###################################
 ###############################################################################
 
@@ -108,12 +126,12 @@ voice_email_from="capisuite daemon <root>"
 #   is necessary for example for the austrian "Global Call" where no number is
 #   signalled when the main MSN is called (sic).
 #
-# voice_email="<mailaddress1>,<mailaddress2>,..." (optional, defaults to empty string)
+# voice_email="<mailaddress1>,<mailaddress2>,..." (optional)
 #
 #   If given, this string indicates email-addresses where the received faxes
-#   and voice calls will be sent to. If it is empty, the recorded calls and
+#   and voice calls will be sent to. If it is not given, the recorded calls and
 #   faxes will be sent to the user on the current system. If you don't want to
-#   get emails, see the "action" option below
+#   get emails, see the "action" option below.
 #
 # pin="<PIN number>" (optional, defaults to empty)
 #
@@ -142,6 +160,5 @@ voice_email_from="capisuite daemon <root>"
 #voice_action="MailAndSave"
 #voice_delay="10"
 #record_length="60"
-#voice_email=""
 #pin="99*45"
 

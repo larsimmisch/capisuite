@@ -1,0 +1,9 @@
+# -*- python -*-
+
+Import('env')
+libappl = env.StaticLibrary('ccapplication', source = Split("""
+    capisuite.cpp capisuitemodule.cpp pythonscript.cpp
+    idlescript.cpp incomingscript.cpp
+    """))
+
+Return('libappl')

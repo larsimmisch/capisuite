@@ -1,0 +1,23 @@
+# -*- python -*-
+
+Import('env')
+env.Append(capisuite_sources = Dir('.'))
+
+SConscript('capisuite-py/SConscript')
+libmodule = SConscript('modules/SConscript')
+libappl   = SConscript('application/SConscript')
+libback   = SConscript('backend/SConscript')
+
+capisuite = env.Program('capisuite',
+                  ['main.cpp', libappl, libmodule, libback, ])
+env.AddPostAction(capisuite, 'strip $TARGET')
+
+capisuite_conf = env.FileSubst('capisuite.conf', 'capisuite.conf.in')
+
+install_exec = env.Install('$sbindir', capisuite)
+Alias('install-exec', install_exec)
+
+Alias('install',
+      env.Install('$pkgsysconfdir', capisuite_conf),
+      install_exec,
+      )

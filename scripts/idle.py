@@ -1,3 +1,5 @@
+# -*- mode: python ; coding: iso_8859_15 -*-
+#
 #                  idle.py - default script for capisuite
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
@@ -10,247 +12,140 @@
 #  (at your option) any later version.
 #
 
-import os,re,time,pwd,fcntl
+import os, time, pwd, fcntl
+
 # capisuite stuff
-import capisuite,cs_helpers
+#import capisuite
+import capisuite.fax
+from capisuite.config import NoOptionError
+import capisuite.core as core
+
+# todo: eliminate this
+import cs_helpers
+
+# sendfax is now imported from capisuite.fax
+
+from capisuite.fileutils import _releaseLock, _getLock, LockTakenError
 
 def idle(capi):
-	config=cs_helpers.readConfig()
-	spool=cs_helpers.getOption(config,"","spool_dir")
-	if (spool==None):
-		capisuite.error("global option spool_dir not found.")
-		return
-	
-	done=os.path.join(spool,"done")
-	failed=os.path.join(spool,"failed")
 
-	if (not os.access(done,os.W_OK) or not os.access(failed,os.W_OK)):
-		capisuite.error("Can't read/write to the necessary spool dirs")
-		return
+    config = capisuite.config.readGlobalConfig()
+    try:
+        spool = config.get('GLOBAL', "spool_dir")
+        max_tries = config.getint('GLOBAL', "send_tries")
+        delays = config.getList('GLOBAL', "send_delays")
+    except NoOptionError, err:
+        core.error("global option %s not found." % err.option)
+        return
 
-	userlist=config.sections()
-	userlist.remove('GLOBAL')
+    # todo: implement config.getQueue(queue,user=None)
+    doneQ = os.path.join(spool, "done")
+    failedQ = os.path.join(spool, "failed")
 
-	for user in userlist: # search in all user-specified sendq's
-		userdata=pwd.getpwnam(user)
-		outgoing_nr=cs_helpers.getOption(config,user,"outgoing_MSN","")
-                if (outgoing_nr==""):
-			incoming_nrs=cs_helpers.getOption(config,user,"fax_numbers","")
-			if (incoming_nrs==""):
-				continue
-			else:
-				outgoing_nr=(incoming_nrs.split(','))[0] 
+    if not os.access(doneQ, os.W_OK) or not os.access(failedQ, os.W_OK):
+        core.error("Can't read/write to the necessary spool dirs")
+        return
 
-		udir=cs_helpers.getOption(config,"","fax_user_dir")
-		if (udir==None):
-			capisuite.error("global option fax_user_dir not found.")
-			return
-		udir=os.path.join(udir,user)
-		sendq=os.path.join(udir,"sendq")
-		if (not os.access(udir,os.F_OK)):
-			os.mkdir(udir,0700)
-			os.chown(udir,userdata[2],userdata[3])
-		if (not os.access(sendq,os.F_OK)):
-			os.mkdir(sendq,0700)
-			os.chown(sendq,userdata[2],userdata[3])
+    # search in all user-specified sendq's
+    for user in config.listUsers():
+        outgoing_num = config.getUser(user, "outgoing_msn")
+        if not outgoing_num:
+            incoming_nums = config.getUser(user, "fax_numbers")
+            if not incoming_nums:
+                continue
+            outgoing_num = incoming_nums.split(',')[0].strip()
 
-		files=os.listdir(sendq)
-		files=filter (lambda s: re.match("fax-.*\.txt",s),files)
+        mailaddress = config.getUser(user, "fax_email", user)
+        fromaddress = config.getUser(user, "fax_email_from", user)
 
-		for job in files:
-			job_fax="%ssff" % job[:-3]
-			real_user_c=os.stat(os.path.join(sendq,job)).st_uid
-			real_user_j=os.stat(os.path.join(sendq,job_fax)).st_uid
-			if (real_user_j!=pwd.getpwnam(user)[2] or real_user_c!=pwd.getpwnam(user)[2]):
-				capisuite.error("job %s seems to be manipulated (wrong uid)! Ignoring..." % os.path.join(sendq,job_fax))
-				continue
+        for jobnum, controlfile in capisuite.fax.getQueueFiles(config, user):
+            assert controlfile == os.path.abspath(controlfile)
+            try:
+                # lock the job so that it isn't deleted while sending
+                lock = _getLock(forfile=controlfile, blocking=0)
+            except LockTakenError:
+                # if we didn't get the lock, continue with next job
+                continue
+            try:
+                control = capisuite.config.JobDescription(controlfile)
 
-			lockfile=open(os.path.join(sendq,"%slock" % job[:-3]),"w")
-			# read directory contents
-			fcntl.lockf(lockfile,fcntl.LOCK_EX) # lock so that it isn't deleted while sending
+                fax_file = control.get('filename')
+                assert fax_file == os.path.abspath(fax_file)
 
-			if (not os.access(os.path.join(sendq,job),os.W_OK)): # perhaps it was cancelled?
-				fcntl.lockf(lockfile,fcntl.LOCK_UN)
-				lockfile.close()
-				os.unlink(os.path.join(sendq,"%slock" % job[:-3]))
-				continue
+                # both the job control file and the fax file must have
+                # the users uid
+                uid = pwd.getpwnam(user).pw_uid
+                if os.stat(controlfile).st_uid != uid or \
+                   os.stat(fax_file).st_uid != uid:
+                    core.error("job %s seems to be manipulated (wrong uid)! "
+                               "Ignoring..." % controlfile)
+                    _releaseLock(lock)
+                    continue
 
-			control=cs_helpers.readConfig(os.path.join(sendq,job))
-			# set DST value to -1 (unknown), as strptime sets it wrong for some reason
-			starttime=(time.strptime(control.get("GLOBAL","starttime")))[0:8]+(-1,)
-			starttime=time.mktime(starttime)
-			if (starttime>time.time()):
-				fcntl.lockf(lockfile,fcntl.LOCK_UN)
-				lockfile.close()
-				os.unlink(os.path.join(sendq,"%slock" % job[:-3]))
-				continue
+                # todo: describe what is tested here
+                # perhaps it was cancelled?
+                if not os.access(controlfile, os.W_OK):
+                    _releaseLock(lock)
+                    continue
 
-			tries=control.getint("GLOBAL","tries")
-			dialstring=control.get("GLOBAL","dialstring")
-			addressee=cs_helpers.getOption(control,"GLOBAL","addressee","")
-			subject=cs_helpers.getOption(control,"GLOBAL","subject","")
-			mailaddress=cs_helpers.getOption(config,user,"fax_email","")
-			if (mailaddress==""):
-				mailaddress=user
-			fromaddress=cs_helpers.getOption(config,user,"fax_email_from","")
-			if (fromaddress==""):
-				fromaddress=user
+                # set DST value to -1 (unknown), as strptime sets it wrong
+                # for some reason
+                starttime = time.strptime(control.get("starttime"))[:-1]+(-1, )
+                starttime = time.mktime(starttime)
+                if starttime > time.time():
+                    _releaseLock(lock)
+                    continue
 
-			capisuite.log("job %s from %s to %s initiated" % (job_fax,user,dialstring),1)
-			result,resultB3 = sendfax(capi,os.path.join(sendq,job_fax),outgoing_nr,dialstring,user,config)
-			tries+=1
-			capisuite.log("job %s: result was %x,%x" % (job_fax,result,resultB3),1)
+                sendinfo = {
+                    'outgoing_num': outgoing_num,
+                    'dialstring':   control.get("dialstring")
+                    }
+                # these options may overwrite the global settings per job
+                for n in ('stationID', 'headline'):
+                    if control.has_option(n):
+                        sendinfo[n] = control.get(n)
 
-			if (result in (0,0x3400,0x3480,0x3490,0x349f) and resultB3==0):
-				movejob(job_fax,sendq,done,user)
-				capisuite.log("job %s: finished successfully" % job_fax,1)
-				mailtext="Your fax job to %s (%s) was sent successfully.\n\n" \
-				  "Subject: %s\nFilename: %s\nNeeded tries: %i\n" \
-				  "Last result: 0x%x/0x%x\n\nIt was moved to " \
-				  "file://%s on host \"%s\"" % (addressee,dialstring, \
-				  subject,job_fax,tries,result,resultB3, \
-				  os.path.join(done,"%s-%s" % (user,job_fax)), \
-				  os.uname()[1])
-				cs_helpers.sendSimpleMail(fromaddress,mailaddress,
-				  "Fax to %s (%s) sent successfully." % (addressee,dialstring),
-				  mailtext)
-			else:
-				max_tries=int(cs_helpers.getOption(config,"","send_tries","10"))
-				delays=cs_helpers.getOption(config,"","send_delays","60,60,60,300,300,3600,3600,18000,36000").split(",")
-				delays=map(int,delays)
-				if ((tries-1)<len(delays)):
-					next_delay=delays[tries-1]
-				else:
-					next_delay=delays[-1]
-				starttime=time.time()+next_delay
-				capisuite.log("job %s: delayed for %i seconds" % (job_fax,next_delay),2)
-				cs_helpers.writeDescription(os.path.join(sendq,job_fax), \
-				  "dialstring=\"%s\"\nstarttime=\"%s\"\ntries=\"%i\"\n" \
-				  "user=\"%s\"\naddressee=\"%s\"\nsubject=\"%s\"\n" \
-				  % (dialstring,time.ctime(starttime),tries,user, \
-				  addressee,subject))
-				if (tries>=max_tries):
-					movejob(job_fax,sendq,failed,user)
-					capisuite.log("job %s: failed finally" % job_fax,1)
-					mailtext="I'm sorry, but your fax job to %s (%s) " \
-					  "failed finally.\n\nSubject: %s\n" \
-					  "Filename: %s\nTries: %i\n" \
-					  "Last result: 0x%x/0x%x\n\n" \
-					  "It was moved to file://%s-%s on host %s.\n\n" \
-					  % (addressee,dialstring,subject,job_fax,tries,result, \
-					  resultB3,os.path.join(failed,user),job_fax,os.uname()[1]) 
-					cs_helpers.sendSimpleMail(fromaddress,mailaddress,
-					  "Fax to %s (%s) FAILED." % (addressee,dialstring),
-					  mailtext)
-
-			fcntl.lockf(lockfile,fcntl.LOCK_UN)
-			lockfile.close()
-			os.unlink("%slock" % os.path.join(sendq,job[:-3]))
-
-def sendfax(capi,job,outgoing_nr,dialstring,user,config):
-	try:
-		controller=int(cs_helpers.getOption(config,"","send_controller","1"))
-		timeout=int(cs_helpers.getOption(config,user,"outgoing_timeout","60"))
-		stationID=cs_helpers.getOption(config,user,"fax_stationID")
-		if (stationID==None):
-			capisuite.error("Warning: fax_stationID for user %s not set" % user)
-			stationID=""
- 		headline=cs_helpers.getOption(config,user,"fax_headline","")
-		(call,result)=capisuite.call_faxG3(capi,controller,outgoing_nr,dialstring,timeout,stationID,headline)
-		if (result!=0):
-			return(result,0)
-		capisuite.fax_send(call,job)
-		return(capisuite.disconnect(call))
-	except capisuite.CallGoneError:
-		return(capisuite.disconnect(call))
-
-def movejob(job,olddir,newdir,user):
-	os.rename(os.path.join(olddir,job),os.path.join(newdir,"%s-%s" % (user,job)))
-	os.rename(os.path.join(olddir,"%stxt" % job[:-3]),os.path.join(newdir, "%s-%stxt" % (user,job[:-3])))
-
-#
-# History:
-#
-# Old Log (for new changes see ChangeLog):
-# Revision 1.11  2003/12/02 18:50:09  gernot
-# - fax_numbers is really allowed to be empty now...
-#
-# Revision 1.10  2003/10/03 13:42:09  gernot
-# - added new options "fax_email_from" and "voice_email_from"
-#
-# Revision 1.9  2003/09/21 12:34:37  gernot
-# - add 0x349f to list of normal results
-#
-# Revision 1.8  2003/06/26 11:53:17  gernot
-# - fax jobs can be given an addressee and a subject now (resolves #18, reported
-#   by Achim Bohnet)
-#
-# Revision 1.7  2003/06/19 14:58:43  gernot
-# - fax_numbers is now really optional (bug #23)
-# - tries counter was wrongly reported (bug #29)
-#
-# Revision 1.6  2003/04/06 11:07:40  gernot
-# - fix for 1-hour-delayed sending of fax (DST problem)
-#
-# Revision 1.5  2003/03/20 09:12:42  gernot
-# - error checking for reading of configuration improved, many options got
-#   optional, others produce senseful error messages now if not found,
-#   fixes bug# 531, thx to Dieter Pelzel for reporting
-#
-# Revision 1.4  2003/03/13 11:09:58  gernot
-# - use stricted permissions for saved files and created userdirs. Fixes
-#   bug #544
-#
-# Revision 1.3  2003/03/09 11:48:10  gernot
-# - removed wrong unlock operation (lock not acquired at this moment!)
-#
-# Revision 1.2  2003/03/06 09:59:11  gernot
-# - added "file://" as prefix to filenames in sent mails, thx to
-#   Achim Bohnet for this suggestion
-#
-# Revision 1.1.1.1  2003/02/19 08:19:54  gernot
-# initial checkin of 0.4
-#
-# Revision 1.12  2003/02/18 09:54:22  ghillie
-# - added missing lockfile deletions, corrected locking protocol
-#   -> fixes Bugzilla 23731
-#
-# Revision 1.11  2003/02/17 16:48:43  ghillie
-# - do locking, so that jobs can be deleted
-#
-# Revision 1.10  2003/02/10 14:50:52  ghillie
-# - revert logic of outgoing_MSN: it's overriding the first number of
-#   fax_numbers now
-#
-# Revision 1.9  2003/02/05 15:59:11  ghillie
-# - search for *.txt instead of *.sff so no *.sff which is currently created
-#   by capisuitefax will be found!
-#
-# Revision 1.8  2003/01/31 11:22:00  ghillie
-# - use different sendq's for each user (in his user_dir).
-# - use prefix user- for names in done and failed
-#
-# Revision 1.7  2003/01/27 21:56:46  ghillie
-# - mailaddress may be not set, that's the same as ""
-# - use first entry of fax_numbers as outgoing MSN if it exists
-#
-# Revision 1.6  2003/01/27 19:24:29  ghillie
-# - updated to use new configuration files for fax & answering machine
-#
-# Revision 1.5  2003/01/19 12:03:27  ghillie
-# - use capisuite log functions instead of stdout/stderr
-#
-# Revision 1.4  2003/01/17 15:09:26  ghillie
-# - updated to use new configuration file capisuite-script.conf
-#
-# Revision 1.3  2003/01/13 16:12:00  ghillie
-# - renamed from idle.pyin to idle.py as all previously processed variables
-#   stay in the config file and cs_helpers.pyin now
-#
-# Revision 1.2  2002/12/16 13:07:22  ghillie
-# - finished queue processing
-#
-# Revision 1.1  2002/12/14 13:53:19  ghillie
-# - idle.py and incoming.py are now auto-created from *.pyin
-#
+                core.log("job %s from %s to %s initiated" %
+                         (jobnum, user, sendinfo['dialstring']), 1)
+                result, resultB3 = capisuite.fax.sendfax(config, user, capi,
+                                                         fax_file, **sendinfo)
+                core.log("job %s: result was %x, %x" % \
+                         (jobnum, result, resultB3), 1)
+                sendinfo['result'] = result
+                sendinfo['resultB3'] = resultB3
+                
+                # todo: use symbolic names for these results to be more
+                # meaningfull
+                send_ok = resultB3 == 0 \
+                          and result in (0, 0x3400, 0x3480, 0x3490, 0x349f)
+                tries = control.getint("tries") +1
+                if send_ok:
+                    core.log("job %s: finished successfully" % jobnum, 1)
+                    control = capisuite.fax.moveJob(controlfile, doneQ, user)
+                    sendinfo.update(control.items())
+                    sendinfo['hostname'] = os.uname()[1]
+                    cs_helpers.sendSimpleMail(
+                        fromaddress, mailaddress,
+                        config.get('MailFaxSent', 'subject') % sendinfo,
+                        config.get('MailFaxSent', 'text') % sendinfo)
+                elif tries >= max_tries:
+                    # too many ties, send failed
+                    core.log("job %s: failed finally" % jobnum, 1)
+                    control = capisuite.fax.moveJob(controlfile, failedQ, user)
+                    sendinfo.update(control.items())
+                    cs_helpers.sendSimpleMail(
+                        fromaddress, mailaddress,
+                        config.get('MailFaxFailed', 'subject') % sendinfo,
+                        config.get('MailFaxFailed', 'text') % sendinfo)
+                else:
+                    # delay next try
+                    next_delay = int(delays[ min(len(delays),tries) -1 ])
+                    core.log("job %s: delayed for %i seconds" % \
+                             (jobnum, next_delay), 2)
+                    starttime = time.time() + next_delay
+                    control.set('starttime', time.ctime(starttime))
+                    control.set('tries', tries)
+                    control.write(controlfile)
+            finally:
+                _releaseLock(lock)
 

@@ -1,3 +1,4 @@
+# -*- mode: python -*-
 #         cs_helpers.py - some helper functions for CapiSuite scripts
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
@@ -9,131 +10,84 @@
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
 
-# the name of the config file read by the scripts; see there for options and
-# descriptions
-configfile_fax="@pkgsysconfdir@/fax.conf"
-configfile_voice="@pkgsysconfdir@/answering_machine.conf"
+import os, commands
 
-# @brief read configuration file and return a ConfigParser object
-#
-# The configfile is read from the path given above and the surrounding
-# quotation marks from the values are removed
-#
-# @return the constructed config file object
-def readConfig(file=""):
-	import ConfigParser
-	config=ConfigParser.ConfigParser()
-	if (file==""):
-		config.readfp(open(configfile_fax))
-		config.readfp(open(configfile_voice))
-	else:
-		config.readfp(open(file))
-	for s in config.sections():
-		for o in config.options(s):
-			value=config.get(s,o)
-			if (len(value)>1 and value[0]=='"'):
-				config.set(s,o,value[1:-1])
-	if (not config.has_section('GLOBAL')):
-		raise IOError("invalid config file, section GLOBAL missing")
-	return config
+from capisuite.config import *
+from capisuite.voice import sayNumber, getAudio
 
-# @brief escape a filename to include it savely in a shell command
-#
-# The filename is enclosed in single quotation marks and quotation
-# marks therein are quoted
-#
-# @return the escaped filename
-def escape(filename):
-	return "'%s'" % filename.replace("'","'\\''")
+# Note: readConfig is now imported from capisuite.config
 
-# @brief get an option from the user or global section
+# @brief escape a argument to include it savely in a shell command
 #
-# The option is searched in the users section and if not found
-# in the global section.
+# This is just a wrapper to commands.mkarg which strips the leading
+# space which mkarg() adds.
 #
-# @param config the ConfigParser object containing the values
-# @param user user section to use, if empty only global section is read
-# @param option the name of the option to search for
-#
-# @return the value for this option or None if it's not found
-def getOption(config,user,option,default=None):
-	if config.has_option(user,option):
-		return config.get(user,option)
-	elif config.has_option('GLOBAL',option):
-		return config.get('GLOBAL',option)
-	else:
-		return default
+# @return the escaped argument
+def escape(arg):
+    arg = commands.mkarg(arg)
+    if arg[0] == ' ':
+        arg = arg[1:]
+    return arg
 
-# @brief Search for an audio file first in user_dir, than in audio_dir
-#
-# @param config the ConfigParser object containing the configuration
-# @param user the name of the user
-# @param filename the filename of the wave file
-#
-# @return the found file with full path
-def getAudio(config,user,filename):
-	import os,capisuite
-	systemdir=getOption(config,"","audio_dir")
-	if (systemdir==None):
-		raise IOError("option audio_dir not found.")
-	userdir=getOption(config,"","voice_user_dir")
-	if (userdir==None):
-		raise IOError("option voice_user_dir not found.")
-	userdir=os.path.join(userdir,user)
-	if (int(getOption(config,"","user_audio_files","0"))
-	and os.access(os.path.join(userdir,filename),os.R_OK)):
-		return os.path.join(userdir,filename) 
-	else:
-		return os.path.join(systemdir,filename)
+def getOption(config, user, option, default=None):
+    return config.getUser(user, option, default)
 
-# @brief thread-safe creation of a unique filename in a directory
-#
-# This function reads the nextnumber from then "nextnr"-file in the given
-# directory and updates it. It holds the next free file number.
-#
-# If nextnr doesn't exist, it's created.
-#
-# The filenames created will have the format
-#
-# basename-number.suffix
-#
-# @param directory name of the directory to work in
-# @param basename the basename of the filename
-# @param suffix the suffix of the filename (without ".")
-#
-# @return new file name
-def uniqueName(directory,basename,suffix):
-	import fcntl,os,re
-	# acquire lock
-	lockfile=open(os.path.join(directory,"cs_lock"),"w")
-	fcntl.lockf(lockfile,fcntl.LOCK_EX)
+# Note: getAudio is now imported from capisuite.voice
+# Note: uniqueName is now imported from capisuite.fileutils
+def uniqueName(*args, **kwargs):
+    return capisuite.fileutils.uniqueName(*args, **kwargs)[1]
 
-	try:
-		 countfile=open("%s-nextnr" % os.path.join(directory,basename),"r")
-		 nextnr=int(countfile.readline())
-		 countfile.close()
-	except IOError:
-		# search for next free sequence number
-		files=os.listdir(directory)
-		files=filter (lambda s: re.match("%s-.*\.%s" % (re.escape(basename),re.escape(suffix)),s),files)
-		if (len(files)):
-			files=map(lambda s: int(s[len(basename)+1:-len(suffix)-1]),files)
-			nextnr=max(files)+1 # take nr of last file and increase it by one
-		else:
-			nextnr=0
-		files.sort()
 
-	newname="%s-%i.%s" % (os.path.join(directory,basename),nextnr,suffix)
+def __sendmail(mail_from, mail_to, msg):
+    import popen2, capisuite.core
 
-	countfile=open("%s-nextnr" % os.path.join(directory,basename),"w")
-	countfile.write('%i\n' % (nextnr+1))
-	countfile.close()
+    r,w = popen2.popen2("{ /usr/sbin/sendmail -t -f %s } 2>&1" % escape(mail_from))
+    try:
+        w.write(msg.as_string())
+    except IOError: #Errno 32: Broken Pipe
+        capisuite.core.error("Error while calling sendmail. Not installed?\n")
+        return 0
+    w.close()
+    #ret = sendmail.wait()
+    text = r.read()
+    r.close()
+    if text:
+        capisuite.core.error("Error while calling sendmail")#, return code=%i" % ret)
+        capisuite.core.error(text)
+        return 0
+    capisuite.core.log("sendmail finished successful",3)
+    return 1
 
-	# unlock
-	fcntl.lockf(lockfile,fcntl.LOCK_UN)
-	lockfile.close()
-	os.unlink(os.path.join(directory,"cs_lock"))
-	return newname
+def __sendmail(fromaddr, toaddr, msg):
+    import smtplib, capisuite.core
+    smtpserver, port = 'localhost', 25
+    server = smtplib.SMTP(smtpserver, port)
+    server.sendmail(fromaddr, (toaddr), msg.as_string())
+    server.quit()
+    capisuite.core.log("mail sent successfully",3)
+    return 1
+
+
+def __call(msg, cmd, *args):
+    """
+    outfile MUST be last parameter!
+    """
+    # todo: think about using commands.getstatusoutput() here
+    ret = os.spawnlp(os.P_WAIT, cmd, cmd, *(args))
+    if ret or not os.access(args[-1], os.F_OK):
+        raise ConvertionError("Error while converting %s. "
+                              "File damaged or %s not installed?" %(msg, cmd))
+
+def sff2tif(infile, outfile):
+    __call('sff to tif', "sfftobmp", "-tif", infile, outfile)
+
+def cff2ps(infile, outfile):
+    __call("cff to ps", "jpeg2ps", "-m", infile , "-o", outfile)
+
+def la2wav(infile, outfile):
+    __call('la to wav', "sox", infile, '-w', outfile)
+
+class ConvertionError(Exception): pass
 
 # @brief send email with text and attachment of type sff or la converted to pdf/wav
 #
@@ -149,95 +103,84 @@ def uniqueName(directory,basename,suffix):
 # @param mail_type containing either "sff" or "la"
 # @param text a string containing the text of the first part of the mail
 # @param attachment name of the file to send as attachment
-def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
-	import email.MIMEBase,email.MIMEText,email.MIMEAudio,email.Encoders,encodings.ascii,os,sys,popen2,capisuite
-	msg = email.MIMEBase.MIMEBase("multipart","mixed")
-	msg['Subject']=mail_subject
-	msg['From']=mail_from
-	msg['To']=mail_to
+def sendMIMEMail(mail_from, mail_to, mail_subject, mail_type,
+                 text, attachment):
+    import email.MIMEBase, email.MIMEText, email.MIMEAudio, email.Encoders
+    import encodings.ascii, os
 
-	msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
-	msg.epilogue = '' # To guarantee the message ends with a newline
+    msg = email.MIMEBase.MIMEBase("multipart","mixed")
+    msg['Subject']=mail_subject
+    msg['From']=mail_from
+    msg['To']=mail_to
 
-	basename=attachment[:attachment.rindex('.')+1]
-	try:
-		if (mail_type=="sff"): # normal fax file
-			# sff -> tif
-			ret=os.spawnlp(os.P_WAIT,"sfftobmp","sfftobmp","-tif",attachment,"%stif" % basename)
-			if (ret or not os.access("%stif" % basename,os.F_OK)):
-				raise "conv-error","Error while converting sff to tif. File damaged or sfftobmp not installed?"
-			# tif -> ps -> pdf
-			# the first pipe must be handled by the shell so that the output of
-			# of ps2pdf can be read immediately. Handling this shell in Python
-			# leads to an overflow of the ps2pdf output pipe...
-			command="tiff2ps -a %s | ps2pdf - -" % escape("%stif" % basename)
-			tiff2pdf=popen2.Popen3(command)
-			if (tiff2pdf.poll()!=-1):
-				raise "conv-error","Error while calling tiff2ps or ps2pdf. Not installed?"
-			tiff2pdf.tochild.close() # we don't need the input pipe
-			# create attachment with pdf stream
-			filepart = email.MIMEBase.MIMEBase("application","pdf",name="%spdf" % os.path.basename(basename))
-			filepart.add_header('Content-Disposition','attachment',filename="%spdf" % os.path.basename(basename))
-			filepart.set_payload(tiff2pdf.fromchild.read())
-			tiff2pdf.fromchild.close()
-			ret=tiff2pdf.wait()
-			if (ret!=0):
-				raise "conv-error","Error %i occured during tiff2ps or ps2pdf" % ret
-			os.unlink("%stif" % basename)
-			email.Encoders.encode_base64(filepart)
-		elif (mail_type=="cff"): # color fax file
-			# cff -> ps
-			ret=os.spawnlp(os.P_WAIT,"jpeg2ps","jpeg2ps","-m",attachment,"-o","%sps" % basename)
-			if (ret or not os.access("%sps" % basename,os.F_OK)):
-				raise "conv-error","Can't convert cff to ps. File damaged or jpeg2ps not installed?"
-			# tif -> ps -> pdf
-			# the first pipe must be handled by the shell so that the output of
-			# of ps2pdf can be read immediately. Handling this shell in Python
-			# leads to an overflow of the ps2pdf output pipe...
-			command="ps2pdf %s -" % escape("%sps" % basename)
-			ps2pdf=popen2.Popen3(command)
-			if (ps2pdf.poll()!=-1):
-				raise "conv-error","Error while calling ps2pdf. Not installed?"
-			ps2pdf.tochild.close() # we don't need the input pipe
-			# create attachment with pdf stream
-			filepart = email.MIMEBase.MIMEBase("application","pdf",name="%spdf" % os.path.basename(basename))
-			filepart.add_header('Content-Disposition','attachment',filename="%spdf" % os.path.basename(basename))
-			filepart.set_payload(ps2pdf.fromchild.read())
-			ps2pdf.fromchild.close()
-			ret=ps2pdf.wait()
-			if (ret!=0):
-				raise "conv-error","Error %i occured during ps2pdf" % ret
-			os.unlink("%sps" % basename)
-			email.Encoders.encode_base64(filepart)
-		elif (mail_type=="la"): # voice file
-			# la -> wav
-			# don't use stdout as sox needs a file to be able to seek in it otherwise the header will be incomplete
-			ret = os.spawnlp(os.P_WAIT,"sox","sox",attachment,"-w","%swav" % basename)
-			if (ret or not os.access("%swav" % basename,os.R_OK)):
-				raise "conv-error","Error while calling sox. File damaged or sox not installed?"
-			filepart = email.MIMEAudio.MIMEAudio(open("%swav" % basename).read(),"x-wav",email.Encoders.encode_base64,name="%swav" % os.path.basename(basename))
-			filepart.add_header('Content-Disposition','attachment',filename="%swav" % os.path.basename(basename))
-			os.unlink("%swav" % basename)
-		textpart = email.MIMEText.MIMEText(text)
-		msg.attach(textpart)
-		msg.attach(filepart)
-	except "conv-error",errormessage:
-		text="%s\n\nERROR occured while converting file: %s\nPlease talk to your friendly administrator.\n" % (text,errormessage)
-		textpart = email.MIMEText.MIMEText(text)
-		msg.attach(textpart)
+    msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
+    msg.epilogue = '' # To guarantee the message ends with a newline
 
-	sendmail = popen2.Popen3("sendmail -t -f %s" % escape(mail_from))
-	if (sendmail.poll()!=-1):
-		capisuite.error("Error while calling sendmail. Not installed?\n")
-		return
-	sendmail.tochild.write(msg.as_string())
-	sendmail.tochild.close()
-	sendmail.fromchild.close()
-	ret=sendmail.wait()
-	if (ret!=0):
-		capisuite.error("Error while calling sendmail, return code=%i" % ret)
-	else:
-		capisuite.log("sendmail finished successful",3)
+    basepath = os.path.splitext(attachment)[0]
+    basename = os.path.basename(basepath)
+    try:
+        if mail_type == "sff": # normal fax file
+            # convert sff -> tif
+            sff2tif(attachment, "%s.tif" % basepath)
+            # convert tif -> ps -> pdf
+            cmd = "tiff2ps -a %s | ps2pdf - -" % escape("%s.tif" %basepath)
+            try:
+                status, content = commands.getstatusoutput(cmd)
+            finally:
+                os.unlink("%s.tif" % basepath)
+            if status:
+                raise ConvertionError("Error while calling tiff2ps or ps2pdf. "
+                                      "Not installed?")
+            filepart = email.MIMEBase.MIMEBase("application","pdf",
+                                               name = "%s.pdf" % basename)
+            filepart.add_header('Content-Disposition','attachment',
+                                filename = "%s.pdf" % basename)
+            filepart.set_payload(content)
+            email.Encoders.encode_base64(filepart)
+        elif mail_type == "cff": # color fax file
+            # convert cff -> ps
+            cff2ps(attachment, "%s.ps" % basepath)
+            # convert ps -> pdf
+            cmd = "ps2pdf %s -" % escape("%s.ps" % basepath)
+            try:
+                status, content = commands.getstatusoutput(cmd)
+            finally:
+                os.unlink("%s.ps" % basepath)
+            if status:
+                raise ConvertionError("Error while calling ps2pdf. "
+                                     "Not installed?")
+            filepart = email.MIMEBase.MIMEBase("application", "pdf",
+                                               name = "%s.pdf" % basename)
+            filepart.add_header('Content-Disposition', 'attachment',
+                                filename="%s.pdf" % basename)
+            filepart.set_payload(content)
+            email.Encoders.encode_base64(filepart)
+        elif mail_type == "la": # voice file
+            # la -> wav
+            la2wav(attachment, "%s.wav" % basepath)
+            content = open("%s.wav" % basepath).read()
+            os.unlink("%s.wav" % basepath)
+            filepart = email.MIMEAudio.MIMEAudio(content, "x-wav",
+                                                 email.Encoders.encode_base64,
+                                                 name = "%s.wav" % basename)
+            filepart.add_header('Content-Disposition', 'attachment',
+                                filename = "%s.wav" % basename)
+        textpart = email.MIMEText.MIMEText(text)
+        msg.attach(textpart)
+        msg.attach(filepart)
+    except ConvertionError, errormessage:
+        text = [text, ''
+                'The following error occured while converting file:',
+                str(errormessage), ''
+                'Please talk to your friendly administrator.', ''
+                ]
+        # todo: add encoding (at least as example)
+        # todo: use latin-1 as std-encoding instead of ascii
+        textpart = email.MIMEText.MIMEText('\n'.join(text))
+        msg.attach(textpart)
+
+    return __sendmail(mail_from, mail_to, msg)
+
 
 # @brief send a simple text email
 #
@@ -247,28 +190,21 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 # @param mail_to the To: address for the mail
 # @param mail_subject the subject of the mail
 # @param text a string containing the text of the first part of the mail
-def sendSimpleMail(mail_from,mail_to,mail_subject,text):
-	import email.Encoders,email.MIMEText,encodings.ascii,popen2,sys,capisuite
-	# Create a text/plain message. Don't forget to change charset here
-	# if you want to use non-us-ascii characters in the mail!
-	msg = email.MIMEText.MIMEText(text)
+#
+# @result returns true on success
+def sendSimpleMail(mail_from, mail_to, mail_subject, text):
+    #import email.Encoders, email.MIMEText, encodings.ascii
 
-	msg['Subject'] = mail_subject
-	msg['From'] = mail_from
-	msg['To'] = mail_to
-
-	sendmail = popen2.Popen3("sendmail -t -f %s" % escape(mail_from))
-	if (sendmail.poll()!=-1):
-		capisuite.error("Error while calling sendmail. Not installed?\n")
-		return
-	sendmail.tochild.write(msg.as_string())
-	sendmail.tochild.close()
-	sendmail.fromchild.close()
-	ret=sendmail.wait()
-	if (ret!=0):
-		capisuite.error("Error while calling sendmail, return code=%i" % ret)
-	else:
-		capisuite.log("sendmail finished successful",3)
+    # Create a text/plain message. Don't forget to change charset here
+    # if you want to use non-us-ascii characters in the mail!
+    # todo: add encoding anyway (at least as example)
+    # todo: use latin-1 as std-encoding instead of ascii
+    import email.MIMEText
+    msg = email.MIMEText.MIMEText(text)
+    msg['Subject'] = mail_subject
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    return __sendmail(mail_from, mail_to, msg)
 
 
 # @brief write description file for received fax or voice
@@ -279,157 +215,19 @@ def sendSimpleMail(mail_from,mail_to,mail_subject,text):
 #
 # @param filename the data filename (with extension!)
 # @param content the content as string
-def writeDescription(filename,content):
-	descr=open("%stxt" % filename[:filename.rindex('.')+1],"w")
-	descr.write("# Description file for %s\n" % filename)
-	descr.write("# This if for internal use of CapiSuite.\n")
-	descr.write("# Only change if you know what you do!!\n")
-	descr.write("[GLOBAL]\n")
-	descr.write("filename=\"%s\"\n" % filename)
-	descr.write(content)
-	descr.close()
+def writeDescription(filename, content):
+    from types import StringType
+    assert isinstance(content, StringType)
+    import capisuite.fileutils
+    descrname = capisuite.fileutils.controlname(filename)
+    descr = open(descrname, "w")
+    print >> descr, "# Description file for", filename
+    print >> descr, "# This if for internal use of CapiSuite."
+    print >> descr, "# Only change if you know what you do!"
+    print >> descr, "[GLOBAL]"
+    print >> descr, 'filename="%s"' % filename
+    print >> descr, content
+    descr.close()
 
-# @brief say a german number
-#
-# All numbers from 0 to 99 are said correctly, while all larger ones are
-# split into numbers and only the numbers are said one after another.
-# An input of "-" produces the word "unbekannt" (unknown)
-#
-# @param call reference to the call
-# @param number the number to say
-# @param curr_user the current user named
-# @param config the ConfigParser instance holding the configuration info
-# @param gender if the number is used in connection with a singular noun ("f" --> "eine Nachricht")
-def sayNumber(call,number,curr_user,config,gender="-"):
-	import capisuite
-	if (number=="-" or number=="??"): # "??" is needed for backward compatibility to versions <= 0.4.1a
-		capisuite.audio_send(call,getAudio(config,curr_user,"unbekannt.la"),1)
-	elif (gender!="-" and number in ("1","01")):
-		if (gender in ("n","m")): 
-			capisuite.audio_send(call,getAudio(config,curr_user,"ein.la"),1)
-		else:
-			capisuite.audio_send(call,getAudio(config,curr_user,"eine.la"),1) 
-	elif (len(number)==2 and number[0]!="0"):
-		if (number[0]=="1"):
-			if (number[1]=="0"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"10.la"),1)
-			elif (number[1]=="1"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"11.la"),1)
-			elif (number[1]=="2"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"12.la"),1)
-			elif (number[1]=="3"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"13.la"),1)
-			elif (number[1]=="4"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"14.la"),1)
-			elif (number[1]=="5"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"15.la"),1)
-			elif (number[1]=="6"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"16.la"),1)
-			elif (number[1]=="7"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"17.la"),1)
-			elif (number[1]=="8"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"18.la"),1)
-			elif (number[1]=="9"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"19.la"),1)
-		else:
-			if (number[1]=="0"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"%s.la" % number),1)
-			elif (number[1]=="1"):
-				capisuite.audio_send(call,getAudio(config,curr_user,"ein.la"),1)
-				capisuite.audio_send(call,getAudio(config,curr_user,"und.la"),1)
-				capisuite.audio_send(call,getAudio(config,curr_user,"%s0.la" % number[0]),1)
-			else:
-				capisuite.audio_send(call,getAudio(config,curr_user,"%s.la" % number[1]),1)
-				capisuite.audio_send(call,getAudio(config,curr_user,"und.la"),1)
-				capisuite.audio_send(call,getAudio(config,curr_user,"%s0.la" % number[0]),1)
-	else:
-		for i in number:
-			capisuite.audio_send(call,getAudio(config,curr_user,"%s.la" % i),1)
+# sayNumber is now imported from capisuite.voice
 
-# Old Log (for new changes see ChangeLog):
-# Revision 1.14  2003/10/19 20:17:54  gernot
-# - sendMIMEMail: better wording for some error messages during file conversion
-#
-# Revision 1.13  2003/07/21 17:44:07  gernot
-# - forgot one import in last commit :-|
-#
-# Revision 1.12  2003/07/20 10:27:51  gernot
-# - workaround for Python RuntimeError "cannot unmarshal code objects in
-#   restricted execution mode", thx to Sander Roest for finally finding
-#   this solution
-#
-# Revision 1.11  2003/06/16 10:20:36  gernot
-# - use new multipage feature of jpeg2ps (requires special jpeg2ps version!)
-#
-# Revision 1.10  2003/05/25 13:38:30  gernot
-# - support reception of color fax documents
-#
-# Revision 1.9  2003/04/24 21:04:20  gernot
-# - replace functions deprecated in Python 2.2.2 (mainly related to the email
-#   module)
-#
-# Revision 1.8  2003/04/24 14:03:18  gernot
-# - shortened some long lines
-# - added function escape which escapes a string for shell usage
-# - escape mail addresses given to sendmail
-#
-# Revision 1.7  2003/04/16 07:16:35  gernot
-# - fixed pipe buffer overflow for conversion of long fax documents to PDF
-#
-# Revision 1.6  2003/04/10 21:29:51  gernot
-# - support empty destination number for incoming calls correctly (austrian
-#   telecom does this (sic))
-# - core now returns "-" instead of "??" for "no number available" (much nicer
-#   in my eyes)
-# - new wave file used in remote inquiry for "unknown number"
-#
-# Revision 1.5  2003/04/10 20:54:44  gernot
-# - allow multiple mail addresses to be set as fax_email or voice_email
-#
-# Revision 1.4  2003/04/08 07:59:56  gernot
-# - replace some wrong space indentations by tabs...
-#
-# Revision 1.3  2003/04/07 15:58:37  gernot
-# - attachments to sent e-mails now get a valid filename
-#
-# Revision 1.2  2003/03/20 09:12:42  gernot
-# - error checking for reading of configuration improved, many options got
-#   optional, others produce senseful error messages now if not found,
-#   fixes bug# 531, thx to Dieter Pelzel for reporting
-#
-# Revision 1.1.1.1  2003/02/19 08:19:54  gernot
-# initial checkin of 0.4
-#
-# Revision 1.8  2003/02/10 14:03:34  ghillie
-# - cosmetical fixes in sendMIMEMail
-# - added wait() calls to popen objects, otherwise processes will hang
-#   after CapiSuite has run them (i.e. sendmail stays as Zombie)
-#
-# Revision 1.7  2003/02/03 14:47:49  ghillie
-# - sayNumber now works correctly for all numbers between 0 and 99
-#   (in german). Added the necessary voice files and improved "1"-"9"
-#
-# Revision 1.6  2003/01/27 21:55:10  ghillie
-# - getOption returns now None if option isn't found at all (no exception)
-# - removed capisuite.log from uniqueName() (not possible in capisuitefax!)
-# - added some missing "import capisuite" statements
-#
-# Revision 1.5  2003/01/27 19:24:29  ghillie
-# - updated to use new configuration files for fax & answering machine
-#
-# Revision 1.4  2003/01/19 12:02:40  ghillie
-# - use capisuite log functions instead of stdout/stderr
-#
-# Revision 1.3  2003/01/17 15:08:17  ghillie
-# - typos as usual...
-# - added sendSimpleMail for normal text messages
-#
-# Revision 1.2  2003/01/15 15:52:49  ghillie
-# - readConfig now takes filename as parameter
-# - uniqueName: countfile now has basename as prefix, fixed small bug
-#   in countfile creation
-# - sendMail: added .la->.wav convertion, error messages now included
-#   in messages to user
-# - writeDescription: [data] renamed to [global]
-# - sayNumber: small fixes
-#

@@ -1,4 +1,18 @@
+Important for 0.5.0/capisuite-py:
+* Check and fix all 'todo:'s in the python library and scripts.
+* Update documentation to include
+  - capisuite-checkconfig
+  - the python library modules.
+  - 'Mail Fax|Voice ...' sections in config files
+* Add update instructions for 0.5.0/capisuite-py
+  - 'Mail Fax|Voice ...' sections in config files
+  - new modulename '_capisuite' (but use capisuite.core instead)
+* Add option '--is-configured' to capisuite-checkconfig to be used
+  by rc-file.
+* Add 'scons-local' to distribution.
+
 NICE:
+- more checks/options for capisuite-checkconfig
 - ?valgrind-clean the used libs and Python?
 - support more than one send_controller
 - don't use 34xx codes, define constants instead and print meaningful messages
@@ -7,4 +21,3 @@ FUTURE PLANS:
 - setuid away from root (problem: chown of recorded file to user)
 - test-implement the whole application part in Python
 - rewrite capisuitefax and idle.py to use named socket communication
-

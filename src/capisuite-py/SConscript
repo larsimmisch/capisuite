@@ -1,0 +1,27 @@
+# -*- python -*-
+
+Import('env')
+
+def py_compile(target, source, env):
+    """compile python modules for .../python2.x/site-packages/capisuite"""
+    # Note: this differs from #/scripts/SConscript.py_compile in 'dfile'
+    import py_compile, os.path
+    py_compile.compile(source[0].abspath,
+                       #cfile=target[0].abspath,
+                       dfile = os.path.join(env.subst('$pkgpython_moduledir'),
+                                            env.subst('$SOURCE.file')),  
+                       )
+
+# substitute "pgksysconfdir"
+env.FileSubst('config.py', 'config.py.in')
+
+modules = []
+for mod in Split('__init__ config consts fax fileutils voice exceptions '
+                 'core'):
+    modules.append(mod+'.py')
+    modules.append(env.Command(mod + '.pyc', mod+'.py', py_compile))
+
+install_pylib = env.Install('$pkgpython_moduledir', modules)
+
+Alias('install-pylib',install_pylib)
+Alias('install', install_pylib)

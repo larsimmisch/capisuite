@@ -4,7 +4,7 @@ sbin_PROGRAMS = capisuite
 capisuite_LDADD=application/libccapplication.a modules/libccmodules.a \
 		backend/libccbackend.a
 capisuite_SOURCES=main.cpp
-SUBDIRS = application backend modules
+SUBDIRS = application backend modules capisuite-py
 
 pkgsysconf_DATA = capisuite.conf
 EXTRA_DIST = capisuite.conf.in

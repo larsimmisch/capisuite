@@ -1,0 +1,192 @@
+# -*- python -*-
+"""
+Check the build environment for CapiSuite
+
+(c) Copyright 2004 by Hartmut Goebel <h.goebel@crazy-compilers.com>
+"""
+
+Import(['env'])
+
+headerfilename = 'config.h'
+havedict = {}
+
+open(headerfilename, 'w') # clear file contents
+
+###--- hack SCons.SConftest ---###
+
+import SCons.Conftest, string
+from types import IntType
+def _Have(context, key, have):
+    """
+    Slightly modified version of SCons.Conftest._Have which uses
+    global havedict and headerfilename instead of context.*. This is
+    necessary until SCons support a way to actually use this feature.
+    In addition this writes '#define ... 1'.
+    """
+    key_up = string.upper(key)
+    key_up = string.replace(key_up, ':', '_')
+    key_up = string.replace(key_up, '.', '_')
+    key_up = string.replace(key_up, '/', '_')
+    key_up = string.replace(key_up, ' ', '_')
+    havedict[key_up] = have
+    if headerfilename:
+        f = open(headerfilename, "a")
+        if have == 1:
+            f.write("#define %s 1\n" % key_up)
+        elif have == 0:
+            f.write("/* #undef %s */\n" % key_up)
+        elif type(have) == IntType:
+            f.write("#define %s %d\n" % (key_up, have))
+        else:
+            f.write('#define %s "%s"\n' % (key_up, str(have)))
+        f.close()
+        
+# need to monkey-patch it into SCons.Conftest :-(
+SCons.Conftest._Have = _Have
+
+_Have(None, 'PACKAGE', env['PACKAGE'])
+_Have(None, 'VERSION', env['VERSION'])
+
+## these were defined by auto-rools but are unused:
+## #define PACKAGE_BUGREPORT ""
+## #define PACKAGE_NAME ""
+## #define PACKAGE_STRING ""
+## #define PACKAGE_TARNAME ""
+## #define PACKAGE_VERSION ""
+
+###--- autoconf-like checks ---###
+### these tests are build like the corresponding autoconf tests
+
+def CheckHeadersStdC(context):
+    context.Message("Checking for ANSI C header files ... ")
+    text = """
+        #include <stdlib.h>
+        #include <stdarg.h>
+        #include <string.h>
+        #include <float.h>
+    \n"""
+    # Some tests for SunOS 4.x, ISC 2.0.2 and Irix-4.0.5 skipped here,
+    # since CapiSuite requires Linux anway.
+    ret = context.CompileProg(text, '.cpp')
+    SCons.Conftest._YesNoResult(context, ret, "STDC_HEADERS", text)
+    context.did_show_result = 1
+    return ret
+
+def CheckHeaderTime(context):
+    context.Display("Checking whether time.h and sys/time.h may both be "
+                    "included ... ")
+    text = """
+        #include <sys/types.h>
+        #include <sys/time.h>
+        #include <time.h>
+
+        int main() {
+          if ((struct tm *) 0) return 0;
+          return 0;
+        }
+        \n"""
+    ret = context.CompileProg(text, '.cpp')
+    SCons.Conftest._YesNoResult(context, ret, "TIME_WITH_SYS_TIME", text)
+    context.did_show_result = 1
+    return ret
+
+###--- custom checks for CapiSuite ---###
+
+def CheckStringClear(context):
+    context.Display('Checking for string::clear method ... ')
+    text = """
+        #include <string>
+        int main() {
+            std::string a; a.clear();
+        }
+        \n"""
+    ret = context.CompileProg(text, '.cpp')
+    SCons.Conftest._YesNoResult(context, ret, "HAVE_STRING_CLEAR", text)
+    context.did_show_result = 1
+    return ret
+
+
+conf = Configure(env,
+                 custom_tests = {'CheckHeadersStdC': CheckHeadersStdC,
+                                 'CheckHeaderTime': CheckHeaderTime,
+                                 'CheckStringClear': CheckStringClear,
+                                 },
+                 conf_dir = '.sconf_temp', # no '#' to build in build-dir
+                 log_file = 'config.log'   # no '#' to build in build-dir
+                 )
+
+conf.CheckHeadersStdC()
+
+missing = 0
+for h in Split("sys/types.h sys/stat.h stdlib.h string.h "
+               "memory.h strings.h inttypes.h stdint.h unistd.h"):
+    missing += not conf.CheckHeader(h, language='C++')
+if missing:
+    print 'Required headers missing - aborting.'
+    Exit(5)
+
+conf.CheckFunc('gettimeofday', language='C++')
+conf.CheckHeader('sys/time.h', language='C++')
+conf.CheckHeaderTime()
+
+###--- CapiSuite specials ---###
+
+# new gcc3 feature: we can #include<ostream> instead of ostream.h
+conf.CheckHeader('ostream', language='C++')
+conf.CheckStringClear() # checking for string::clear method
+
+
+###--- libs required by CapiSuite ---###
+
+# checking for capi20_register in -lcapi20... yes
+if not conf.CheckLib('capi20', 'capi20_register', language='C++'):
+    print 'libcapi not found - aborting'
+    Exit(5)
+
+# checking for pthread_create in -lpthread... yes
+if not conf.CheckLib('pthread', 'pthread_create', language='C++'):
+    print 'lipthread not found - aborting'
+    Exit(5)
+
+# todo
+#  Which(doxygen)
+#  Which(pychecker)
+
+conf.Finish()
+
+
+"""
+These are the checks 'configure' does
+
+Legende:
+- not neccessary
++ Scons build-in
+? unsure
+~ implemented in SConscript/SConstruct
+
+-checking for a BSD-compatible install... /usr//bin/install -c
+-checking whether build environment is sane... yes
+-checking for gawk... gawk
+-checking whether make sets $(MAKE)... yes
++checking for gcc... gcc
++checking for C compiler default output... a.out
++checking whether the C compiler works... yes
+?checking whether we are cross compiling... no
++checking for suffix of executables...
++checking for suffix of object files... o
+?checking whether we are using the GNU C compiler... yes
+?checking whether gcc accepts -g... yes
+?checking for gcc option to accept ANSI C... none needed
+-checking for style of include used by make... GNU
+-checking dependency style of gcc... gcc3
+
++checking for g++... g++
+checking whether we are using the GNU C++ compiler... yes
+checking whether g++ accepts -g... yes
+-checking dependency style of g++... gcc3
+-checking for a BSD-compatible install... /usr//bin/install -c
++checking for ranlib... ranlib
+-checking whether make sets $(MAKE)... (cached) yes
++checking how to run the C++ preprocessor... g++ -E
+-checking for egrep... grep -E
+"""

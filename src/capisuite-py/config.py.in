@@ -1,0 +1,216 @@
+# -*- mode: python -*-
+"""capisuite.config
+
+Handling of configuration and job description files.
+
+This file contains CSConfigParser, a configuration parser derived from the
+default Python parsers, but adapted to the needs of CapiSuite.
+
+Additionally, the class JobDescription is defined, which allows to read and
+write special text files used to store meta data about incoming and outgoing
+voice and fax jobs/calls.
+"""
+
+__author__    = "Hartmut Goebel <h.goebel@crazy-compilers.com>"
+__copyright__ = "Copyright (c) 2004 by Hartmut Goebel"
+__version__   = "$Revision: 0.0 $"
+__credits__   = "This is part of www.capisuite.de; thanks to Gernot Hiller"
+
+import os.path, types, string
+
+# the name of the config file read by the scripts; see there for
+# options and descriptions
+pkgsysconfdir = "@pkgsysconfdir@"
+
+configfile_fax   = os.path.join(pkgsysconfdir, "fax.conf")
+configfile_voice = os.path.join(pkgsysconfdir, "answering_machine.conf")
+
+__all__ = ['configfile_fax', 'configfile_voice',
+           'CSConfigParser', 'JobDescription',
+           'readGlobalConfig', 'readDescription', 'createDescriptionFor',
+           'NoOptionError', 'NoGlobalSectionError']
+
+# try to use RawConfigParser if available
+try:
+    from ConfigParser import RawConfigParser as ConfigParser
+except:
+    from ConfigParser import ConfigParser as ConfigParser
+
+# capisuite stuff
+import consts
+#from exceptions import NoGlobalSectionError
+
+#--- spezialied ConfigParser --#
+
+class CSConfigParser(ConfigParser):
+    """
+    Specialized version of Python ConfigParser:
+    - if no filenames are given, read the default config files
+    - values are automatically quoted on setting (if required) und
+      unquoted on reading
+    """
+    
+    def read(self, filenames):
+        """Read configuration files given as filenames. If no names are given,
+        the default fax and voice files are read.
+        """
+        if not filenames:
+            ConfigParser.read(self, configfile_fax)
+            ConfigParser.read(self, configfile_voice)
+        else:
+            ConfigParser.read(self, filenames)
+
+    def get(self, section, option):
+        """Get the value of the option from the given section (w/o quot. marks)."""
+        value = ConfigParser.get(self, section, option)
+        if len(value) > 1 and value[0] == '"':
+            value = value[1:-1]
+            self.set(section, option, value)
+        return value
+
+    def getList(self, section, option):
+        """Return the value of the option from the given section as a list.
+        Commas are used as separators and leading and trailing whitespaces are
+        removed from all items."""
+        return map(string.strip, self.get(section, option).split(','))
+
+    def getUser(self, user, option, default=None, fail=0):
+        """Get an option from the user or global section.
+        
+        The option is searched in the user's section and if not found
+        in the global section.
+    
+        'config' the ConfigParser object containing the values
+        'user' user section to use, if empty only global section is read
+        'option' the name of the option to search for
+    
+        Returns the value for this option or None if it's not found
+        """
+        if self.has_option(user, option):
+            return self.get(user, option)
+        elif self.has_option('GLOBAL', option):
+            return self.get('GLOBAL', option)
+        elif fail:
+            raise NoOptionError(user, option)
+        else:
+            return default
+
+    def listUsers(self):
+        ul = [ u
+               for u in self.sections()
+               if u not in consts.__known_sections__ ]
+        return ul
+
+    def items(self, section):
+        """
+        Return a dictionary (name, value) for each option in the section.
+
+        NB: This differs from ConfigParser.items() which returns a list of
+        tuples!
+        """
+        items = {}
+        for key, value in ConfigParser.items(self, section):
+            if len(value) > 1 and value[0] == '"':
+                value = value[1:-1]
+            items[key] = value
+        return items
+
+    def set(self, section, option, value):
+        if isinstance(value, types.StringTypes):
+            if not value or value[0].isspace() or value[-1].isspace():
+                value = '"%s"' % value
+        ConfigParser.set(self, section, option, value)
+
+
+class JobDescription:
+    def __init__(self, filename=None, defaults=None):
+        self._config = config = CSConfigParser(defaults)
+        config.add_section('GLOBAL')
+        if filename:
+            config.read(filename)
+
+    def add_section(self, section):
+        if 1: # PyChecker should _not_ take this a an abstract method
+            raise NotImplementedError
+    remove_section = add_section
+
+    def options(self):     return self._config.options('GLOBAL')
+    def items(self):       return self._config.items('GLOBAL')
+    def get(self, option): return self._config.get('GLOBAL', option)
+    def getint(self, option):     return self._config.getint('GLOBAL', option)
+    def getfloat(self, option):   return self._config.getfloat('GLOBAL', option)
+    def getboolean(self, option): return self._config.getboolean('GLOBAL', option)
+    def has_option(self, option): return self._config.has_option('GLOBAL', option)
+    def set(self, option, value): return self._config.set('GLOBAL', option, value)
+    def remove_option(self, option): return self._config.remove_option('GLOBAL',option)
+    def read(self, filenames): return self._config.read(filenames)
+    def readfp(self, fp, filename=None): return self._config.read(fp, filename)
+
+    def write(self, fp):
+        print >> fp, "# Description file for", self.get('filename')
+        print >> fp, "# This if for internal use of CapiSuite."
+        print >> fp, "# Only change if you know what you do!"
+        self._config.write(fp)
+        
+
+    def x__getattr__(self, attr):
+        return getattr(self._config, attr)
+    def x__setattr__(self, attr, value):
+        setattr(self._config, attr, value)
+
+###--- utility functions ---###
+
+
+def readGlobalConfig(file=None):
+    """read configuration file and return a ConfigParser object
+
+    The configfile is read from the path given above and the
+    surrounding quotation marks from the values are removed.
+
+    Returns the constructed CSConfigParser object
+    """
+    config = CSConfigParser()
+    config.read(file)
+    if not config.has_section('GLOBAL'):
+        raise NoGlobalSectionError()
+    return config
+
+def readDescription(jobfilename):
+    """read (job) description file for received fax or voice
+
+    This function reads an INI-style description file which has prior
+    been written by writeDesc() .
+
+    jobfilename the job' filename (with extension .txt)
+
+    Returns the filename the data filename (with extension) and
+    content the description as a dictionary
+    """
+    control = JobDescription()
+    control.read(jobfilename)
+    filename = control.get('filename')
+    description = control.items()
+    return filename, description
+
+
+def createDescriptionFor(filename, **description):
+    """write (job) description file for received fax or voice
+
+    This function writes an INI-style description file for the given
+    data file which can later on be read by the CSConfigParser
+    instance. The data file name is used, the extension stripped and
+    replaced by .txt
+
+    filename the data filename (with extension),
+    content the description as a dictionary
+    """
+    assert isinstance(description, dict)
+    descrname = os.path.splitext(filename)[0] + '.txt'
+    control = JobDescription()
+    control.set('filename', filename)
+    for key, value in description.items():
+        control.set(key, value)
+    descr = open(descrname, 'w')
+    control.write(descr)
+    descr.close()
+    return descrname
