@@ -1,7 +1,0 @@
-*.o
-capisuite
-capisuite.conf
-.deps
-.deps/*
-Makefile.in
-Makefile
