@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.1 $
+#    version              : $Revision: 1.2 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -43,17 +43,17 @@ def readConfig(file=""):
 # in the global section.
 #
 # @param config the ConfigParser object containing the values
-# @param user the name of the user section to use
+# @param user user section to use, if empty only global section is read
 # @param option the name of the option to search for
 #
 # @return the value for this option or None if it's not found
-def getOption(config,user,option):
+def getOption(config,user,option,default=None):
 	if config.has_option(user,option):
 		return config.get(user,option)
 	elif config.has_option('GLOBAL',option):
 		return config.get('GLOBAL',option)
 	else:
-		return None
+		return default
 
 # @brief Search for an audio file first in user_dir, than in audio_dir
 #
@@ -63,10 +63,15 @@ def getOption(config,user,option):
 #
 # @return the found file with full path
 def getAudio(config,user,filename):
-	import os
-	systemdir=config.get('GLOBAL','audio_dir')
-	userdir=config.get('GLOBAL','voice_user_dir')+user+"/"
-	if (config.getint('GLOBAL','user_audio_files') and os.access(userdir+filename,os.R_OK)):
+	import os,capisuite
+	systemdir=getOption(config,"","audio_dir")
+	if (systemdir==None):
+		raise IOError("option audio_dir not found.")
+	userdir=getOption(config,"","voice_user_dir")
+	if (userdir==None):
+		raise IOError("option voice_user_dir not found.")
+	userdir=os.path.join(userdir,user)+"/"
+	if (int(getOption(config,"","user_audio_files","0")) and os.access(userdir+filename,os.R_OK)):
 		return userdir+filename
 	else:
 		return systemdir+filename
@@ -302,8 +307,13 @@ def sayNumber(call,number,curr_user,config):
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
 # $Log: cs_helpers.pyin,v $
-# Revision 1.1  2003/02/19 08:19:54  gernot
-# Initial revision
+# Revision 1.2  2003/03/20 09:12:42  gernot
+# - error checking for reading of configuration improved, many options got
+#   optional, others produce senseful error messages now if not found,
+#   fixes bug# 531, thx to Dieter Pelzel for reporting
+#
+# Revision 1.1.1.1  2003/02/19 08:19:54  gernot
+# initial checkin of 0.4
 #
 # Revision 1.8  2003/02/10 14:03:34  ghillie
 # - cosmetical fixes in sendMIMEMail

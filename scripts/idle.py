@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.4 $
+#    version              : $Revision: 1.5 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,17 @@ import capisuite,cs_helpers
 
 def idle(capi):
 	config=cs_helpers.readConfig()
-	done=config.get('GLOBAL','spool_dir')+"done/"
-	failed=config.get('GLOBAL','spool_dir')+"failed/"
+	spool=cs_helpers.getOption(config,"","spool_dir")
+	if (spool==None):
+		capisuite.error("global option spool_dir not found.")
+		return
+	
+	done=os.path.join(spool,"done")+"/"
+	failed=os.path.join(spool,"failed")+"/"
+
 	if (not os.access(done,os.W_OK) or not os.access(failed,os.W_OK)):
-		raise "Can't read/write to the necessary spool dirs"
+		capisuite.error("Can't read/write to the necessary spool dirs")
+		return
 
 	userlist=config.sections()
 	userlist.remove('GLOBAL')
@@ -29,8 +36,12 @@ def idle(capi):
 		if (not config.has_option(user,"fax_numbers")):
 			continue
 
-		udir=config.get("GLOBAL","fax_user_dir")+user+"/"
-		sendq=udir+"sendq/"
+		udir=cs_helpers.getOption(config,"","fax_user_dir")
+		if (udir==None):
+			capisuite.error("global option fax_user_dir not found.")
+			return
+		udir=os.path.join(udir,user)+"/"
+		sendq=os.path.join(udir,"sendq")+"/"
 		if (not os.access(udir,os.F_OK)):
 			os.mkdir(udir,0700)
 			os.chown(udir,userdata[2],userdata[3])
@@ -69,8 +80,8 @@ def idle(capi):
 
 			tries=control.getint("GLOBAL","tries")
 			dialstring=control.get("GLOBAL","dialstring")
-			mailaddress=cs_helpers.getOption(config,user,"fax_email")
-			if (mailaddress=="" or mailaddress==None):
+			mailaddress=cs_helpers.getOption(config,user,"fax_email","")
+			if (mailaddress==""):
 				mailaddress=user
 
 			capisuite.log("job "+job_fax+" from "+user+" to "+dialstring+" initiated",1)
@@ -87,8 +98,8 @@ def idle(capi):
 				+("\nLast result: 0x%x/0x%x" % (result,resultB3))
 				+"\n\nIt was moved to file://"+done+user+"-"+job_fax)
 			else:
-				max_tries=config.getint('GLOBAL','send_tries')
-				delays=config.get('GLOBAL','send_delays').split(",")
+				max_tries=int(cs_helpers.getOption(config,"","send_tries","10"))
+				delays=cs_helpers.getOption(config,"","send_delays","60,60,60,300,300,3600,3600,18000,36000").split(",")
 				delays=map(int,delays)
 				if (tries<len(delays)):
 					next_delay=delays[tries]
@@ -115,12 +126,18 @@ def idle(capi):
 
 def sendfax(capi,job,dialstring,user,config):
 	try:
-		outgoing_nr=cs_helpers.getOption(config,user,'outgoing_MSN')
+		outgoing_nr=cs_helpers.getOption(config,user,"outgoing_MSN","")
 		if (outgoing_nr==""):
-			outgoing_nr=(config.get(user,'fax_numbers').split(','))[0]
-		(call,result)=capisuite.call_faxG3(capi,int(config.get('GLOBAL','send_controller')),
-		  outgoing_nr, dialstring, int(cs_helpers.getOption(config,user,'outgoing_timeout')),
-		  cs_helpers.getOption(config,user,'fax_stationID'), cs_helpers.getOption(config,user,'fax_headline'))
+			outgoing_nr=(config.get(user,'fax_numbers').split(','))[0] # it's guaranteed that we have fax_numbers defined
+		
+		controller=int(cs_helpers.getOption(config,"","send_controller","1"))      
+		timeout=int(cs_helpers.getOption(config,user,"outgoing_timeout","60"))
+		stationID=cs_helpers.getOption(config,user,"fax_stationID")
+		if (stationID==None):
+			capisuite.error("Warning: fax_stationID for user "+user+" not set")                         
+			stationID=""
+ 		headline=cs_helpers.getOption(config,user,"fax_headline","")
+		(call,result)=capisuite.call_faxG3(capi,controller,outgoing_nr,dialstring,timeout,stationID,headline)
 		if (result!=0):
 			return(result,0)
 		capisuite.fax_send(call,job)
@@ -136,6 +153,11 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.5  2003/03/20 09:12:42  gernot
+# - error checking for reading of configuration improved, many options got
+#   optional, others produce senseful error messages now if not found,
+#   fixes bug# 531, thx to Dieter Pelzel for reporting
+#
 # Revision 1.4  2003/03/13 11:09:58  gernot
 # - use stricted permissions for saved files and created userdirs. Fixes
 #   bug #544

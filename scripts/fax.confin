@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.3 2003/03/18 23:12:00 gernot Exp $
+# $Id: fax.confin,v 1.4 2003/03/20 09:12:42 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -31,6 +31,8 @@
 
 [GLOBAL]
 
+# spool_dir (MANDATORY)
+#
 # Directory where idle.py will save its data. There must exist two
 # subdirectories:
 #
@@ -38,6 +40,8 @@
 # spool_dir/failed  -  jobs which have finally failed live here
 spool_dir="@spooldir@/"
 
+# fax_user_dir (MANDATORY)
+#
 # Directory for all user-specific data. Contains one subdirectory
 # for each user (named like his userid). The following directory tree is used below:
 #
@@ -45,13 +49,13 @@ spool_dir="@spooldir@/"
 # user_dir/username/sendq    - the files to send will be queued here
 fax_user_dir="@spooldir@/users/"
 
-# send_tries
+# send_tries (optional, defaults to 10)
 #
 # Number of tries for sending a fax document. After completing the
 # given number of tries, the document will considered as failed.
 send_tries="10"
 
-# send_delays
+# send_delays (optional, defaults to 60,60,60,300,300,3600,3600,18000,36000)
 #
 # Delays in seconds between the send_tries. The different values are separated
 # by commas. The first value gives the delay between the first and the second
@@ -60,7 +64,7 @@ send_tries="10"
 # values will be ignored.
 send_delays="60,60,60,300,300,3600,3600,18000,36000"
 
-# send_controller
+# send_controller (optional, defaults to 1)
 #
 # This value defines which one of the installed controllers will be used for
 # sending faxes. All controllers are numbered beginning with "1". If you
@@ -68,20 +72,20 @@ send_delays="60,60,60,300,300,3600,3600,18000,36000"
 # there's only one send_controller supported currently.
 send_controller="1"
 
-# outgoing_MSN
+# outgoing_MSN (optional, default is empty)
 #
 # The MSN (number) to use for outgoing calls. You can also leave this empty.
 # Then default MSN of your ISDN interface will be used automatically. Will
 # be overwritten by the first entry of fax_numbers if set.
 outgoing_MSN=""
 
-# outgoing_timeout
+# outgoing_timeout (optional, defaults to 60)
 #
 # This value decides how long to wait for a successful connection if the other
 # party doesn't answer the call at once.
 outgoing_timeout="60"   
 
-# dial_prefix
+# dial_prefix (optional, defaults to empty)
 #
 # This value is used as a prefix for all outgoing numbers when using
 # capisuitefax for enqueueing a fax document. It will be saved in the
@@ -89,19 +93,20 @@ outgoing_timeout="60"
 # documents.
 dial_prefix=""
 
-# fax_stationID
+# fax_stationID (MANDATORY)
 #
 # This is the default for the fax station ID (fax number send to the other
 # party). It must only contain the following characters <space>,'+','0'..'9'.
-# The maximal length is 20 chars.
+# The maximal length is 20 chars
 fax_stationID="+49 000 0000"
 
-# fax_headline
+# fax_headline (optional, default: empty)
 #
 # This is the default for the fax headline. There's no definitive length
 # constraint given by the CAPI specification, so it may be dependent on
-# the driver you use. Just use a reasonable short string.
-fax_headline="Fax sent by CapiSuite (http://www.capisuite.de)"
+# the driver you use. Just use a reasonable short string 
+#
+fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 
 ###############################################################################
 ############################# user settings ###################################
@@ -116,21 +121,21 @@ fax_headline="Fax sent by CapiSuite (http://www.capisuite.de)"
 #
 # Additionally, the following options are possible:
 #
-# fax_numbers="<num1>,<num2>, ..."
+# fax_numbers="<num1>,<num2>, ..." (optional, if not set this user can't receive)
 #   A list containing the numbers on which this user wants to receive incoming
 #   fax calls. The values are separated by commas. The first number is also
 #   used as our own number for outgoing calls. This overrides outgoing_MSN.
 #   You can also use the special entry "*" which stands for accepting ALL
 #   incoming calls as fax (use with care!)
 #
-# fax_email="name@domain.de"
+# fax_email="name@domain.de" (optional, defaults to empty string)
 #   If given, this string indicates an email-address where the received faxes
 #   and voice calls will be sent to. If it is empty, the recorded calls and
 #   faxes will be sent to the user on the current system. It's also used to
 #   send status reports for sent fax jobs to. If you don't want to get emails,
 #   see the "action" option below
 #
-# fax_action="<action>"
+# fax_action="<action>" (MANDATORY)
 #   Here you can define what action will be taken when a fax is received.
 #   Currently, three possible actions are supported:
 #
