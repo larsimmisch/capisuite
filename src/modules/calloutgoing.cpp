@@ -2,7 +2,7 @@
     @brief Contains CallOutgoingModule - Call Module for establishment of an outgoing connection and wait for successful connect
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -17,7 +17,7 @@
 #include "calloutgoing.h"
 
 CallOutgoing::CallOutgoing(Capi *capi, _cdword controller, string call_from, string call_to, Connection::service_t service, int timeout, string faxStationID, string faxHeadline, bool clir)
-:CallModule(NULL,-1,false),capi(capi),controller(controller)
+:CallModule(NULL,-1,false,false),capi(capi),controller(controller)
 ,call_from(call_from),call_to(call_to),service(service),
 faxStationID(faxStationID),faxHeadline(faxHeadline),clir(clir)
 ,saved_timeout(timeout)
@@ -29,21 +29,18 @@ CallOutgoing::mainLoop() throw (CapiExternalError, CapiMsgError)
 	conn=new Connection(capi,controller,call_from,clir,call_to,service,faxStationID,faxHeadline);
 	conn->registerCallInterface(this);
 
-	try {
-		// first, we have no timeout, timeout is activated in alerting()!
-		CallModule::mainLoop();
-	}
-	catch (CapiWrongState) {} // filter abort exception
-        
-	if (finish) // connection up
+	// first, we have no timeout, timeout is activated in alerting()!
+	CallModule::mainLoop();
+
+	if (conn->getState()==Connection::UP)
 		result=0;
-	else if (abort) { // error during connection setup
+	else if (finish) { // error during connection setup
 		result=conn->getCause();
 		if (!result)
 			result=2; // no reason available
 	} else { // timeout exceeded
 		result=1;
-		conn->disconnectCall(); 
+		conn->disconnectCall();
 		timespec delay_time;
 		delay_time.tv_sec=0; delay_time.tv_nsec=100000000;  // 100 msec
 		while(conn->getState()!=Connection::DOWN)
@@ -79,6 +76,15 @@ CallOutgoing::getResult()
 /*  History
 
 $Log: calloutgoing.cpp,v $
+Revision 1.3  2003/10/03 14:56:40  gernot
+- partly implementation of a bigger semantic change: don't throw
+  call finished exceptions in normal operation any longer; i.e. we only
+  test for the connection at the begin of a command. This allows return
+  values, e.g. for commands like capisuite.fax_receive() which were
+  interrupted by an exception always in former CapiSuite versions and thus
+  never returned. This is also a better and more logical use of exceptions
+  IMO. ATTN: this is *far from stable*
+
 Revision 1.2  2003/04/17 10:52:12  gernot
 - timeout value is now measured beginning at the moment the other party is
   signalled

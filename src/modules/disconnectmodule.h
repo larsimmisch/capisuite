@@ -2,7 +2,7 @@
     @brief Contains DisconnectModule - Call Module for call clearing
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -44,24 +44,18 @@ class DisconnectModule: public CallModule
   		*/
 		DisconnectModule(Connection *conn, int reject_reason=1, bool quick_disconnect=false);
 
- 		/** @brief Initiate call clearing and wait for successful physical disconnection.
+		/** @brief Initiate call clearing and wait for successful physical disconnection.
 		
 		    @throw CapiMsgError Thrown by Connection::disconnectCall() or Connection::rejectWaiting()
 		    @throw CapiExternalError Thrown by Connection::rejectWaiting().
   		*/
 		void mainLoop() throw (CapiMsgError,CapiExternalError);
-		
+
 		/** @brief Do nothing as we're waiting for physical disconnection.
 		*/
   		void callDisconnectedLogical ();
 
-		/** @brief Finish current module if physical connection is cleared.
-		
-		    This is overwritten here because we don't trigger an exception at call clearing.
-		*/
-  		void callDisconnectedPhysical ();
-	
-	private: 
+	private:
 		int reject_reason; ///< saving reject reason given in constructor
 		bool quick_disconnect; ///< disconnect physical immediately w/o disconnection logical before
 };
@@ -71,8 +65,17 @@ class DisconnectModule: public CallModule
 /* History
 
 $Log: disconnectmodule.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/10/03 14:56:40  gernot
+- partly implementation of a bigger semantic change: don't throw
+  call finished exceptions in normal operation any longer; i.e. we only
+  test for the connection at the begin of a command. This allows return
+  values, e.g. for commands like capisuite.fax_receive() which were
+  interrupted by an exception always in former CapiSuite versions and thus
+  never returned. This is also a better and more logical use of exceptions
+  IMO. ATTN: this is *far from stable*
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.3  2002/12/11 13:40:22  ghillie
 - added support for quick disconnect (immediate physical disconnect)

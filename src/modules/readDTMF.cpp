@@ -2,7 +2,7 @@
     @brief Contains ReadDTMF - Call Module for waiting for DTMF signals
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -18,7 +18,7 @@
 #include "readDTMF.h"
 
 ReadDTMF::ReadDTMF(Connection *conn, int timeout, int min_digits, int max_digits)
-	:CallModule(conn, timeout, false),min_digits(min_digits),max_digits(max_digits)
+:CallModule(conn, timeout, false),min_digits(min_digits),max_digits(max_digits)
 {
 	if (conn->getState()!=Connection::UP)
 		throw CapiWrongState("Disconnection occured.","ReadDTMF::ReadDTMF()");
@@ -32,7 +32,7 @@ ReadDTMF::mainLoop() throw (CapiWrongState)
 		do {
 			finish=false;
 			CallModule::mainLoop();
-		} while (!abort && (digit_count<min_digits));
+		} while (!call_finished && (digit_count<min_digits));
 	}
 }
 
@@ -41,16 +41,40 @@ ReadDTMF::gotDTMF()
 {
 	digit_count=conn->getDTMF().size();
 	if (max_digits && (digit_count >= max_digits))
-		finish=true;        
+		finish=true;
 	else
 		exit_time=getTime()+timeout;
 }
 
+void
+ReadDTMF::callDisconnectedPhysical()
+{
+	call_finished=true;
+	CallModule::callDisconnectedPhysical();
+}
+
+void
+ReadDTMF::callDisconnectedLogical()
+{
+	call_finished=true;
+	CallModule::callDisconnectedLogical();
+}
+
+
 /*  History
 
 $Log: readDTMF.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/10/03 14:56:40  gernot
+- partly implementation of a bigger semantic change: don't throw
+  call finished exceptions in normal operation any longer; i.e. we only
+  test for the connection at the begin of a command. This allows return
+  values, e.g. for commands like capisuite.fax_receive() which were
+  interrupted by an exception always in former CapiSuite versions and thus
+  never returned. This is also a better and more logical use of exceptions
+  IMO. ATTN: this is *far from stable*
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.7  2003/01/19 16:50:27  ghillie
 - removed severity in exceptions. No FATAL-automatic-exit any more.

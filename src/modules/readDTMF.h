@@ -2,7 +2,7 @@
     @brief Contains ReadDTMF - Call Module for waiting for DTMF signals
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -26,8 +26,8 @@ class Connection;
     This module allows the user to specify how much DTMF digits he wants to read and how long to
     wait for them. It doesn't do the actual read, just waits for the given conditions to be fulfilled.
 
-    To use it, create an object and call mainLoop(). After mainLoop() finished, call Connection::getDTMF() to read
-    the received signals.
+    To use it, create an object and call mainLoop(). After mainLoop() finished, call
+    Connection::getDTMF() to read the received signals.
 
     @author Gernot Hillier
 
@@ -45,12 +45,12 @@ class ReadDTMF: public CallModule
 		ReadDTMF(Connection *conn, int timeout, int min_digits, int max_digits);
 
  		/** @brief mainLoop: Waits until the given conditions (see constructor) have been fulfilled
-                                                                         
+
 		    The module will finish if one of these conditions are true:
 
                     - max_digits is fulfilled
 		    - timeout was reached AND min_digits is fulfilled
-		    
+
 		    @throw CapiWrongState Thrown if disconnection is recognized
   		*/
 		void mainLoop() throw (CapiWrongState);
@@ -59,10 +59,27 @@ class ReadDTMF: public CallModule
   		*/
 		void gotDTMF();
 
-	private:  
+		/** @brief set call_finished
+
+		This method overwrites CallModule::callDisconnectedLogical and sets the flag call_finished
+		in addition to the other one. This is needed for our mainLoop to differ between a received
+		DTMF (then we should continue) and a disconnect (then we should really finish)
+		*/
+		void callDisconnectedLogical();
+
+		/** @brief set call_finished
+
+		This method overwrites CallModule::callDisconnectedPhysical and sets the flag call_finished
+		in addition to the other one. This is needed for our mainLoop to differ between a received
+		DTMF (then we should continue) and a disconnect (then we should really finish)
+		*/
+		void callDisconnectedPhysical();
+
+	private:
 		int digit_count, ///< save the current number of digits in receive buffer
 		    min_digits, ///< save min_digits parameter
 		    max_digits; ///< save max_digits parameter
+		bool call_finished; ///< set additionally at disconnect as CallModule::finish is used otherwise here
 };
 
 #endif
@@ -70,8 +87,17 @@ class ReadDTMF: public CallModule
 /* History
 
 $Log: readDTMF.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/10/03 14:56:40  gernot
+- partly implementation of a bigger semantic change: don't throw
+  call finished exceptions in normal operation any longer; i.e. we only
+  test for the connection at the begin of a command. This allows return
+  values, e.g. for commands like capisuite.fax_receive() which were
+  interrupted by an exception always in former CapiSuite versions and thus
+  never returned. This is also a better and more logical use of exceptions
+  IMO. ATTN: this is *far from stable*
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.2  2002/11/29 10:28:34  ghillie
 - updated comments, use doxygen format now

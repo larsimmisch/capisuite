@@ -2,7 +2,7 @@
     @brief Contains Switch2FaxG3 - Call Module for switching to FAXG3 service from another one.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -24,8 +24,6 @@ Switch2FaxG3::Switch2FaxG3(Connection *conn_in, string faxStationID, string faxH
 void
 Switch2FaxG3::mainLoop() throw (CapiWrongState, CapiExternalError, CapiMsgError)
 {
-	if (conn->getState()!=Connection::UP)
-		throw CapiWrongState("Disconnection detected","Switch2FaxG3::mainLoop()");
 	conn->debugMessage("switching to fax protocol",1);
 	conn->disconnectCall(Connection::LOGICAL_ONLY);
         CallModule::mainLoop();  // wait for DISCONNECT_B3_IND
@@ -50,8 +48,17 @@ Switch2FaxG3::callConnected()
 /*  History
 
 $Log: switch2faxG3.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/10/03 14:56:40  gernot
+- partly implementation of a bigger semantic change: don't throw
+  call finished exceptions in normal operation any longer; i.e. we only
+  test for the connection at the begin of a command. This allows return
+  values, e.g. for commands like capisuite.fax_receive() which were
+  interrupted by an exception always in former CapiSuite versions and thus
+  never returned. This is also a better and more logical use of exceptions
+  IMO. ATTN: this is *far from stable*
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.8  2003/02/10 14:08:21  ghillie
 - cosmetical log improvement
