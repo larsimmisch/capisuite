@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
     
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -58,6 +58,13 @@ CallModule::mainLoop() throw (CapiWrongState, CapiMsgError, CapiExternalError)
 		throw CapiWrongState("call abort detected","CallModule::mainLoop()");
 }
 
+void
+CallModule::resetTimer(int new_timeout)
+{
+	exit_time=getTime()+new_timeout;
+	timeout=new_timeout;
+}
+
 long 
 CallModule::getTime()
 {
@@ -73,12 +80,17 @@ CallModule::transmissionComplete()
 {
 }
 
-void 
+void
 CallModule::callConnected()
 {
 }
 
-void 
+void
+CallModule::alerting()
+{
+}
+
+void
 CallModule::dataIn(unsigned char* data, unsigned length)
 {
 }
@@ -93,8 +105,11 @@ CallModule::gotDTMF()
 /*  History
 
 $Log: callmodule.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/04/17 10:40:32  gernot
+- support new ALERTING notification feature of backend
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.14  2003/01/19 16:50:27  ghillie
 - removed severity in exceptions. No FATAL-automatic-exit any more.

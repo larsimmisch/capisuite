@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -76,6 +76,12 @@ class CallModule: public CallInterface
 
 		    empty function to overwrite if necessary
 		*/
+  		virtual void alerting (void);
+
+		/** @brief empty here.
+
+		    empty function to overwrite if necessary
+		*/
   		virtual void callConnected (void);
 
 		/** @brief abort current modul if logical connection is lost.
@@ -107,6 +113,10 @@ class CallModule: public CallInterface
   		*/
 		virtual long getTime();
 
+ 		/** @brief restart the timer with new timeout value
+  		*/
+		void resetTimer(int new_timeout);
+
 		bool DTMF_exit; ///< if set to true, we will finish when we receive a DTMF signal
 		bool finish;  ///< set this if the module should exit nicely for any reason
 		bool abort;   ///< set this for hard exit because connection is lost, causes CapiWrongState to be throwed in mainLoop
@@ -120,6 +130,9 @@ class CallModule: public CallInterface
 /* History
 
 $Log: callmodule.h,v $
+Revision 1.3  2003/04/17 10:40:32  gernot
+- support new ALERTING notification feature of backend
+
 Revision 1.2  2003/03/06 09:35:10  gernot
 - fixed typo
 
