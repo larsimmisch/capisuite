@@ -10,6 +10,7 @@ def findFiles(pattern, subdir=''):
             files.append(File(os.path.join(subdir, file), Dir('.')))
     return files
 
-for n in (env.Install('$pkgdatadir', 'README' ),
-          env.Install('$pkgdatadir', findFiles('*.la'))):
-    env.Alias('install', n)
+env.Alias('install', [
+    env.Install('$pkgdatadir', 'README' ),
+    env.Install('$pkgdatadir', findFiles('*.la'))
+    ])
