@@ -6,6 +6,8 @@
 	  Docbook/XML tools, include documentation for DDI, add update
 	  chapter
 	* docs/manual-de.docbook: Likewise.
+	* docs/Makefile.am: add generation of documentation tar-balls and 
+	  german docu
 
 2004-11-26  Gernot Hillier  <gernot@hillier.de>
 	* docs/Makefile.am: add man-pages to distribution, hopefully finally

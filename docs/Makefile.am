@@ -13,6 +13,8 @@ dist-hook: manual-prepare manual-html reference-html capisuite.8 capisuite.conf.
 	cp $(srcdir)/reference/* $(distdir)/reference/
 	cp manual.pdf $(distdir)/
 
+manual-de: manual-de-prepare manual-de-html manual-de-pdf
+
 # force recreation of complete manual for dist
 recreatedoc:
 	touch manual.docbook
@@ -23,6 +25,12 @@ manual-prepare: recreatedoc
 	mv manual.docbook.new manual.docbook
 	xmllint --noout --valid manual.docbook
 
+manual-de-prepare: 
+	sed -e 's,<title>CapiSuite [0-9a-z\.]*</title>,<title>CapiSuite $(VERSION)</title>,g' \
+	  manual-de.docbook > manual-de.docbook.new
+	mv manual-de.docbook.new manual-de.docbook
+	xmllint --noout --valid manual-de.docbook
+	
 manual-html: manual.docbook
 	xsltproc --stringparam profile.condition html -o manual-profiled.docbook \
 	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
@@ -37,7 +45,24 @@ manual-html: manual.docbook
 		echo "manual pages weren't created succesful." ;\
 		exit 1; \
 	fi
+	tar czf capisuite-manual-$(VERSION).tar.gz manual
 
+manual-de-html: manual-de.docbook
+	xsltproc --stringparam profile.condition html -o manual-profiled.docbook \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  manual-de.docbook
+	xsltproc --stringparam chunker.output.encoding UTF-8 \
+	  --stringparam chunker.output.doctype-public "-//W3C//DTD XHTML 1.0 Transitional//EN" \
+	  --stringparam chunker.output.doctype-system "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" \
+	  -o manual-de/ /usr/share/xml/docbook/stylesheet/nwalsh/current/xhtml/chunk.xsl manual-profiled.docbook
+	rm manual-profiled.docbook
+	cp -r /usr/share/xml/docbook/stylesheet/nwalsh/current/images/ manual-de/ # missing images...
+	if test ! -d manual-de/images/callouts; then \
+		echo "manual wasn't created succesful." ;\
+		exit 1; \
+	fi
+	tar czf capisuite-manual-de-$(VERSION).tar.gz manual-de
+	
 capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1: manual.docbook
 	xsltproc --stringparam profile.condition man -o manual-profiled.docbook \
 	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
@@ -53,6 +78,13 @@ manual-pdf: manual.docbook
 	db2pdf manual.xml 
 	-rm CATALOG.local manual.aux manual.log manual.out manual.tex suse-*.dsl manual.xml
 
+manual-de-pdf: manual-de.docbook
+	xsltproc --stringparam profile.condition pdf -o manual-de.xml \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  manual-de.docbook
+	db2pdf manual-de.xml 
+	-rm CATALOG.local manual-de.aux manual-de.log manual-de.out manual-de.tex suse-*.dsl manual-de.xml
+	
 reference-html: Doxyfile.in
 	sed -e 's,@VERSION\@,$(VERSION),g' \
 	    -e 's,@capisuite_sources\@,$(top_srcdir)/src,g' \
@@ -64,6 +96,7 @@ reference-html: Doxyfile.in
 		exit 1; \
 	fi
 	rm Doxyfile
+	tar czf capisuite-reference-$(VERSION).tar.gz reference
 	
 install-data-local:
 	if test -d reference; then \
@@ -84,5 +117,5 @@ uninstall-local:
 	-rm -rf $(DESTDIR)$(docdir) 
 
 maintainer-clean-local:
-	-rm -rf reference manual manual.pdf *.[1-9]
+	-rm -rf reference manual manual-de manual.pdf manual-de.pdf *.[1-9]
 
