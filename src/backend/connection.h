@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -307,6 +307,25 @@ class Connection
 		    @return current connection state as specified in Connection::connection_state_t
 		*/
 		connection_state_t getState();
+
+		/** @brief several parameters describing fax protocol details for incoming faxes
+
+		    Information is available when B3 connection is established (after CallInterface::callConnected()
+		    was called) unless noted otherwise.
+		*/
+		struct fax_info_t {
+			int rate; ///< bit rate used at connect or at disconnect (depends when you ask for it)
+			bool hiRes; ///< fax is transferred in high resolution
+			bool colorJPEG; ///< color fax transmitted as JPEG file
+			int pages; ///< number of transmitted pages (only available after disconnection!)
+			std::string stationID; ///< ID of the sending station
+		};
+
+		/** @brief Return fax information
+
+		    @return several informations about a fax transfer as specified in Connection::fax_info_t, NULL when not available
+		*/
+		fax_info_t* getFaxInfo();
 
 		/** @brief Output error message
 
@@ -629,6 +648,8 @@ class Connection
 
 		unsigned short buffer_start, ///< holds the index for the first buffer currently used
 			buffers_used; ///< holds the number of currently used buffers
+
+		fax_info_t* fax_info;
 };
 
 #endif
@@ -636,6 +657,9 @@ class Connection
 /*  History
 
 $Log: connection.h,v $
+Revision 1.4  2003/05/24 13:48:54  gernot
+- get fax details (calling station ID, transfer format, ...), handle PLCI
+
 Revision 1.3  2003/04/17 10:39:42  gernot
 - support ALERTING notification (to know when it's ringing on the other side)
 - cosmetical fixes in capi.cpp

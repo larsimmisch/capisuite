@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.7 $
+    $Revision: 1.8 $
 */
 
 /***************************************************************************
@@ -23,15 +23,13 @@
 
 #define conf_send_buffers 4
 
-// TODO NCPI handling für Fax
-
 using namespace std;
 
 Connection::Connection (_cmsg& message, Capi* capi_in):
 	call_if(NULL),capi(capi_in),plci_state(P2),ncci_state(N0), buffer_start(0), buffers_used(0),
 	file_for_reception(NULL), file_to_send(NULL), received_dtmf(""), keepPhysicalConnection(false),
 	disconnect_cause(0),debug(capi->debug), debug_level(capi->debug_level), error(capi->error),
-	our_call(false), disconnect_cause_b3(0)
+	our_call(false), disconnect_cause_b3(0), fax_info(NULL)
 {
 	pthread_mutex_init(&send_mutex, NULL);
 	pthread_mutex_init(&receive_mutex, NULL);
@@ -40,8 +38,8 @@ Connection::Connection (_cmsg& message, Capi* capi_in):
 	call_from = getNumber(CONNECT_IND_CALLINGPARTYNUMBER(&message),true);
   	call_to   = getNumber(CONNECT_IND_CALLEDPARTYNUMBER(&message),false);
 	if (debug_level >= 1) {
-		debug << prefix() << "Connection object created for incoming call PLCI " << plci << endl;
-		debug << prefix() << "from " << call_from << " to " << call_to << " CIP 0x" << hex << CONNECT_IND_CIPVALUE(&message) << endl;
+		debug << prefix() << "Connection object created for incoming call PLCI " << plci;
+		debug << " from " << call_from << " to " << call_to << " CIP 0x" << hex << CONNECT_IND_CIPVALUE(&message) << endl;
 	}
   	switch (CONNECT_IND_CIPVALUE(&message)) {
 		case 1:
@@ -63,7 +61,7 @@ Connection::Connection (Capi* capi, _cdword controller, string call_from_in, boo
 	:call_if(NULL),capi(capi),plci_state(P01),ncci_state(N0),plci(0),service(service),  buffer_start(0), buffers_used(0),
 	file_for_reception(NULL), file_to_send(NULL), call_from(call_from_in), call_to(call_to_in), connect_ind_msg_nr(0),
 	disconnect_cause(0), debug(capi->debug), debug_level(capi->debug_level), error(capi->error), keepPhysicalConnection(false),
-	our_call(true), disconnect_cause_b3(0)
+	our_call(true), disconnect_cause_b3(0), fax_info(NULL)
 {
 	pthread_mutex_init(&send_mutex, NULL);
 	pthread_mutex_init(&receive_mutex, NULL);
@@ -160,6 +158,9 @@ Connection::~Connection()
 	pthread_mutex_lock(&receive_mutex); // assure the lock is free before destroying it
 	pthread_mutex_unlock(&receive_mutex);
 	pthread_mutex_destroy(&receive_mutex);
+
+	if (fax_info)
+		delete fax_info;
 
 	if (debug_level >= 1) {
 		debug << prefix() << "Connection object deleted" <<  endl;
@@ -318,6 +319,12 @@ Connection::getService()
 	return service;
 }
 
+Connection::fax_info_t*
+Connection::getFaxInfo()
+{
+	return fax_info;
+}
+
 Connection::connection_state_t
 Connection::getState()
 {
@@ -390,10 +397,10 @@ void
 Connection::connect_b3_active_ind(_cmsg& message) throw (CapiWrongState, CapiExternalError)
 {
 	if (ncci_state!=N2) {
-		throw CapiWrongState("CONNECT_B3_ACTIVE_IND received in wrong state","Connection::connect_active_b3_ind()");
+		throw CapiWrongState("CONNECT_B3_ACTIVE_IND received in wrong state","Connection::connect_b3_active_ind()");
   	} else {
-		if (ncci!=CONNECT_B3_IND_NCCI(&message))
-			throw CapiError("CONNECT_B3_ACTIVE_IND received with wrong NCCI","Connection::connect_active_b3_ind()");
+		if (ncci!=CONNECT_B3_ACTIVE_IND_NCCI(&message))
+			throw CapiError("CONNECT_B3_ACTIVE_IND received with wrong NCCI","Connection::connect_b3_active_ind()");
 		try {
 			capi->connect_b3_active_resp(message.Messagenumber,ncci);
 		}
@@ -401,6 +408,23 @@ Connection::connect_b3_active_ind(_cmsg& message) throw (CapiWrongState, CapiExt
 			error << prefix() << "WARNING: Error deteced when sending connect_b3_active_resp. Message was: " << e << endl;
 		}
 		ncci_state=NACT;
+
+		if (service==FAXG3 && CONNECT_B3_ACTIVE_IND_NCPI(&message)[0]>=9) {
+			_cstruct ncpi=CONNECT_B3_ACTIVE_IND_NCPI(&message);
+			if (!fax_info)
+				fax_info=new fax_info_t;
+			fax_info->rate=ncpi[1]+(ncpi[2]<<8);
+			fax_info->hiRes=((ncpi[3] & 0x01) == 0x01);
+			fax_info->colorJPEG=((ncpi[4] & 0x04) == 0x04);
+			fax_info->pages=ncpi[7]+(ncpi[8]<<8);
+			fax_info->stationID.assign(reinterpret_cast<char*>(&ncpi[10]),static_cast<int>(ncpi[9])); // indx 9 helds the length, string starts at 10
+			if (debug_level >= 2) {
+				debug << prefix() << "fax connected with rate " << dec << fax_info->rate
+				  << (fax_info->hiRes ? ", hiRes" : ", lowRes") << (fax_info->colorJPEG ? ", JPEG" : "")
+				  << ", ID: " << fax_info->stationID << endl;
+			}
+		}
+
 		if (call_if)
 			call_if->callConnected();
 		else
@@ -419,10 +443,26 @@ Connection::disconnect_b3_ind(_cmsg& message) throw (CapiWrongState)
 
 		disconnect_cause_b3=DISCONNECT_B3_IND_REASON_B3(&message);
 
+		if (service==FAXG3 && CONNECT_B3_ACTIVE_IND_NCPI(&message)[0]>=9) {
+			_cstruct ncpi=CONNECT_B3_ACTIVE_IND_NCPI(&message);
+			if (!fax_info)
+				fax_info=new fax_info_t;
+			fax_info->rate=ncpi[1]+(ncpi[2]<<8);
+			fax_info->hiRes=((ncpi[3] & 0x01) == 0x01);
+			fax_info->colorJPEG=((ncpi[4] & 0x04) == 0x04);
+			fax_info->pages=ncpi[7]+(ncpi[8]<<8);
+			fax_info->stationID.assign(reinterpret_cast<char*>(&ncpi[10]),static_cast<int>(ncpi[9])); // indx 9 helds the length, string starts at 10
+			if (debug_level >= 2) {
+				debug << prefix() << "fax finished with rate " << dec << fax_info->rate
+				  << (fax_info->hiRes ? ", hiRes" : ", lowRes") << (fax_info->colorJPEG ? ", JPEG" : "")
+				  << ", ID: " << fax_info->stationID << ", " << fax_info->pages << " pages" << endl;
+			}
+		}
+
 		pthread_mutex_lock(&send_mutex);
 		buffers_used=0; // we'll get no DATA_B3_CONF's after DISCONNECT_B3_IND, see Capi 2.0 spec, 5.18, note for DATA_B3_CONF
 		pthread_mutex_unlock(&send_mutex);
-		
+
 		stop_file_transmission();
 		stop_file_reception();
 
@@ -1000,6 +1040,9 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.8  2003/05/24 13:48:54  gernot
+- get fax details (calling station ID, transfer format, ...), handle PLCI
+
 Revision 1.7  2003/04/17 10:39:42  gernot
 - support ALERTING notification (to know when it's ringing on the other side)
 - cosmetical fixes in capi.cpp
