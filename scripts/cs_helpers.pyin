@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.10 $
+#    version              : $Revision: 1.11 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -187,7 +187,7 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 			email.Encoders.encode_base64(filepart)
 		elif (mail_type=="cff"): # color fax file
 			# cff -> ps
-			ret=os.spawnlp(os.P_WAIT,"jpeg2ps","jpeg2ps",attachment,"-o",basename+"ps")
+			ret=os.spawnlp(os.P_WAIT,"jpeg2ps","jpeg2ps","-m",attachment,"-o",basename+"ps")
 			if (ret or not os.access(basename+"ps",os.F_OK)):
 				raise "conv-error","Can't convert cff to ps. jpeg2ps not installed?"
 			# tif -> ps -> pdf
@@ -341,6 +341,9 @@ def sayNumber(call,number,curr_user,config):
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
 # $Log: cs_helpers.pyin,v $
+# Revision 1.11  2003/06/16 10:20:36  gernot
+# - use new multipage feature of jpeg2ps (requires special jpeg2ps version!)
+#
 # Revision 1.10  2003/05/25 13:38:30  gernot
 # - support reception of color fax documents
 #
