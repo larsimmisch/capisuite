@@ -128,10 +128,7 @@ class InstallableEnv(Environment):
 
     def ExtraDist(self, files):
         """Collect Additional files to be distributed."""
-        if SCons.Util.is_List(files):
-            files = map(File, files)
-        else:
-            files = File(files)
+        files = self.arg2nodes(files, self.File)
         env.Append(__SOURCES=files)
 
 #

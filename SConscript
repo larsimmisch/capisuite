@@ -15,3 +15,7 @@ env.Alias('install', [
     #env.InstallAs('$sysconfdir/cron.daily/capisuite', cronfile),
     #env.InstallAs('$pkgsysconfdir/cronjob.conf','cronjob.conf'),
     ])
+
+# Since these are not installed, we need to list them for
+# distribuition explicitly
+env.ExtraDist([cronfile, rcfile, 'cronjob.conf'])
