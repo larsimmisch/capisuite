@@ -1,10 +1,12 @@
 0.5 (CVS nn):
 =============
 
-	* core: support for ISDN interfaces with DDI/in PtP mode (this is 
-	  used when *only* the ISDN card an no other devices are connected
-	  to your ISDN interface; called "Anlagenanschluss" in Germany), this
-	  added three new options to capisuite.conf
+	* core: support for ISDN interfaces with DDI (means you only have one
+	  base number (not a list of MSNs) and can define your extensions
+	  how you like; in Germany used in the "Anlagenanschluss"). We now have
+	  three new options in capisuite.conf. Many thanks goes to Jörg Fester
+	  for paying and supporting me to develop this feature. They use
+	  CapiSuite in their product (see http://www.x-manage.de).
 
 	* scripts: received voice calls are now converted to 16 bit WAV files
 	  instead of 8 bit; this leads to a dramatically better playback quality
