@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.7 $
+#    version              : $Revision: 1.8 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -34,8 +34,17 @@ def readConfig(file=""):
 			if (len(value)>1 and value[0]=='"'):
 				config.set(s,o,value[1:-1])
 	if (not config.has_section('GLOBAL')):
-		raise IOError("invalid configuration file - section GLOBAL is missing")
+		raise IOError("invalid config file, section GLOBAL missing")
 	return config
+
+# @brief escape a filename to include it savely in a shell command
+#
+# The filename is enclosed in single quotation marks and quotation
+# marks therein are quoted
+#
+# @return the escaped filename
+def escape(filename):
+	return "'"+filename.replace("'","'\\''")+"'"
 
 # @brief get an option from the user or global section
 #
@@ -71,7 +80,8 @@ def getAudio(config,user,filename):
 	if (userdir==None):
 		raise IOError("option voice_user_dir not found.")
 	userdir=os.path.join(userdir,user)+"/"
-	if (int(getOption(config,"","user_audio_files","0")) and os.access(userdir+filename,os.R_OK)):
+	if (int(getOption(config,"","user_audio_files","0"))
+	and os.access(userdir+filename,os.R_OK)):
 		return userdir+filename
 	else:
 		return systemdir+filename
@@ -160,7 +170,8 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 			# the first pipe must be handled by the shell so that the output of
 			# of ps2pdf can be read immediately. Handling this shell in Python
 			# leads to an overflow of the ps2pdf output pipe...
-			tiff2pdf=popen2.Popen3("tiff2ps -a "+basename+"tif | ps2pdf - -")
+			command="tiff2ps -a "+escape(basename+"tif")+" | ps2pdf - -"
+			tiff2pdf=popen2.Popen3(command)
 			if (tiff2pdf.poll()!=-1):
 				raise "conv-error","Error while calling tiff2pdf or ps2pdf. Not installed?"
 			tiff2pdf.tochild.close() # we don't need the input pipe
@@ -191,7 +202,7 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 		textpart = email.MIMEText.MIMEText(text)
 		msg.attach(textpart)
 
-	sendmail = popen2.Popen3("sendmail -t -f "+mail_from)
+	sendmail = popen2.Popen3("sendmail -t -f "+escape(mail_from))
 	if (sendmail.poll()!=-1):
 		capisuite.error("Error while calling sendmail. Not installed?\n")
 		return
@@ -222,7 +233,7 @@ def sendSimpleMail(mail_from,mail_to,mail_subject,text):
 	msg['From'] = mail_from
 	msg['To'] = mail_to
 
-	sendmail = popen2.Popen3("sendmail -t -f "+mail_from)
+	sendmail = popen2.Popen3("sendmail -t -f "+escape(mail_from))
 	if (sendmail.poll()!=-1):
 		capisuite.error("Error while calling sendmail. Not installed?\n")
 		return
@@ -306,6 +317,11 @@ def sayNumber(call,number,curr_user,config):
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
 # $Log: cs_helpers.pyin,v $
+# Revision 1.8  2003/04/24 14:03:18  gernot
+# - shortened some long lines
+# - added function escape which escapes a string for shell usage
+# - escape mail addresses given to sendmail
+#
 # Revision 1.7  2003/04/16 07:16:35  gernot
 # - fixed pipe buffer overflow for conversion of long fax documents to PDF
 #
