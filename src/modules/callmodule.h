@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.6 $
+    $Revision: 1.7 $
 */
 
 /***************************************************************************
@@ -74,10 +74,11 @@ class CallModule: public CallInterface
 
 		    This method will likely be overwritten in each sub class. You can call CallModule::mainLoop() there to implement busy loops.
 		    @throw CapiMsgError A CAPI function hasn't succeeded for some reason (not thrown by CallModule, but may be thrown in subclasses).
+		    @throw CapiError Some internal error has occured (not thrown by CallModule, but may be thrown in subclasses).
 		    @throw CapiExternalError A given command didn't succeed for a reason not caused by the CAPI (not thrown by CallModule, but may be thrown in subclasses)
 		    @throw CapiWrongState Not thrown here, but sub classes may throw it
 		*/
-		virtual void mainLoop() throw (CapiWrongState,CapiMsgError,CapiExternalError);
+		virtual void mainLoop() throw (CapiError,CapiWrongState,CapiMsgError,CapiExternalError);
 
  		/** @brief empty here.
 

@@ -2,7 +2,7 @@
     @brief Contains AudioSend - Call Module for sending an A-Law file
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -25,7 +25,7 @@ AudioSend::AudioSend(Connection *conn, string file, bool DTMF_exit) throw (CapiW
 }
 
 void
-AudioSend::mainLoop() throw (CapiWrongState,CapiExternalError,CapiMsgError)
+AudioSend::mainLoop() throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError)
 {
 	start_time=getTime();
 	if (!(DTMF_exit && (!conn->getDTMF().empty()) ) ) {

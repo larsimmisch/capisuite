@@ -1,6 +1,9 @@
 0.5 (CVS nn):
 =============
 
+	* core: fixed a bug which could lead to a crash when some unexpected
+	  CAPI messages arrived (thx to Karsten Keil for analyzing)
+
 	* scripts: the mails sent with received voice and fax calls will now
 	  contain some general information like length of calls, number of
 	  pages, etc. (thx to Achim Bohnet and Thomas Niesel for the feature

@@ -2,7 +2,7 @@
    @brief Contains FaxSend - Call Module for sending an analog fax (group 3)
 
    @author Gernot Hillier <gernot@hillier.de>
-   $Revision: 1.3 $
+   $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -27,7 +27,7 @@ FaxSend::FaxSend(Connection *conn, string file) throw (CapiWrongState,CapiExtern
 
 
 void
-FaxSend::mainLoop() throw (CapiWrongState,CapiExternalError,CapiMsgError)
+FaxSend::mainLoop() throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError)
 {
 	conn->start_file_transmission(file);
 	CallModule::mainLoop();

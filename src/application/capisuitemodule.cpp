@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.8 $
+    $Revision: 1.9 $
 */
 
 /***************************************************************************
@@ -239,6 +239,11 @@ capisuite_audio_send(PyObject*, PyObject *args)
 		PyErr_SetString(BackendError,(e.message()).c_str());
 		return NULL;
 	}
+	catch (CapiError e) {
+		Py_BLOCK_THREADS
+		PyErr_SetString(BackendError,(e.message()).c_str());
+		return NULL;
+	}
 
 	PyObject *r=PyInt_FromLong(duration);
 	return (r);
@@ -400,6 +405,16 @@ capisuite_fax_send(PyObject *, PyObject *args)
 	catch (CapiWrongState e) {
 		Py_BLOCK_THREADS
 		PyErr_SetString(CallGoneError,"Call was finished from partner.");
+		return NULL;
+	}
+	catch (CapiMsgError e) {
+		Py_BLOCK_THREADS
+		PyErr_SetString(BackendError,(e.message()).c_str());
+		return NULL;
+	}
+	catch (CapiExternalError e) {
+		Py_BLOCK_THREADS
+		PyErr_SetString(BackendError,(e.message()).c_str());
 		return NULL;
 	}
 	catch (CapiError e) {

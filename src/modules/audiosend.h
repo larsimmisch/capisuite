@@ -2,7 +2,7 @@
     @brief Contains AudioSend - Call Module for sending an A-Law file
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -61,9 +61,10 @@ class AudioSend: public CallModule
 
 		    @throw CapiExternalError Thrown by Connection::start_file_transmission, see there for explanation.
 		    @throw CapiMsgError Thrown by Connection::start_file_transmission, see there for explanation.
+		    @throw CapiError Thrown by Connection::start_file_transmission, see there for explanation.
 		    @throw CapiWrongState Thrown if connection is not up at start of transfer (thrown by Connection::start_file_transmission)
 		*/
-		void mainLoop() throw (CapiWrongState,CapiExternalError,CapiMsgError);
+		void mainLoop() throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError);
 
 		/** @brief finish main loop if file is completely received
 

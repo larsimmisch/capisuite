@@ -1,3 +1,18 @@
+2004-02-08  Gernot Hillier  <gernot@hillier.de>
+	* src/application/capisuitemodule.cpp (capisuite_audio_send, 
+	  capisuite_fax_send): catch some missing Exceptions
+	* src/backend/connection.{cpp,h} (connectWaiting,rejectWaiting): throw
+	  CapiExternalError instead of CapiError when user passed a wrong call
+	* src/backend/connection.{cpp,h} (connectWaiting,connect_b3_active_ind,
+	  disconnect_b3_ind,disconnect_ind,data_b3_ind,facility_ind_DTMF,
+	  info_ind_alerting,info_ind_called_party_nr,select_b_protocol_conf,
+	  alert_conf,data_b3_conf,facility_conf_DTMF,disconnect_b3_conf,
+	  disconnect_conf,send_block,start_file_transmission): add CapiError to
+	  allowed throwable objects in declaration
+	* src/modules/audiosend.{cpp,h} (mainLoop): Likewise.
+	* src/modules/callmodule.{cpp,h} (mainLoop): Likewise.
+	* src/modules/faxsend.{cpp,h} (mainLoop): Likewise.
+
 2004-01-18  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (sendMIMEMail): remove space in sox call
 

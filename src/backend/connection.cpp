@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.15 $
+    $Revision: 1.16 $
 */
 
 /***************************************************************************
@@ -220,7 +220,7 @@ Connection::changeProtocol(service_t desired_service, string faxStationID, strin
 }
 
 void
-Connection::connectWaiting(service_t desired_service, string faxStationID, string faxHeadline) throw (CapiWrongState, CapiExternalError, CapiMsgError)
+Connection::connectWaiting(service_t desired_service, string faxStationID, string faxHeadline) throw (CapiWrongState,CapiExternalError,CapiMsgError)
 {
 	if (debug_level >= 1) {
 		debug << prefix() << "accepting with service " << desired_service <<  endl;
@@ -232,7 +232,7 @@ Connection::connectWaiting(service_t desired_service, string faxStationID, strin
 		throw CapiWrongState("wrong state for connectWaiting","Connection::connectWaiting()");
 
 	if (our_call)
-		throw (CapiError("can't accept an outgoing call","Connection::connectWaiting()"));
+		throw (CapiExternalError("can't accept an outgoing call","Connection::connectWaiting()"));
 
 	_cstruct B1config=NULL, B2config=NULL, B3config=NULL;
 	_cword B1proto,B2proto,B3proto;
@@ -269,7 +269,7 @@ Connection::rejectWaiting(_cword reject) throw (CapiWrongState, CapiMsgError, Ca
 	if (plci_state!=P2)
 		throw CapiWrongState("wrong state for reject","Connection::reject()");
 	if (our_call)
-		throw (CapiError("can't accept an outgoing call","Connection::connectWaiting()"));
+		throw (CapiExternalError("can't reject an outgoing call","Connection::rejectWaiting()"));
 	if (!reject)
 		throw CapiExternalError("reject cause must not be zero","Connection::reject()");
 
@@ -402,7 +402,7 @@ Connection::connect_b3_ind(_cmsg& message) throw (CapiWrongState, CapiMsgError)
 }
 
 void
-Connection::connect_b3_active_ind(_cmsg& message) throw (CapiWrongState, CapiExternalError)
+Connection::connect_b3_active_ind(_cmsg& message) throw (CapiError,CapiWrongState, CapiExternalError)
 {
 	if (ncci_state!=N2) {
 		throw CapiWrongState("CONNECT_B3_ACTIVE_IND received in wrong state","Connection::connect_b3_active_ind()");
@@ -441,7 +441,7 @@ Connection::connect_b3_active_ind(_cmsg& message) throw (CapiWrongState, CapiExt
 }
 
 void
-Connection::disconnect_b3_ind(_cmsg& message) throw (CapiWrongState)
+Connection::disconnect_b3_ind(_cmsg& message) throw (CapiError,CapiWrongState)
 {
 	if (ncci_state!=NACT && ncci_state!=N1 && ncci_state!=N2 && ncci_state!=N3 && ncci_state!=N4) {
 		throw CapiWrongState("DISCONNECT_B3_IND received in wrong state","Connection::disconnect_b3_ind()");
@@ -504,7 +504,7 @@ Connection::disconnect_b3_ind(_cmsg& message) throw (CapiWrongState)
 }
 
 void
-Connection::disconnect_ind(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::disconnect_ind(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError)
 {
 	if (ncci_state!=N0 || (plci_state!=P1 && plci_state!=P2 && plci_state!=P3 && plci_state!=P4 && plci_state!=P5 && plci_state!=PACT)) {
 		throw CapiWrongState("DISCONNECT_IND received in wrong state","Connection::disconnect_ind()");
@@ -524,7 +524,7 @@ Connection::disconnect_ind(_cmsg& message) throw (CapiWrongState, CapiMsgError)
 }
 
 void
-Connection::data_b3_ind(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::data_b3_ind(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError)
 {
 	if (ncci_state!=NACT && ncci_state!=N4)
 		throw CapiWrongState("DATA_B3_IND received in wrong state","Connection::data_b3_ind()");
@@ -546,7 +546,7 @@ Connection::data_b3_ind(_cmsg& message) throw (CapiWrongState, CapiMsgError)
 }
 
 void
-Connection::facility_ind_DTMF(_cmsg &message) throw (CapiWrongState)
+Connection::facility_ind_DTMF(_cmsg &message) throw (CapiError,CapiWrongState)
 {
 	if (plci_state!=PACT)
 		throw CapiWrongState("FACILITY_IND received in wrong state","Connection::facility_ind_DTMF()");
@@ -572,7 +572,7 @@ Connection::facility_ind_DTMF(_cmsg &message) throw (CapiWrongState)
 }
 
 void
-Connection::info_ind_alerting(_cmsg &message) throw (CapiWrongState)
+Connection::info_ind_alerting(_cmsg &message) throw (CapiError,CapiWrongState)
 {
 	if (plci_state!=P01 && plci_state!=P1)
 		throw CapiWrongState("INFO_IND for ALERTING received in wrong state","Connection::info_ind_alerting()");
@@ -592,7 +592,7 @@ Connection::info_ind_alerting(_cmsg &message) throw (CapiWrongState)
 }
 
 bool
-Connection::info_ind_called_party_nr(_cmsg &message) throw (CapiWrongState)
+Connection::info_ind_called_party_nr(_cmsg &message) throw (CapiError,CapiWrongState)
 {
 	if (plci_state!=P2)
 		throw CapiWrongState("INFO_IND for CalledPartyNr received in wrong state","Connection::info_ind_called_party_nr()");
@@ -607,7 +607,7 @@ Connection::info_ind_called_party_nr(_cmsg &message) throw (CapiWrongState)
 	}
 
 	call_to+=getNumber(INFO_IND_INFOELEMENT(&message),false);
-	
+
 	string currDDI=call_to.substr(DDIBaseLength);
 	for (int i=0;i<DDIStopNumbers.size();i++)
 	    if (DDIStopNumbers[i]==currDDI) {
@@ -662,7 +662,7 @@ Connection::connect_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
 }
 
 void
-Connection::select_b_protocol_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::select_b_protocol_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError)
 {
 	if (plci_state!=PACT || ncci_state!=N0)
 		throw CapiWrongState("SELECT_B_PROTOCOL_CONF received in wrong state","Connection::select_b_protocol_conf()");
@@ -686,7 +686,7 @@ Connection::select_b_protocol_conf(_cmsg& message) throw (CapiWrongState, CapiMs
 }
 
 void
-Connection::alert_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::alert_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError)
 {
 	if (plci_state!=P2 && plci_state!=P5)
 		throw CapiWrongState("ALERT_CONF received in wrong state","Connection::alert_conf()");
@@ -699,7 +699,7 @@ Connection::alert_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
 }
 
 void
-Connection::data_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError, CapiExternalError)
+Connection::data_b3_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError,CapiExternalError)
 {
 	if (ncci_state!=NACT)
 		throw CapiWrongState("DATA_B3_CONF received in wrong state","Connection::data_b3_conf()");
@@ -730,7 +730,7 @@ Connection::data_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError, Ca
 }
 
 void
-Connection::facility_conf_DTMF(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::facility_conf_DTMF(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError)
 {
 	if (plci_state!=PACT)
 		throw CapiWrongState("FACILITY_CONF for DTMF received in wrong state","Connection::facility_conf_DTMF()");
@@ -747,7 +747,7 @@ Connection::facility_conf_DTMF(_cmsg& message) throw (CapiWrongState, CapiMsgErr
 }
 
 void
-Connection::disconnect_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::disconnect_b3_conf(_cmsg& message) throw (CapiError,CapiWrongState, CapiMsgError)
 {
 	if (ncci_state!=N4)
 		throw CapiWrongState("DISCONNECT_B3_CONF received in wrong state","Connection::disconnect_b3_conf()");
@@ -760,7 +760,7 @@ Connection::disconnect_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgErr
 }
 
 void
-Connection::disconnect_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
+Connection::disconnect_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError)
 {
 	if (plci_state!=P5)
 		throw CapiWrongState("DISCONNECT_CONF received in wrong state","Connection::disconnect_conf()");
@@ -791,7 +791,7 @@ Connection::disconnectCall(disconnect_mode_t disconnect_mode) throw (CapiMsgErro
 }
 
 void
-Connection::send_block() throw (CapiWrongState, CapiExternalError, CapiMsgError)
+Connection::send_block() throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError)
 {
 	if (ncci_state!=NACT)
 		throw CapiWrongState("unable to send file because connection is not established","Connection::send_block()");
@@ -841,7 +841,7 @@ Connection::send_block() throw (CapiWrongState, CapiExternalError, CapiMsgError)
 }
 
 void
-Connection::start_file_transmission(string filename) throw (CapiWrongState, CapiExternalError, CapiMsgError)
+Connection::start_file_transmission(string filename) throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError)
 {
 	if (debug_level >= 2) {
 		debug << prefix() << "start_file_transmission " << filename << endl;

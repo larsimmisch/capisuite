@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.5 $
+    $Revision: 1.6 $
 */
 
 /***************************************************************************
@@ -47,7 +47,7 @@ CallModule::callDisconnectedLogical()
 }
 
 void
-CallModule::mainLoop() throw (CapiWrongState,CapiMsgError, CapiExternalError)
+CallModule::mainLoop() throw (CapiWrongState,CapiMsgError,CapiExternalError,CapiError)
 {
 	if (! (DTMF_exit && (conn->getDTMF()!="") ) ) {
 		exit_time=getTime()+timeout;

@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.8 $
+    $Revision: 1.9 $
 */
 
 /***************************************************************************
@@ -136,8 +136,9 @@ class Connection
 		    @throw CapiWrongState Thrown if Connection isn't up completely (physical & logical)
 		    @throw CapiExternalError Thrown if file transmission is already in progress or the file couldn't be opened
 		    @throw CapiMsgError Thrown by send_block(). See there.
+		    @throw CapiError Thrown by send_block(). See there.
 		*/
-		void start_file_transmission(string filename) throw (CapiWrongState, CapiExternalError, CapiMsgError);
+		void start_file_transmission(string filename) throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError);
 
 		/** @brief called to stop sending of the current file, will block until file is really finished
 
@@ -200,10 +201,10 @@ class Connection
 		    @param faxStationID my fax station ID - only needed in FAXG3 mode
 		    @param faxHeadline my fax headline - only needed in FAXG3 mode, encoded in ISO8859-1
 		    @throw CapiWrongState Thrown if call is not in necessary state (waiting for acception or rejection)
-		    @throw CapiExternalError Thrown by buildBconfiguration. See there.
+		    @throw CapiExternalError Thrown by buildBconfiguration and if method is called with an outgoing call
 		    @throw CapiMsgError Thrown by Capi::connect_resp(). See there.
 		*/
-		void connectWaiting(service_t desired_service, string faxStationID="", string faxHeadline="")  throw (CapiWrongState, CapiExternalError, CapiMsgError);
+		void connectWaiting(service_t desired_service, string faxStationID="", string faxHeadline="")  throw (CapiWrongState,CapiExternalError,CapiMsgError);
 
 		/** @brief Reject a waiting incoming call
 
@@ -211,7 +212,7 @@ class Connection
 
 		    @param reject reject cause, see CAPI spec ch 5.6 for details
 		    @throw CapiWrongState Thrown if call is not in necessary state (waiting for acception or rejection)
-		    @throw CapiExternalError Thrown if reject cause is not set (cause 0 not allowed).
+		    @throw CapiExternalError Thrown if function called with wrong parameters
 		    @throw CapiMsgError Thrown by Capi::connect_resp(). See there.
 		*/
 		void rejectWaiting(_cword reject) throw (CapiWrongState, CapiMsgError, CapiExternalError);
@@ -400,18 +401,20 @@ class Connection
 		    @param message the received CONNECT_B3_ACTIVE_IND message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong ncci_state)
 		    @throw CapiExternalError Thrown if no CallInterface is registered
+		    @throw CapiError Thrown if invalid message was received
 		*/
-		void connect_b3_active_ind(_cmsg& message) throw (CapiWrongState, CapiExternalError);
+		void connect_b3_active_ind(_cmsg& message) throw (CapiError,CapiWrongState,CapiExternalError);
 
 		/** @brief called when we get DATA_B3_IND from CAPI
 
 		    This method will also save the received data, send a response to Capi and call CallInterface::dataIn().
 
 		    @param message the received DATA_B3_IND message
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong ncci_state)
 		    @throw CapiMsgError Thrown by Capi::data_b3_resp()
 		*/
-		void data_b3_ind(_cmsg& message) throw (CapiWrongState,CapiMsgError);
+		void data_b3_ind(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/** @brief called when we get FACILITY_IND from CAPI with facility selector saying it's DTMF
 
@@ -419,18 +422,20 @@ class Connection
 		    CallInterface::gotDTMF().
 
 		    @param message the received FACILITY_IND message
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong ncci_state)
 		*/
-		void facility_ind_DTMF(_cmsg& message) throw (CapiWrongState);
+		void facility_ind_DTMF(_cmsg& message) throw (CapiError,CapiWrongState);
 
 		/** @brief called when we get INFO_IND from CAPI with Info number saying it's ALERTING
 
 		    This method will call CallInterface::alerting().
 
 		    @param message the received INFO_IND message
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
 		*/
-		void info_ind_alerting(_cmsg& message) throw (CapiWrongState);
+		void info_ind_alerting(_cmsg& message) throw (CapiError,CapiWrongState);
 
 		/** @brief called when we get INFO_IND from CAPI with Info number saying it's ALERTING
 
@@ -440,9 +445,10 @@ class Connection
 
 		    @param message the received INFO_IND message
 		    @return true if the CalledPartyNumber is complete (DDI length fulfilled or stop_number found)
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
 		*/
-		bool info_ind_called_party_nr(_cmsg& message) throw (CapiWrongState);
+		bool info_ind_called_party_nr(_cmsg& message) throw (CapiError,CapiWrongState);
 
 		/** @brief called when we get DISCONNECT_B3_IND from CAPI
 
@@ -450,19 +456,21 @@ class Connection
 		    It will call CallInterface::callDisconnectedLogical() and initiate termination of physical connection.
 
 		    @param message the received DISCONNECT_B3_IND message
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong ncci_state)
 		*/
-		void disconnect_b3_ind(_cmsg& message) throw (CapiWrongState);
+		void disconnect_b3_ind(_cmsg& message) throw (CapiError,CapiWrongState);
 
 		/** @brief called when we get DISCONNECT_IND from CAPI
 
 		    This method will also send a response to Capi and call CallInterface::callDisconnectedPhysical().
 
 		    @param message the received DISCONNECT_IND message
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong ncci_state or plci_state)
 		    @throw CapiMsgError Thrown by Capi::disconnect_resp()
 		*/
-		void disconnect_ind(_cmsg& message) throw (CapiWrongState, CapiMsgError);
+		void disconnect_ind(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/*************************** CONFIRMATIONS **************************************/
 
@@ -486,17 +494,19 @@ class Connection
 
 		    @param message the received SELECT_B_PROTOCOL_CONF message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiMsgError Thrown if the info InfoElement indicates an error
 		*/
-		void select_b_protocol_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError);
+		void select_b_protocol_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/** @brief called when we get ALERT_CONF from CAPI
 
 		    @param message the received ALERT_CONF message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiMsgError Thrown if the info InfoElement indicates an error
 		*/
-		void alert_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError);
+		void alert_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/** @brief called when we get DATA_B3_CONF from CAPI
 
@@ -505,33 +515,37 @@ class Connection
 		    @param message the received DATA_B3_CONF message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
 		    @throw CapiMsgError Thrown if the info InfoElement indicates an error
+		    @throw CapiError Thrown when an invalid message is received and by Connection::send_block()
 		    @throw CapiExternalError Thrown by Connection::send_block()
 		*/
-		void data_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError, CapiExternalError);
+		void data_b3_conf(_cmsg& message) throw (CapiError,CapiWrongState, CapiMsgError, CapiExternalError);
 
 		/** @brief called when we get FACILITY_CONF from CAPI with facility selector saying it's DTMF
 
 		    @param message the received FACILITY_CONF message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
+		    @throw CapiError Thrown when an invalid message is received
 		    @throw CapiMsgError Thrown if the info InfoElement indicates an error
 		*/
-		void facility_conf_DTMF(_cmsg& message) throw (CapiWrongState, CapiMsgError);
+		void facility_conf_DTMF(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/** @brief called when we get DISCONNECT_B3_CONF from CAPI
 
 		    @param message the received DISCONNECT_B3_CONF message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
 		    @throw CapiMsgError Thrown if the info InfoElement indicates an error
+		    @throw CapiError Thrown when an invalid message is received
 		*/
-		void disconnect_b3_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError);
+		void disconnect_b3_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/** @brief called when we get DISCONNECT_CONF from CAPI
 
 		    @param message the received DISCONNECT_CONF message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
 		    @throw CapiMsgError Thrown if the info InfoElement indicates an error
+		    @throw CapiError Thrown when an invalid message is received
 		*/
-		void disconnect_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError);
+		void disconnect_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsgError);
 
 		/********************************************************************************/
     		/*	                       internal methods					*/
@@ -561,9 +575,10 @@ class Connection
 
 		    @throw CapiWrongState Thrown when the the connection is not up completely (physical & logical)
  		    @throw CapiExternalError Thrown when no CallInterface is registered
+ 		    @throw CapiError Thrown on some internal errors
 		    @throw CapiMsgError Thrown by Capi::data_b3_req().
 		*/
-		void send_block() throw (CapiWrongState, CapiExternalError, CapiMsgError);
+		void send_block() throw (CapiError,CapiWrongState,CapiExternalError,CapiMsgError);
 
 		/** @brief called to build the B Configuration info elements out of given service
 
