@@ -297,10 +297,7 @@ make install</screen>
 				on <ulink url="http://www.capisuite.de"/>.</para>
 
 				<para>After you checked out the sources to some directory, please do
-
-				<screen
->autoreconf
-automake -a</screen>
+				<screen>make -f Makefile.cvs</screen>
 				</para>
 
 				<para>After that you can continue with the normal installation process as described in
