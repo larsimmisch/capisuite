@@ -1,4 +1,9 @@
 2003-12-31  Gernot Hillier  <gernot@hillier.de>
+	* scripts/incoming.py (voiceIncoming): include recorded msg length
+	  and host name were file is stored in sent mail (closes bug #6,
+	  thx to Achim Bohnet and Thomas Niesel for the feature requests)
+
+2003-12-31  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (sendMIMEMail): use 16 bit ouput when
 	  converting sound files from la to wav. Thx to Holger Krull for
 	  the fix (closes bug #51)!

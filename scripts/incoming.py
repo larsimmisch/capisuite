@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.14 $
+#    version              : $Revision: 1.15 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -160,7 +160,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 				  +(faxInfo[2] and "hiRes" or "loRes")+(faxInfo[3] and "color" or "")+"\nPages: " \
 				  +str(faxInfo[4])
 			mailText+="\n\nSee attached file.\nThe original file was saved to file://"+filename \
-			  +" on host \""+os.uname()[1]+"\""
+			  +" on host \""+os.uname()[1]+"\"."
 			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Fax received from "+call_from+" to "+call_to,
 			  faxFormat, mailText, filename)
 
@@ -212,7 +212,7 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"beep.la"),1)
 			length=cs_helpers.getOption(config,curr_user,"record_length","60")
 			silence_timeout=cs_helpers.getOption(config,curr_user,"record_silence_timeout","5")
-			capisuite.audio_receive(call,filename,int(length), int(silence_timeout),1)
+			msg_length=capisuite.audio_receive(call,filename,int(length), int(silence_timeout),1)
 
 		dtmf_list=capisuite.read_DTMF(call,0)
 		if (dtmf_list=="X"):
@@ -257,10 +257,13 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		if (mailaddress==""):
 			mailaddress=curr_user
 		if (action=="mailandsave"):
-			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Voice call received from "+call_from+" to "+call_to, "la",
-			  "You got a voice call from "+call_from+" to "+call_to+"\nDate: "+time.ctime()+"\n\n"
-			  +"See attached file.\nThe original file was saved to file://"+filename+"\n\n", filename)
-
+			mailText="You got a voice call from "+call_from+" to " \
+			  +call_to+"\nDate: "+time.ctime()+"\nLength: " \
+			  +str(msg_length)+" s\n\nSee attached file.\n" \
+			  +"The original file was saved to file://"+filename \
+			  +" on host \""+os.uname()[1]+"\".\n\n"
+			subject="Voice call received from "+call_from+" to "+call_to
+			cs_helpers.sendMIMEMail(fromaddress,mailaddress,subject,"la",mailText,filename)
 
 # @brief remote inquiry function (uses german wave snippets!)
 #
