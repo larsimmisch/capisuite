@@ -344,6 +344,7 @@ class Call:
         faxInfo = _capisuite.switch_to_faxG3(self._handle,
                                              faxStationID, faxHeadline)
         self.service = SERVICE_FAXG3
+        log('faxinfo: %s' % repr(faxInfo), 3)
         if not faxInfo:
             return FaxInfo()
         return FaxInfo(*faxInfo)
@@ -373,6 +374,7 @@ class Call:
         """
         faxInfo = _capisuite.connect_faxG3(self._handle, faxStationID,
                                            faxHeadline, delay)
+        log('faxinfo: %s' % repr(faxInfo), 3)
         if not faxInfo:
             return FaxInfo()
         return FaxInfo(*faxInfo)
@@ -394,7 +396,11 @@ class Call:
 
         faxfilename: file to send
         """
-        _capisuite.fax_send(self._handle, faxfilename)
+        faxInfo = _capisuite.fax_send(self._handle, faxfilename)
+        log('faxinfo: %s' % repr(faxInfo), 3)
+        if not faxInfo:
+            return FaxInfo()
+        return FaxInfo(*faxInfo)
 
 
     def fax_receive(self, filename):
@@ -413,7 +419,11 @@ class Call:
 
         filename: where to save the received fax.
         """
-        _capisuite.fax_receive(self._handle, filename)
+        faxInfo = _capisuite.fax_receive(self._handle, filename)
+        log('faxinfo: %s' % repr(faxInfo), 3)
+        if not faxInfo:
+            return FaxInfo()
+        return FaxInfo(*faxInfo)
 
 
 class FaxInfo:

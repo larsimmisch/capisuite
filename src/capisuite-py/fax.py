@@ -231,6 +231,8 @@ def sendfax(config, user, capi, faxfile,
             outgoing_num, dialstring, stationID=None, headline=None):
     """
     Send a fax out via the capi.
+
+    Returns a tuple ((result, resultB3), faxinfo)
     """
     import capisuite.core as core
 
@@ -252,8 +254,8 @@ def sendfax(config, user, capi, faxfile,
         core.log('result from capi.call_faxG3: %s' % result, 2)
         if result:
             # an errror occured
-            return result, 0
-        call.fax_send(faxfile)
-        return call.disconnect()
+            return (result, 0), None
+        faxinfo = call.fax_send(faxfile)
+        return call.disconnect(), faxinfo
     except core.CallGoneError:
-        return call.disconnect()
+        return call.disconnect(), None

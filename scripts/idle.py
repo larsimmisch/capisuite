@@ -115,19 +115,23 @@ def idle(capi):
 
                 core.log("job %s from %s to %s initiated" %
                          (jobnum, user, sendinfo['dialstring']), 1)
-                result, resultB3 = capisuite.fax.sendfax(config, user, capi,
-                                                         fax_file, **sendinfo)
+                result, faxinfo = capisuite.fax.sendfax(config, user, capi,
+                                                        fax_file, **sendinfo)
+                result, resultB3 = result
                 core.log("job %s: result was 0x%x, 0x%x" % \
                          (jobnum, result, resultB3), 1)
                 sendinfo['result'] = result
                 sendinfo['resultB3'] = resultB3
                 sendinfo['hostname'] = os.uname()[1]
+                if faxinfo:
+                    sendinfo.update(faxinfo.as_dict())
                 
                 # todo: use symbolic names for these results to be more
                 # meaningfull
                 send_ok = resultB3 == 0 \
                           and result in (0, 0x3400, 0x3480, 0x3490, 0x349f)
                 tries = control.getint("tries") +1
+                control.set('tries', tries)
                 if send_ok:
                     core.log("job %s: finished successfully" % jobnum, 1)
                     control = capisuite.fax.moveJob(controlfile, doneQ, user)
@@ -152,7 +156,6 @@ def idle(capi):
                              (jobnum, next_delay), 2)
                     starttime = time.time() + next_delay
                     control.set('starttime', time.ctime(starttime))
-                    control.set('tries', tries)
                     control.write(controlfile)
             finally:
                 _releaseLock(lock)
