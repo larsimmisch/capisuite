@@ -161,7 +161,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 				  "on host \"%s\"." % (mailText,faxInfo[0], \
 				  faxInfo[1],(faxInfo[2] and "hiRes" or "loRes"), \
 				  (faxInfo[3] and "color" or ""),faxInfo[4], \
-				  fileName,os.uname()[1])
+				  filename,os.uname()[1])
 			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Fax received from %s to %s" % (call_from,call_to),
 			  faxFormat, mailText, filename)
 

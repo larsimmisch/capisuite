@@ -3,6 +3,7 @@
 	  a short prefix, too; use short prefix for Python traceback (fixes bug
 	  #63, reported anonymously)
 	* src/application/pythonscript.cpp: Likewise.
+	* scripts/incoming.py: Fix typo.
 
 2004-03-09  Hartmut Goebel  <h.goebel@crazy-compilers.com>
 	* src/application/idlescript.cpp: Reduced delay until
