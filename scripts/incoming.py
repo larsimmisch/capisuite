@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.12 $
+#    version              : $Revision: 1.13 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 			mailText+=str(faxInfo)
 			if (faxInfo!=None and len(faxInfo)>=5):
 				mailText+="Station ID: "+faxInfo[0]+"\nTransmission Details: bit rate "+str(faxInfo[1]) \
-				  +(faxInfo[2] and "loRes" or "hiRes")+(faxInfo[3] and "color" or "")+"\nPages: " \
+				  +(faxInfo[2] and "hiRes" or "loRes")+(faxInfo[3] and "color" or "")+"\nPages: " \
 				  +str(faxInfo[4])
 			mailText+="\n\nSee attached file.\nThe original file was saved to file://"+filename \
 			  +" on host \""+os.uname()[1]+"\""
@@ -419,6 +419,10 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.13  2003/12/01 20:53:05  gernot
+# - confused "hiRes" and "loRes". Thx to Ingo Göppert <Ingo.Goeppert@gmx.de>
+#   for the report!
+#
 # Revision 1.12  2003/10/03 13:42:09  gernot
 # - added new options "fax_email_from" and "voice_email_from"
 #
