@@ -1,0 +1,7 @@
+# Makefile for bootstrapping the CVS version
+# 
+# Thx to Achim Bohnet <ach@mpe.mpg.de>
+
+bootstrap:
+	autoreconf
+	automake -a
