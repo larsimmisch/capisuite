@@ -252,7 +252,7 @@ def sendfax(config, user, capi, faxfile,
         core.log('result from capi.call_faxG3: %s' % result, 2)
         if result:
             # an errror occured
-            return 0, result  # todo: maybe use another physical reason?
+            return result, 0
         call.fax_send(faxfile)
         return call.disconnect()
     except core.CallGoneError:
