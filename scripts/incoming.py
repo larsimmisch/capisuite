@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.7 $
+#    version              : $Revision: 1.8 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -105,6 +105,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config):
 		capisuite.error("user "+curr_user+" is not a valid system user. Disconnecting",call)
 		capisuite.reject(call,0x34A9)
 		return
+	filename="" # assure the variable is defined...
 	try:
 		stationID=cs_helpers.getOption(config,curr_user,"fax_stationID")
 		if (stationID==None):
@@ -406,6 +407,10 @@ def newAnnouncement(call,userdir,curr_user,config):
 # History:
 #
 # $Log: incoming.py,v $
+# Revision 1.8  2003/06/16 10:21:05  gernot
+# - define filename in any case (thx to Axel Schneck for reporting and
+#   analyzing...)
+#
 # Revision 1.7  2003/05/25 13:38:30  gernot
 # - support reception of color fax documents
 #
