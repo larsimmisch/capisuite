@@ -227,7 +227,8 @@ def Get_sfftobmp_Version(context):
 
 # A Shortcut
 is_dist = ('dist' in COMMAND_LINE_TARGETS or
-           'distcheck' in COMMAND_LINE_TARGETS)
+           'distcheck' in COMMAND_LINE_TARGETS or
+           'rpms' in COMMAND_LINE_TARGETS)
 
 ###---####---###---####---###---####---###---####---###---####---###---###
 
