@@ -29,6 +29,7 @@ from capisuite.fileutils import _releaseLock, _getLock, LockTakenError
 
 def idle(capi):
 
+    capi = capisuite.core.Capi(capi)
     config = capisuite.config.readGlobalConfig()
     try:
         spool = config.get('GLOBAL', "spool_dir")
@@ -59,6 +60,7 @@ def idle(capi):
         fromaddress = config.getUser(user, "fax_email_from", user)
 
         for jobnum, controlfile in capisuite.fax.getQueueFiles(config, user):
+            core.log("checking job %s %s" % (jobnum, controlfile), 3)
             assert controlfile == os.path.abspath(controlfile)
             try:
                 # lock the job so that it isn't deleted while sending
@@ -75,17 +77,23 @@ def idle(capi):
                 # both the job control file and the fax file must have
                 # the users uid
                 uid = pwd.getpwnam(user).pw_uid
-                if os.stat(controlfile).st_uid != uid or \
-                   os.stat(fax_file).st_uid != uid:
-                    core.error("job %s seems to be manipulated (wrong uid)! "
-                               "Ignoring..." % controlfile)
-                    _releaseLock(lock)
+                try:
+                    if os.stat(controlfile).st_uid != uid or \
+                       os.stat(fax_file).st_uid != uid:
+                        core.error("job %s seems to be manipulated "
+                                   "(wrong uid)! Ignoring..." % controlfile)
+                        #_releaseLock(lock)
+                        continue
+                except OSError, e:
+                    core.error("job %s seems to be manipulated! "
+                               "%s Ignoring..." % (controlfile, e))
+                    #_releaseLock(lock)
                     continue
 
                 # todo: describe what is tested here
                 # perhaps it was cancelled?
                 if not os.access(controlfile, os.W_OK):
-                    _releaseLock(lock)
+                    #_releaseLock(lock)
                     continue
 
                 # set DST value to -1 (unknown), as strptime sets it wrong
@@ -93,7 +101,7 @@ def idle(capi):
                 starttime = time.strptime(control.get("starttime"))[:-1]+(-1, )
                 starttime = time.mktime(starttime)
                 if starttime > time.time():
-                    _releaseLock(lock)
+                    #_releaseLock(lock)
                     continue
 
                 sendinfo = {
@@ -109,10 +117,11 @@ def idle(capi):
                          (jobnum, user, sendinfo['dialstring']), 1)
                 result, resultB3 = capisuite.fax.sendfax(config, user, capi,
                                                          fax_file, **sendinfo)
-                core.log("job %s: result was %x, %x" % \
+                core.log("job %s: result was 0x%x, 0x%x" % \
                          (jobnum, result, resultB3), 1)
                 sendinfo['result'] = result
                 sendinfo['resultB3'] = resultB3
+                sendinfo['hostname'] = os.uname()[1]
                 
                 # todo: use symbolic names for these results to be more
                 # meaningfull
@@ -123,7 +132,6 @@ def idle(capi):
                     core.log("job %s: finished successfully" % jobnum, 1)
                     control = capisuite.fax.moveJob(controlfile, doneQ, user)
                     sendinfo.update(control.items())
-                    sendinfo['hostname'] = os.uname()[1]
                     cs_helpers.sendSimpleMail(
                         fromaddress, mailaddress,
                         config.get('MailFaxSent', 'subject') % sendinfo,

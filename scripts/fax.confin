@@ -1,3 +1,4 @@
+# -*- sh -*-
 # $Id: fax.confin,v 1.10 2004/02/20 14:12:20 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
@@ -131,7 +132,7 @@ text =
   Pages: %(numPages)i
 
   See attached file.
-  The original file was saved to file://%(filename)s on host "%(hostname)s".
+  The original file was saved to file:%(filename)s on host "%(hostname)s".
 
 #########
 # defined for fax send: addressee, dialstring, subject, filename, tries,
@@ -144,10 +145,10 @@ text =
   
   Subject: %(subject)s
   Filename: %(filename)s
-  Number of tries: %(tries)i
+  Number of tries: %(tries)s
   Last result: 0x%(result)x/0x%(resultB3)x
   
-  It was moved to file://%(filename)s on host %(hostname)s.
+  It was moved to file:%(filename)s on host %(hostname)s.
 
 
 [MailFaxFailed]
@@ -157,10 +158,10 @@ text =
   
   Subject: %(subject)s
   Filename: %(filename)s
-  Number of tries: %(tries)i
+  Number of tries: %(tries)s
   Last result: 0x%(result)x/0x%(resultB3)x
   
-  It was moved to file://%(filename)s on host %(hostname)s.
+  It was moved to file:%(filename)s on host %(hostname)s.
 
 
 ###############################################################################

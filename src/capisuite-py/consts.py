@@ -40,5 +40,5 @@ reject causes:
   7 = incompatible destination
   8 = destination out of order
   0x34A9 = temporary failure
+  0x3492 = no connection???
 """
-                                                            

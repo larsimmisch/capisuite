@@ -124,7 +124,7 @@ def moveJob(controlfile, newdir, user=None):
     os.rename(filename,    fname)
     # update controlfile
     control.set('filename', fname)
-    control.write(open(cname, 'w'))
+    control.write(cname)
 
     return control
 
@@ -246,12 +246,13 @@ def sendfax(config, user, capi, faxfile,
         headline = config.getUser(user, "fax_headline")
 
     try:
-        call = core.call_faxG3(
-            capi, controller, outgoing_num,
-            dialstring, timeout, stationID, headline)
-        if call:
+        call, result = capi.call_faxG3(controller, outgoing_num,
+                                       dialstring, timeout,
+                                       stationID, headline)
+        core.log('result from capi.call_faxG3: %s' % result, 2)
+        if result:
             # an errror occured
-            return call
+            return 0, result  # todo: maybe use another physical reason?
         call.fax_send(faxfile)
         return call.disconnect()
     except core.CallGoneError:

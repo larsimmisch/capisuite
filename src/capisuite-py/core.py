@@ -65,12 +65,12 @@ class Capi:
         On success returns a call object; on failure returns an
         error_code.
         """
-        call, result = _capisuite.call_voice(self.handle, controller,
+        call, result = _capisuite.call_voice(self._handle, controller,
                                        call_from, call_to,
                                        timeout, clir)
         if result:
-            return result
-        return Call(call, SERVICE_VOICE, call_from, call_to)
+            return None, result
+        return Call(call, SERVICE_VOICE, call_from, call_to), None
 
 
     def call_faxG3(self, controller, call_from, call_to,
@@ -99,12 +99,12 @@ class Capi:
         On success returns a call object; on failure returns an
         error_code.
         """
-        call, result = _capisuite.call_faxG3(self.handle, controller,
-                                       call_from, call_to,
-                                       timeout, stationID, headline)
+        call, result = _capisuite.call_faxG3(self._handle, controller,
+                                             call_from, call_to,
+                                             timeout, stationID, headline)
         if result:
-            return result
-        return Call(call, SERVICE_FAXG3, call_from, call_to)
+            return None, result
+        return Call(call, SERVICE_FAXG3, call_from, call_to), None
 
 
 class Call:
@@ -391,7 +391,7 @@ class Call:
 
         faxfilename: file to send
         """
-        capisuite.fax_send(self._handle, faxfilename)
+        _capisuite.fax_send(self._handle, faxfilename)
 
 
     def fax_receive(self, filename):

@@ -16,8 +16,9 @@ the Free Software Foundation; either version 2 of the License, or
 """
 
 import fcntl, os, re, errno
-
 from types import IntType
+
+import capisuite.core as core
 
 class UnknownUserError(KeyError): pass
 class LockTakenError(Exception): pass
@@ -46,6 +47,7 @@ def _getLock(lockname_=None, forfile=None, blocking=0):
             raise LockTakenError
         else:
             raise
+    core.log("lock taken %s" % lockname_, 3)
     return (lockname_, lockfile)
 
 
@@ -59,6 +61,7 @@ def _releaseLock((lockname, lockfile)):
         # in deleting than we; this doesn't harm, so ignore it
         if (err.errno!=2): 
             raise
+    core.log("lock released %s" % lockname, 3)
 
 
 def _setProtection(user, mode=0600, *files):

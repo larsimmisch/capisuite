@@ -44,7 +44,7 @@ except:
 
 # capisuite stuff
 import consts
-#from exceptions import NoGlobalSectionError
+from exceptions import NoGlobalSectionError, NoOptionError
 
 #--- spezialied ConfigParser --#
 
@@ -152,12 +152,14 @@ class JobDescription:
     def read(self, filenames): return self._config.read(filenames)
     def readfp(self, fp, filename=None): return self._config.read(fp, filename)
 
-    def write(self, fp):
+    def writefp(self, fp):
         print >> fp, "# Description file for", self.get('filename')
         print >> fp, "# This if for internal use of CapiSuite."
         print >> fp, "# Only change if you know what you do!"
         self._config.write(fp)
         
+    def write(self, filename):
+        self.writefp(open(filename, 'w'))
 
     def x__getattr__(self, attr):
         return getattr(self._config, attr)
@@ -216,7 +218,5 @@ def createDescriptionFor(filename, **description):
     control.set('filename', filename)
     for key, value in description.items():
         control.set(key, value)
-    descr = open(descrname, 'w')
-    control.write(descr)
-    descr.close()
+    control.write(descrname)
     return descrname
