@@ -38,14 +38,14 @@ changelog_header = """
 # for reference.
 """
 cl = env.Command(
-    '#/Changelog', None,
+    '#/ChangeLog', None,
     [Echo('$TARGET', changelog_header),
      Echo('$TARGET', ''),
      # need to set locale to set correct character encoding
-     'LANG=de_DE svn log -v -r HEAD:385 >> $TARGET'
+     'LANG=de_DE svn log -v -r "HEAD:{2005-01-01}" >> $TARGET'
      ])
 env.ExtraDist(cl)
-if is_dist or 'Changelog' in COMMAND_LINE_TARGETS:
+if is_dist or 'ChangeLog' in COMMAND_LINE_TARGETS:
     env.AlwaysBuild(cl)
 
 
@@ -56,12 +56,12 @@ changelog_complete_header = """
 # changes which lead to this release, please refer to the ChangeLog
 """
 cl = env.Command(
-    '#/Changelog.complete', None,
+    '#/ChangeLog.complete', None,
     [Echo('$TARGET', changelog_complete_header),
      Echo('$TARGET', ''),
      # need to set locale to set correct character encoding
      'LANG=de_DE svn log -v $SVNREPOSITORY >> $TARGET'
      ])
 env.ExtraDist(cl)
-if is_dist or 'Changelog.complete' in COMMAND_LINE_TARGETS:
+if is_dist or 'ChangeLog.complete' in COMMAND_LINE_TARGETS:
     env.AlwaysBuild(cl)
