@@ -21,14 +21,19 @@ Doxyfile: Doxyfile.in
 	    -e 's,@srcdir\@,$(srcdir),g' $< >$@
 
 install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(docdir)/reference ; \
-	(cd reference; for i in *; do \
-		$(INSTALL_DATA) $$i $(DESTDIR)$(docdir)/reference/$$i  ;\
-        done;) 
-	$(mkinstalldirs) $(DESTDIR)$(docdir)/manual ; \
-	(cd manual; for i in *; do \
-                $(INSTALL_DATA) $$i $(DESTDIR)$(docdir)/manual/$$i  ;\
-        done;)
+	if test -d reference; then \
+		$(mkinstalldirs) $(DESTDIR)$(docdir)/reference ; \
+		(cd reference; for i in *; do \
+			$(INSTALL_DATA) $$i $(DESTDIR)$(docdir)/reference/$$i  ;\
+		done;) ;\
+	fi
+
+	if test -d manual; then \
+		$(mkinstalldirs) $(DESTDIR)$(docdir)/manual ; \
+		(cd manual; for i in *; do \
+			$(INSTALL_DATA) $$i $(DESTDIR)$(docdir)/manual/$$i  ;\
+		done;) ;\
+	fi
 
 uninstall-local:
 	rm -rf $(DESTDIR)$(docdir) 
