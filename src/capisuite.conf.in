@@ -1,4 +1,4 @@
-# $Id: capisuite.conf.in,v 1.1 2003/02/19 08:19:52 gernot Exp $
+# $Id: capisuite.conf.in,v 1.2 2003/03/20 09:15:53 gernot Exp $
 #
 # This is the global configuration file for CapiSuite
 #
@@ -42,7 +42,7 @@ idle_script="@pkglibdir@/idle.py"
 # The length of the intervals in seconds is given here. If you
 # don't want to use an idle script, set it to "0"
 #
-idle_script_interval="60"
+idle_script_interval="30"
 
 # log_file
 #
