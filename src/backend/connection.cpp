@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.11 $
+    $Revision: 1.12 $
 */
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 #include <../../config.h>
 #include <fstream>
 #include <pthread.h>
+#include <errno.h> // for errno
 #include <iconv.h> // for iconv(), iconv_open(), iconv_close()
 #include "capi.h"
 #include "callinterface.h"
@@ -1081,6 +1082,9 @@ Connection::convertToCP437(string &text)
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.12  2003/07/20 19:08:19  gernot
+- added missing include of errno.h
+
 Revision 1.11  2003/06/29 06:18:13  gernot
 - don't take a wrong character too serious...
 
