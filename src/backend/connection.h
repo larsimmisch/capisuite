@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -391,13 +391,22 @@ class Connection
 
 		/** @brief called when we get FACILITY_IND from CAPI with facility selector saying it's DTMF
 
-		    This method will save the received DTMF to received_dtmf, send a response to Capi and call 
+		    This method will save the received DTMF to received_dtmf, send a response to Capi and call
 		    CallInterface::gotDTMF().
 
 		    @param message the received FACILITY_IND message
 		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong ncci_state)
 		*/
 		void facility_ind_DTMF(_cmsg& message) throw (CapiWrongState);
+
+		/** @brief called when we get INFO_IND from CAPI with Info number saying it's ALERTING
+
+		    This method will call CallInterface::alerting().
+
+		    @param message the received INFO_IND message
+		    @throw CapiWrongState Thrown when the message is received unexpected (i.e. in a wrong plci_state)
+		*/
+		void info_ind_alerting(_cmsg& message) throw (CapiWrongState);
 
 		/** @brief called when we get DISCONNECT_B3_IND from CAPI
 
@@ -627,6 +636,10 @@ class Connection
 /*  History
 
 $Log: connection.h,v $
+Revision 1.3  2003/04/17 10:39:42  gernot
+- support ALERTING notification (to know when it's ringing on the other side)
+- cosmetical fixes in capi.cpp
+
 Revision 1.2  2003/04/04 09:17:59  gernot
 - buildBconfiguration() now checks the abilities of the given controller
   and throws an error if it doesn't support the service

@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -317,6 +317,14 @@ class Capi {
  		*/
   		void facility_resp (_cword messageNumber, _cdword address, _cword facilitySelector, _cstruct facilityResponseParameter=NULL) throw (CapiMsgError);
 
+  		/** @brief send INFO_RESP to CAPI
+
+      	    	    @param messageNumber number of the referred INDICATION message
+       	    	    @param address Nr. of connection (Controller/PLCI)
+		    @throw CapiMsgError Thrown when CAPI_PUT_MESSAGE returned an error.
+ 		*/
+  		void info_resp (_cword messageNumber, _cdword address) throw (CapiMsgError);
+
   		/** @brief send DISCONNECT_RESP to CAPI
 
       	    	    @param messageNumber number of the referred INDICATION message
@@ -433,6 +441,10 @@ class Capi {
 /*  History
 
 $Log: capi.h,v $
+Revision 1.5  2003/04/17 10:39:42  gernot
+- support ALERTING notification (to know when it's ringing on the other side)
+- cosmetical fixes in capi.cpp
+
 Revision 1.4  2003/04/08 07:50:48  gernot
 - fix wrong exception order which gcc-2.95 doesn't like...
 

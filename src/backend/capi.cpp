@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -32,7 +32,7 @@ void* capi_exec_handler(void* arg)
 }
 
 Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)
-:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0),usedCIPMask(0),numControllers(0)
+:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0x10),usedCIPMask(0),numControllers(0)
 {
 	if (debug_level >= 2)
 		debug << prefix() << "Capi object created" << endl;
@@ -44,6 +44,9 @@ Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned
 	unsigned info = capi20_register(maxLogicalConnection, maxBDataBlocks, maxBDataLen, &applId);
 	if (applId == 0 || info!=0)
         	throw (CapiMsgError(info,"Error while registering application: "+describeParamInfo(info),"Capi::Capi()"));
+
+	for (int i=1;i<=numControllers;i++)
+		listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
 
 	int erg=pthread_create(&thread_handle, NULL, capi_exec_handler, this); // create a normal thread
 	if (erg!=0)
@@ -352,7 +355,7 @@ Capi::data_b3_resp (_cword messageNumber, _cdword ncci, _cword dataHandle) throw
 		throw(CapiMsgError(info,"Error while DATA_B3_RESP: "+Capi::describeParamInfo(info),"Capi::data_b3_resp()"));
 }
 
-void 
+void
 Capi::facility_resp (_cword messageNumber, _cdword address, _cword facilitySelector, _cstruct facilityResponseParameter) throw (CapiMsgError)
 {
 	if (debug_level >= 2)
@@ -368,8 +371,22 @@ Capi::facility_resp (_cword messageNumber, _cdword address, _cword facilitySelec
 		throw(CapiMsgError(info,"Error while FACILITY_RESP: "+Capi::describeParamInfo(info),"Capi::facility_resp()"));
 }
 
+void
+Capi::info_resp (_cword messageNumber, _cdword address) throw (CapiMsgError)
+{
+	if (debug_level >= 2)
+		debug << prefix() << ">INFO_RESP ApplId 0x" << hex << applId << ", MsgNr 0x" << messageNumber << ", Address 0x" << address << endl;
 
-void 
+	_cmsg new_message;
+	unsigned info=INFO_RESP(&new_message, applId, messageNumber, address);
+	if (debug_level >= 2)
+		debug << prefix() << "info: " << info << endl;
+
+	if (info != 0)
+		throw(CapiMsgError(info,"Error while INFO_RESP: "+Capi::describeParamInfo(info),"Capi::info_resp()"));
+}
+
+void
 Capi::disconnect_b3_resp (_cword messageNumber, _cdword ncci) throw (CapiMsgError)
 {
 	if (debug_level >= 2)
@@ -618,10 +635,30 @@ Capi::readMessage (void) throw (CapiMsgError, CapiError, CapiWrongState, CapiExt
 							}
 						break;
 
+						case CAPI_INFO:
+							switch (INFO_IND_INFONUMBER(&nachricht)) {
+								case 0x8001: { // ALERTING
+									_cdword plci=INFO_IND_PLCI(&nachricht);
+									if (debug_level >= 2)
+										debug << prefix() << "<INFO_IND: PLCI 0x" << hex << plci << ", InfoNumber ALERTING " << endl;
+		     							if (connections.count(plci)==0)
+										throw(CapiError("PLCI unknown in INFO_IND","Capi::readMessage()"));
+									else
+										connections[plci]->info_ind_alerting(nachricht);
+								} break;
+
+								default:
+									if (debug_level >= 2)
+										debug << prefix() << "<INFO_IND: Controller/PLCI 0x" << hex << INFO_IND_PLCI(&nachricht) << ", InfoNumber " << INFO_IND_INFONUMBER(&nachricht) << " (ignoring)" << endl;
+									info_resp(nachricht.Messagenumber,INFO_IND_PLCI(&nachricht));
+								break;
+							}
+						break;
+
 
 						default:
 							stringstream err;
-							err << "Indication 0x" << hex << nachricht.Command << " not handled" << ends;
+							err << "Indication 0x" << hex << static_cast<int>(nachricht.Command) << " not handled" << ends;
                   					throw (CapiError(err.str(),"Capi::readMessage()"));
 						break;
       					}
@@ -657,8 +694,11 @@ Capi::run()
 					debug << prefix() << "**" << endl;
 			}
 		}
+		catch (CapiMsgError e) {
+		 	error << prefix() << "ERROR: Connection " << this << ": Error in readMessage(), message: " << e << endl;
+		}
 		catch (CapiError e) {
-		 	error << prefix() << "ERROR: Connection " << this << ": Error in readMessage(), messagge: " << e << endl;
+		 	error << prefix() << "ERROR: Connection " << this << ": Error in readMessage(), message: " << e << endl;
 		}
 	}
 }
@@ -911,6 +951,10 @@ Capi::getInfo(bool verbose)
 /* History
 
 $Log: capi.cpp,v $
+Revision 1.5  2003/04/17 10:39:42  gernot
+- support ALERTING notification (to know when it's ringing on the other side)
+- cosmetical fixes in capi.cpp
+
 Revision 1.4  2003/04/04 09:14:02  gernot
 - setListenTelephony() and setListenFaxG3 now check if the given controller
   supports this service and throw an error otherwise

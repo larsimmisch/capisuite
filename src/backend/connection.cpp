@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.6 $
+    $Revision: 1.7 $
 */
 
 /***************************************************************************
@@ -524,6 +524,27 @@ Connection::facility_ind_DTMF(_cmsg &message) throw (CapiWrongState)
 }
 
 void
+Connection::info_ind_alerting(_cmsg &message) throw (CapiWrongState)
+{
+	if (plci_state!=P01 && plci_state!=P1)
+		throw CapiWrongState("INFO_IND for ALERTING received in wrong state","Connection::info_ind_alerting()");
+
+	if (plci!=INFO_IND_PLCI(&message))
+		throw CapiError("INFO_IND received with wrong PLCI","Connection::info_ind_alerting()");
+
+	try {
+		capi->info_resp(message.Messagenumber,plci);
+	}
+	catch (CapiMsgError e) {
+		error << prefix() << "WARNING: Can't send info_resp. Message was: " << e << endl;
+	}
+
+	if (call_if)
+		call_if->alerting();
+}
+
+
+void
 Connection::connect_conf(_cmsg& message) throw (CapiWrongState, CapiMsgError)
 {
 	if (plci_state!=P01)
@@ -979,6 +1000,10 @@ Connection::buildBconfiguration(_cdword controller, service_t service, string fa
 /*  History
 
 $Log: connection.cpp,v $
+Revision 1.7  2003/04/17 10:39:42  gernot
+- support ALERTING notification (to know when it's ringing on the other side)
+- cosmetical fixes in capi.cpp
+
 Revision 1.6  2003/04/17 10:36:29  gernot
 - fix another typo which could probably lead to errors in sending own number...
 

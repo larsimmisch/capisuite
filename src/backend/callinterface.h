@@ -2,7 +2,7 @@
     @brief Contains CallInterface - Interface class for all signals specific to a certain call.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -38,6 +38,10 @@ using namespace std;
 class CallInterface
 {
 	public:
+		/** @brief Called if the other party is alerted, i.e. it has started "ringing" there
+		*/
+		virtual void alerting (void) = 0;
+
 		/** @brief Called if the connection is completely established (physical + logical)
 		*/
   		virtual void callConnected (void) = 0;
@@ -85,8 +89,12 @@ class CallInterface
 /* History
 
 $Log: callinterface.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/04/17 10:39:42  gernot
+- support ALERTING notification (to know when it's ringing on the other side)
+- cosmetical fixes in capi.cpp
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.9  2002/12/06 12:55:04  ghillie
 - updated docs
