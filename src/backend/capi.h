@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -100,7 +100,7 @@ class Capi {
 		    @throw CapiMsgError Thrown by listen_req, see there for details
 		    @throw CapiError Thrown if the given controller can't handle fax group 3
 		*/
-  		void setListenFaxG3 (_cdword Controller=0) throw (CapiError,CapiMsgError);
+  		void setListenFaxG3 (_cdword Controller=0) throw (CapiMsgError,CapiError);
 
   		/** @brief Tell capi that we want to _additionally_ listen to Telephony calls
 
@@ -115,7 +115,7 @@ class Capi {
 		    @throw CapiMsgError Thrown by listen_req, see there for details
 		    @throw CapiError Thrown if the given controller can't handle fax group 3
 		*/
-  		void setListenTelephony (_cdword Controller=0) throw (CapiError,CapiMsgError);
+  		void setListenTelephony (_cdword Controller=0) throw (CapiMsgError,CapiError);
 
 		/** @brief Static Returns some info about the installed Controllers
 
@@ -433,6 +433,9 @@ class Capi {
 /*  History
 
 $Log: capi.h,v $
+Revision 1.4  2003/04/08 07:50:48  gernot
+- fix wrong exception order which gcc-2.95 doesn't like...
+
 Revision 1.3  2003/04/04 09:14:02  gernot
 - setListenTelephony() and setListenFaxG3 now check if the given controller
   supports this service and throw an error otherwise
