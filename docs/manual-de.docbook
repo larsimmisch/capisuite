@@ -794,7 +794,7 @@ make install</screen>
 						<term><option>dial_prefix=""</option></term>
 						<listitem>
 							<para>Wenn hier etwas angegeben ist, wird es als Präfix vor jede Nummer 
-                                eingefügt, die an <command>capisuitefax</command> übergeben wird. 
+                                eingefügt, die an <command>capisuitefax</command> übergeben wird.
                                 Dies ist z.B. sehr nützlich, wenn Ihr ISDN-Adapter an einer Telefonanlage
 								hängt, die eine "0" für externe Anrufe benötigt. Es kann aber auch später 
 								für ein einzelnes Fax-Dokument deaktiviert werden, sodass diese Einstellung
@@ -1206,15 +1206,22 @@ make install</screen>
 
 			<para><command>capisuitefax</command> kennt die folgenden Optionen:</para>
 
-			<screen>capisuitefax [-q] [-n] [-u username] -d dialstring file1 [file2...]</screen>
+			<screen>capisuitefax [-q] [-n] [-u user] [-A addr] [-S subj] -d number file1 [file2...]</screen>
 			<screen>capisuitefax [-q] -a id</screen>
-			<screen>capisuitefax [-h] [-l]</screen>
+			<screen>capisuitefax -l</screen>
+			<screen>capisuitefax -h</screen>
 			<variablelist>
 				<varlistentry>
 					<term><option>-a id</option></term>
 					<listitem><para>Bricht den Auftrag mit der angegebenen ID ab. Um die ID eines
                     Auftrags zu ermittelen, können Sie die Option <option>-l</option>
 					verwenden.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>-A adr</option></term>
+					<listitem><para>Der Adressat des Faxes. Diese Angabe dient (zur Zeit) nur
+					zur leichteren Identifikation eines Jobs. Sie wird in der versandten Status-Mail
+					später zitiert.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-d dialstring</option></term>
@@ -1232,13 +1239,19 @@ make install</screen>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-n</option></term>
-					<listitem><para>Nicht den konfigurierten Präfix für diesen Auftrag verwenden. 
+					<listitem><para>Nicht den konfigurierten Präfix für diesen Auftrag verwenden.
                     Dies ist nützlich für interne Aufträge.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-q</option></term>
 					<listitem><para>Sei still, gib keine informativen Meldungen aus!
                     </para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>-S subj</option></term>
+					<listitem><para>Der Betreff des Faxes. Diese Angabe dient (zur Zeit) nur
+					zur leichteren Identifikation eines Jobs. Sie wird in der versandten Status-Mail
+					später zitiert.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-u user</option></term>
@@ -1250,7 +1263,7 @@ make install</screen>
 				</varlistentry>
 				<varlistentry>
 					<term><option>file1 [file2...]</option></term>
-					<listitem><para>Eine oder mehrere PostScript-Dateien, die an diesen Empfänger 
+					<listitem><para>Eine oder mehrere PostScript-Dateien, die an diesen Empfänger
 						verschickt werden sollen. Mehrere PostScript-Dateien erzeugen mehrere separate
 						Fax-Aufträge).
 					</para></listitem>

@@ -1051,9 +1051,10 @@ make install</screen>
 
 			<para>The following options are recognized by <command>capisuitefax</command>:</para>
 
-			<screen>capisuitefax [-q] [-n] [-u username] -d dialstring file1 [file2...]</screen>
+			<screen>capisuitefax [-q] [-n] [-u user] [-A adr] [-S subj] -d number file1 [file2 ...]</screen>
 			<screen>capisuitefax [-q] -a id</screen>
-			<screen>capisuitefax [-h] [-l]</screen>
+			<screen>capisuitefax -h</screen>
+			<screen>capisuitefax -l</screen>
 			<variablelist>
 				<varlistentry>
 					<term><option>-a id</option></term>
@@ -1061,7 +1062,12 @@ make install</screen>
 					option.</para></listitem>
 				</varlistentry>
 				<varlistentry>
-					<term><option>-d dialstring</option></term>
+					<term><option>-A adr</option></term>
+					<listitem><para>The addressee of the fax. This option is (currently) only
+					for informational purposes and will be quoted in the sent status mail.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>-d number</option></term>
 					<listitem><para>The number which should be called (destination of the fax)</para></listitem>
 				</varlistentry>
 				<varlistentry>
@@ -1079,6 +1085,11 @@ make install</screen>
 				<varlistentry>
 					<term><option>-q</option></term>
 					<listitem><para>Be quiet, don't output informational messages</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>-S subj</option></term>
+					<listitem><para>A subject for the fax. This option is (currently) only
+					for informational purposes and will be quoted in the sent status mail.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-u user</option></term>

@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.7 $
+#    version              : $Revision: 1.8 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -87,6 +87,8 @@ def idle(capi):
 
 			tries=control.getint("GLOBAL","tries")
 			dialstring=control.get("GLOBAL","dialstring")
+			addressee=cs_helpers.getOption(control,"GLOBAL","addressee","")
+			subject=cs_helpers.getOption(control,"GLOBAL","subject","")
 			mailaddress=cs_helpers.getOption(config,user,"fax_email","")
 			if (mailaddress==""):
 				mailaddress=user
@@ -99,11 +101,14 @@ def idle(capi):
 			if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):
 				movejob(job_fax,sendq,done,user)
 				capisuite.log("job "+job_fax+": finished successfully",1)
-				cs_helpers.sendSimpleMail(user,mailaddress,"Fax to "+dialstring+" sent successfully.",
-				"Your fax job to "+dialstring+" was sent successfully.\n\n"
-				+"Filename: "+job_fax+"\nNeeded tries: "+str(tries)
-				+("\nLast result: 0x%x/0x%x" % (result,resultB3))
-				+"\n\nIt was moved to file://"+done+user+"-"+job_fax)
+				mailtext="Your fax job to "+addressee+" ("+dialstring+") was sent successfully.\n\n" \
+				  +"Subject: "+subject+"\nFilename: "+job_fax \
+				  +"\nNeeded tries: "+str(tries) \
+				  +("\nLast result: 0x%x/0x%x" % (result,resultB3)) \
+				  +"\n\nIt was moved to file://"+done+user+"-"+job_fax
+				cs_helpers.sendSimpleMail(user,mailaddress,
+				  "Fax to "+addressee+" ("+dialstring+") sent successfully.",
+				  mailtext)
 			else:
 				max_tries=int(cs_helpers.getOption(config,"","send_tries","10"))
 				delays=cs_helpers.getOption(config,"","send_delays","60,60,60,300,300,3600,3600,18000,36000").split(",")
@@ -115,16 +120,19 @@ def idle(capi):
 				starttime=time.time()+next_delay
 				capisuite.log("job "+job_fax+": delayed for "+str(next_delay)+" seconds",2)
 				cs_helpers.writeDescription(sendq+job_fax,"dialstring=\""+dialstring+"\"\n"
-				+"starttime=\""+time.ctime(starttime)+"\"\ntries=\""+str(tries)+"\"\n"
-				+"user=\""+user+"\"")
+				  +"starttime=\""+time.ctime(starttime)+"\"\ntries=\""+str(tries)+"\"\n"
+				  +"user=\""+user+"\"\naddressee=\""+addressee+"\"\nsubject=\""+subject+"\"\n")
 				if (tries>=max_tries):
 					movejob(job_fax,sendq,failed,user)
 					capisuite.log("job "+job_fax+": failed finally",1)
-					cs_helpers.sendSimpleMail(user,mailaddress,"Fax to "+dialstring+" FAILED.",
-					"I'm sorry, but your fax job to "+dialstring+" failed finally.\n\n"
-					+"Filename: "+job_fax+"\nTries: "+str(tries)
-					+"\nLast result: 0x%x/0x%x" % (result,resultB3)
-					+"\n\nIt was moved to file://"+failed+user+"-"+job_fax)
+					mailtext="I'm sorry, but your fax job to "+addressee+" ("+dialstring \
+					  +") failed finally.\n\nSubject: "+subject \
+					  +"\nFilename: "+job_fax+"\nTries: "+str(tries) \
+					  +"\nLast result: 0x%x/0x%x" % (result,resultB3) \
+					  +"\n\nIt was moved to file://"+failed+user+"-"+job_fax
+					cs_helpers.sendSimpleMail(user,mailaddress,
+					  "Fax to "+addressee+" ("+dialstring+") FAILED.",
+					  mailtext)
 
 			fcntl.lockf(lockfile,fcntl.LOCK_UN)
 			lockfile.close()
@@ -132,11 +140,11 @@ def idle(capi):
 
 def sendfax(capi,job,outgoing_nr,dialstring,user,config):
 	try:
-		controller=int(cs_helpers.getOption(config,"","send_controller","1"))      
+		controller=int(cs_helpers.getOption(config,"","send_controller","1"))
 		timeout=int(cs_helpers.getOption(config,user,"outgoing_timeout","60"))
 		stationID=cs_helpers.getOption(config,user,"fax_stationID")
 		if (stationID==None):
-			capisuite.error("Warning: fax_stationID for user "+user+" not set")                         
+			capisuite.error("Warning: fax_stationID for user "+user+" not set")
 			stationID=""
  		headline=cs_helpers.getOption(config,user,"fax_headline","")
 		(call,result)=capisuite.call_faxG3(capi,controller,outgoing_nr,dialstring,timeout,stationID,headline)
@@ -155,6 +163,10 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.8  2003/06/26 11:53:17  gernot
+# - fax jobs can be given an addressee and a subject now (resolves #18, reported
+#   by Achim Bohnet)
+#
 # Revision 1.7  2003/06/19 14:58:43  gernot
 # - fax_numbers is now really optional (bug #23)
 # - tries counter was wrongly reported (bug #29)

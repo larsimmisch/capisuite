@@ -17,6 +17,9 @@
 	* scripts: number of needed tries reported after sending a fax was  
 	  wrong (bug #29, thx to Eckhard Rüggeberg)
 
+	* scripts: fax jobs can be given a literal addressee and a subject
+	  for informational purposes now (bug #18 reported by Achim Bohnet) 
+
 0.4.2 (CVS tag CAPISUITE_042):
 ==============================
 	* manual now available as PDF  
