@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.17 $
+    $Revision: 1.18 $
 */
 
 /***************************************************************************
@@ -14,7 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <../../config.h>
+#include "../../config.h"
 #include <fstream>
 #include <pthread.h>
 #include <errno.h> // for errno

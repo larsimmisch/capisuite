@@ -2,7 +2,7 @@
     @brief Contains PythonScript - Read a python script and call a function in own thread
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -17,7 +17,7 @@
 #ifndef PYTHONSCRIPT_H
 #define PYTHONSCRIPT_H
 
-#include <../../config.h>
+#include "../../config.h"
 #include <Python.h>
 #ifdef HAVE_OSTREAM
   #include <ostream>
