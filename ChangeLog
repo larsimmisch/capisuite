@@ -1,3 +1,7 @@
+2004-03-09  Hartmut Goebel  <h.goebel@crazy-compilers.com>
+	* src/application/idlescript.cpp: Reduced delay until
+	  idlescript.py is called the first time after startup.
+
 2004-03-07  Gernot Hillier  <gernot@hillier.de>
 	* docs/manual.docbook: update links to new web site structure
 	* docs/manual-de.docbook: Likewise.

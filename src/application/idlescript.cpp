@@ -63,7 +63,7 @@ IdleScript::~IdleScript()
 void
 IdleScript::run() throw()
 {
-	int count=0,errorcount=0;
+	int count=idlescript_interval*9,errorcount=0;
 	timespec delay_time;
 	delay_time.tv_sec=0; delay_time.tv_nsec=100000000;  // 100 msec
 	while (1) {
