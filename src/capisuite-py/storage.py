@@ -36,27 +36,27 @@ class ItemStorage:
         self.config=config
         pass
 
-    def itemDone(self,name):
+    def setDone(self,id):
         """
         Move an item from the sendq to the done state/dir.
         """
         pass
 
-    def itemFailed(self,name):
+    def setFailed(self,id):
         """
         Move an item from the sendq to the finally failed state/dir.
         """
         pass
 
-    def getItem(self,queue,name):
+    def getItem(self,queue,id):
         """
-        Get entry 'name' from the queue 'queue'. Must return a file name in
-        the local filesystem because the core can only handle files. It should
+        Get entry with name 'id' from the queue 'queue'. Must return a file name
+	in the local filesystem because the core can only handle files. It should
         also check file permissions if necessary.
         """
         pass
     
-    def addItem(self,queue,name,description):
+    def addItem(self,queue,id,description):
         """
         Add an item to a certain queue with the given description.
         """

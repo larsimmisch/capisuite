@@ -33,14 +33,14 @@ class UserDelivery:
         self.config=config
         pass
 
-    def sendNotice(self,recipient,information):
+    def sendNotice(self,recipient,subject,information):
         """
         Send the 'information' text (multi-line string) to the given
         'recipient'.
         """
         pass
 
-    def sendFile(self,recipient,information,file,format):
+    def sendFile(self,recipient,subject,information,file,format):
         """
         Send the 'file' together with the given 'information' (multi-line
         string) to 'recipient'. If necessary, the file is converted to the
