@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.6 $
+#    version              : $Revision: 1.7 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,8 +33,13 @@ def idle(capi):
 
 	for user in userlist: # search in all user-specified sendq's
 		userdata=pwd.getpwnam(user)
-		if (not config.has_option(user,"fax_numbers")):
-			continue
+		outgoing_nr=cs_helpers.getOption(config,user,"outgoing_MSN","")
+                if (outgoing_nr==""):
+			incoming_nrs=config.get(user,"fax_numbers","")
+			if (incoming_nrs==""):
+				continue
+			else:
+				outgoing_nr=(incoming_nrs.split(','))[0] 
 
 		udir=cs_helpers.getOption(config,"","fax_user_dir")
 		if (udir==None):
@@ -87,8 +92,8 @@ def idle(capi):
 				mailaddress=user
 
 			capisuite.log("job "+job_fax+" from "+user+" to "+dialstring+" initiated",1)
-			result,resultB3 = sendfax(capi,sendq+job_fax,dialstring,user,config)
-
+			result,resultB3 = sendfax(capi,sendq+job_fax,outgoing_nr,dialstring,user,config)
+			tries+=1
 			capisuite.log("job "+job_fax+": result was %x,%x" % (result,resultB3),1)
 
 			if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):
@@ -103,13 +108,12 @@ def idle(capi):
 				max_tries=int(cs_helpers.getOption(config,"","send_tries","10"))
 				delays=cs_helpers.getOption(config,"","send_delays","60,60,60,300,300,3600,3600,18000,36000").split(",")
 				delays=map(int,delays)
-				if (tries<len(delays)):
-					next_delay=delays[tries]
+				if ((tries-1)<len(delays)):
+					next_delay=delays[tries-1]
 				else:
 					next_delay=delays[-1]
 				starttime=time.time()+next_delay
 				capisuite.log("job "+job_fax+": delayed for "+str(next_delay)+" seconds",2)
-				tries+=1
 				cs_helpers.writeDescription(sendq+job_fax,"dialstring=\""+dialstring+"\"\n"
 				+"starttime=\""+time.ctime(starttime)+"\"\ntries=\""+str(tries)+"\"\n"
 				+"user=\""+user+"\"")
@@ -126,12 +130,8 @@ def idle(capi):
 			lockfile.close()
 			os.unlink(sendq+job[:-3]+"lock")
 
-def sendfax(capi,job,dialstring,user,config):
+def sendfax(capi,job,outgoing_nr,dialstring,user,config):
 	try:
-		outgoing_nr=cs_helpers.getOption(config,user,"outgoing_MSN","")
-		if (outgoing_nr==""):
-			outgoing_nr=(config.get(user,'fax_numbers').split(','))[0] # it's guaranteed that we have fax_numbers defined
-		
 		controller=int(cs_helpers.getOption(config,"","send_controller","1"))      
 		timeout=int(cs_helpers.getOption(config,user,"outgoing_timeout","60"))
 		stationID=cs_helpers.getOption(config,user,"fax_stationID")
@@ -155,6 +155,10 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.7  2003/06/19 14:58:43  gernot
+# - fax_numbers is now really optional (bug #23)
+# - tries counter was wrongly reported (bug #29)
+#
 # Revision 1.6  2003/04/06 11:07:40  gernot
 # - fix for 1-hour-delayed sending of fax (DST problem)
 #
