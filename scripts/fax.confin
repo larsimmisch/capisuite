@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.6 2003/04/10 21:29:51 gernot Exp $
+# $Id: fax.confin,v 1.7 2003/04/25 10:34:28 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -75,15 +75,14 @@ send_controller="1"
 # outgoing_MSN (optional, default is empty)
 #
 # The MSN (number) to use for outgoing calls. You can also leave this empty.
-# Then default MSN of your ISDN interface will be used automatically. Will
-# be overwritten by the first entry of fax_numbers if set.
+# Then the first number of fax_numbers will be used as outgoing MSN.
 outgoing_MSN=""
 
 # outgoing_timeout (optional, defaults to 60)
 #
 # This value decides how long to wait for a successful connection if the other
 # party doesn't answer the call at once.
-outgoing_timeout="60"   
+outgoing_timeout="60"
 
 # dial_prefix (optional, defaults to empty)
 #
@@ -104,7 +103,7 @@ fax_stationID="+49 000 0000"
 #
 # This is the default for the fax headline. There's no definitive length
 # constraint given by the CAPI specification, so it may be dependent on
-# the driver you use. Just use a reasonable short string 
+# the driver you use. Just use a reasonable short string
 #
 fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 
@@ -124,7 +123,8 @@ fax_headline="Sent by CapiSuite (www.CapiSuite.de)"
 # fax_numbers="<num1>,<num2>, ..." (optional, if not set this user can't receive)
 #   A list containing the numbers on which this user wants to receive incoming
 #   fax calls. The values are separated by commas. The first number is also
-#   used as our own number for outgoing calls. This overrides outgoing_MSN.
+#   used as our own number for outgoing calls if outgoing_MSN isn't provided.
+#   Otherwise, outgoing_MSN will have precedence.
 #   You can also use the special entry "*" which stands for accepting ALL
 #   incoming calls as fax (use with care!). The special character "-" stands for
 #   "no destination number available". That is necessary for example for the austrian
