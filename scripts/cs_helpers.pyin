@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.2 $
+#    version              : $Revision: 1.3 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -172,7 +172,8 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 			os.unlink(basename+"tif")
 			ps2pdf.tochild.close() # send EOF, so that it starts to convert
 			# create attachment with pdf stream
-			filepart = email.MIMEBase.MIMEBase("application","pdf")
+			filepart = email.MIMEBase.MIMEBase("application","pdf",name=os.path.basename(basename)+"pdf")
+			filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"pdf")
 			filepart.add_payload(ps2pdf.fromchild.read())
 			ps2pdf.fromchild.close()
 			ret=ps2pdf.wait()
@@ -185,7 +186,8 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 			ret = os.spawnlp(os.P_WAIT,"sox","sox",attachment,basename+"wav")
 			if (ret or not os.access(basename+"wav",os.R_OK)):
 				raise "conv-error","Error while calling sox. Not installed?"
-			filepart = email.MIMEAudio.MIMEAudio(open(basename+"wav").read(),"x-wav")
+			filepart = email.MIMEAudio.MIMEAudio(open(basename+"wav").read(),"x-wav",email.Encoders.encode_base64,name=os.path.basename(basename)+"wav")
+                        filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"wav")
 			os.unlink(basename+"wav")
 		textpart = email.MIMEText.MIMEText(text)
 		msg.attach(textpart)
@@ -307,6 +309,9 @@ def sayNumber(call,number,curr_user,config):
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
 # $Log: cs_helpers.pyin,v $
+# Revision 1.3  2003/04/07 15:58:37  gernot
+# - attachments to sent e-mails now get a valid filename
+#
 # Revision 1.2  2003/03/20 09:12:42  gernot
 # - error checking for reading of configuration improved, many options got
 #   optional, others produce senseful error messages now if not found,
