@@ -52,7 +52,7 @@ capisuitefax \- sending faxes with the CapiSuite default scripts
 The default scripts for CapiSuite come with the tool \fBcapisuitefax\fR for sending faxes\&.
 
 .PP
-It will be called with some parameters telling it which file to send (it currently only supports PostScript files) and to which number\&. It will then enqueue the job converted to the right format into the send queue from which it's collected by another CapiSuite script and sent to the destination\&. If the sending was completed successfully or failed finally after trying for some time, the according user will get an email telling him/her what has happened\&.
+It will be called with some parameters telling it which file to send (it currently only supports PostScript and PDF files) and to which number\&. It will then enqueue the job converted to the right format into the send queue from which it's collected by another CapiSuite script and sent to the destination\&. If the sending was completed successfully or failed finally after trying for some time, the according user will get an email telling him/her what has happened\&.
 
 .SH "OPTIONS"
 
@@ -94,7 +94,7 @@ Send fax as another user\&. Only allowed if \fBcapisuitefax\fR is called as user
 
 .TP
 \fBfile\&.\&.\&.\fR
-One or more PostScript files to send to this destination\&. More than one PostScript file will produce several separate fax jobs\&.
+One or more PostScript/PDF files to send to this destination\&. More than one PostScript file will produce several separate fax jobs\&.
 
 .SH "SEE ALSO"
 

@@ -180,7 +180,7 @@
 
 				<para>Es gibt auch einige Distributionen (z.B. aktuelle Versionen von SuSE), bei denen
 				die Capi4Linux-Treiber von AVM bereits dabei sind - Sie müssen sie dann nur noch
-				aktivieren (unter SuSE mit YaST2). Wenn Sie eine aktive Karte von AVM besitzen
+				aktivieren (unter SUSE mit YaST2). Wenn Sie eine aktive Karte von AVM besitzen
 				(z.B. die B1, C2 oder C4), dann haben Sie bereits alles benötigte installiert.
 				SuSE bietet in neueren Versionen auch ein kleines grafisches Frontend zum Einrichten
 				von &cs; als Bestandteil von YaST an.</para>
@@ -330,11 +330,9 @@
 			<sect3 id="install_bin"><title>Installation der Binär-Pakete</title>
 
 				<para>Wenn Sie Binär-Pakete für Ihre Distribution und Plattform bekommen können, empfehle
-				ich, diese zu verwenden. Ich erstelle regelmäßig RPM-Pakete für SuSE Linux, da dies die
-                Distribution ist, die ich verwende (und nebenbei ist es die Firma, die mich dafür bezahlt
-				und dabei unterstützt hat, &cs; als Diplomarbeit zu schreiben ;-) ). Es gibt auch
-				Pakete für andere Distributionen, die von anderen Usern gepflegt werden - Links
-				dazu finden sich ebenfalls im Download-Bereich meiner Homepage.</para>
+				ich, diese zu verwenden. Diverse Pakete für diverse Distributionen sind bereits verfügbar,
+				die von verschiedenen Personen gepflegt werden. CapiSuite ist mittlerweile auch 
+				Bestandteil von aktuellen Versionen von SUSE, Debian und Gentoo.</para>
 
 				<para>Wenn es Ihnen gelungen ist, &cs; auf einem nicht erwähnten System zu installieren,
 				lassen Sie es mich bitte wissen und ich werde die Beschreibung hier aufnehmen. Wenn Sie
@@ -345,7 +343,7 @@
 				<para>Jetzt sollte alles soweit sein, dass wir loslegen können. Lesen Sie also weiter im
 				<xref linkend="csglobal"/>.</para>
 
-				<sect4 id="install_bin_rpm"><title>Installation der RPM-Pakete (SuSE, RedHat)</title>
+				<sect4 id="install_bin_rpm"><title>Installation der RPM-Pakete (SUSE, Mandrake, Fedora &amp; Co.)</title>
 					<para>Um die &cs;-RPM-Pakete zu installieren, können Sie entweder Ihr
                     Lieblings-Setup-Tool verwenden - entweder von Ihrem Distributor oder aus der Community -
                     oder Sie können es manuell (als root) machen:</para>
@@ -353,36 +351,12 @@
 					<screen>rpm -Uvh capisuite-version.rpm</screen>
 				</sect4>
 
-				<sect4 id="install_bin_debian"><title>Installation der Debian-Pakete</title>
-
-					<para>Um die von Achim Bohnet gebauten Debian-(Woody)-Pakete zu installieren,
-					 fügen Sie bitte folgende Zeilen zu Ihrer Datei
-					 <filename>/etc/apt/sources.list</filename> hinzu:</para>
-
-					<screen>deb     http://www.mpe.mpg.de/~ach/debian ./
-deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
-
-					<para>Geben Sie jetzt folgende Befehle ein:</para>
-
-					<screen>apt-get update            # fügt die Paketliste aus dem Repository hinzu
-apt-get install capisuite # installiert und löst Abhängigkeiten auf</screen>
-
-					<para>Wenn ein neues Paket verfügbar ist, holt <command>apt-get update</command> 
-                    die neue Paketliste und</para>
-
-        				<screen>apt-get -u (dist-)upgrade</screen>
-
-					<para>aktualisiert alle alten Pakete (und neue zusätzliche Paketabhängigkeiten in der 
-                    dist-upgrade Version).</para>
-
-					<para>Ein ähnliches Vorgehen gilt für die Menü-/GUI-Installationsprogramme 
-                    <command>dselect</command>, <command>aptitude</command>, 
-                    <command>kpackage</command>, ...</para>
-
-					<para>Für weitere Details schauen Sie bitte in die Debian-Dokumentation, z.B. das
-                    APT-HowTo unter
-					<ulink url="http://www.debian.org/doc/manuals/apt-howto/index.en.html"/> (englisch) oder
-					<ulink url="http://www.de.debian.org/doc/user-manuals#apt-howto"/> (deutsch).</para>
+				<sect4 id="install_bin_other"><title>Installation anderer Pakete</title>
+					<para>Informationen über die Installation anderer Paketformate
+					sollten Sie in der Dokumentation Ihrer Distribution, in den Paketen
+					selbst oder auf den Homepages der jeweiligen Maintainer finden. 
+					Wenn Sie eine Installationsbeschreibung für bestimmte Pakete 
+					für diese Anleitung verfassen wollen, wenden Sie sich bitte an mich.</para>
 				</sect4>
 			</sect3>
 
@@ -409,23 +383,23 @@ make install</screen>
 
 				ausgegeben wird. Hier finden Sie Optionen zum ändern des Installationsverzeichnisses.</para>
 			</sect3>
-			<sect3 id="install_CVS"><title>Installation aus dem CVS</title>
+			<sect3 id="install_CVS"><title>Installation aus dem Subversion-Repository</title>
 				<para>Wenn Sie ganz innovativ sein und immer die neuesten Features testen wollen,
-				können Sie sich die aktuellen Sorucen von &cs; aus dem CVS-Repository holen.</para>
+				können Sie sich die aktuellen Sorucen von &cs; aus dem Repository holen.</para>
 
 				<para><emphasis>Dies wird nicht empfohlen, wenn Sie nicht die neuesten Features testen
-				oder bei der Entwicklung von &cs; helfen wollen! Die Sourcen im CVS können OK sein,
+				oder bei der Entwicklung von &cs; helfen wollen! Die Entwicklungsversionen können OK sein,
 				können aber auch nicht funktionieren, Ihren Rechner in die Luft jagen oder noch nicht
 				mal kompilieren. Es ist Ihr eigenes Risiko!</emphasis></para>
 
 				<para>Sie müssen die üblichen Entwicklungs-Tools installiert und lauffähig haben, wie z.B.
-				autoconf, autoheader, automake, GNU make, gcc/g++ und alle Komponenten, die oben beschrieben
-				wurden (insbesondere die Entwickler-Pakete von Python).</para>
+				GNU make, gcc/g++ und alle Komponenten, die oben beschrieben wurden (insbesondere die 
+				Entwickler-Pakete von Python).</para>
 
 				<para>Wenn Sie die Dokumentation aus den Sourcen erstellen wollen, brauchen Sie zusätzlich
-				Doxygen.</para>
+				Doxygen und funktionsfähige Docbook/XML-Tools.</para>
 
-				<para>Eine Anleitung, wo Sie das CVS-Repository finden und wie Sie die Sourcen auschecken
+				<para>Eine Anleitung, wo Sie das Repository finden und wie Sie die Sourcen auschecken
 				können, finden Sie im Download-Bereich auf der &cs;-Homepage unter
 				<ulink url="http://www.capisuite.de"/>.</para>
 
@@ -435,8 +409,52 @@ make install</screen>
 
 				<para>Jetzt können Sie ganz normal mit der Installation weiter machen wie im
 				<xref linkend="install_source"/> beschrieben.</para>
-
-
+			</sect3>
+			
+		</sect2>
+		<sect2 id="install_update"><title>Update von früheren Versionen</title>
+			<para>Dieser Abschnitt enthält einen Überblick über das Vorgehen,
+			wenn Sie bereits eine frühere Version von CapiSuite installiert 
+			haben.</para>
+			
+			<para>Generell sollte der übliche Updatemechanismus, passend zu Ihrer
+			Installationsart verwendet werden - zum Beispiel also der Update-Modus
+			Ihres Paketmanagementtools wenn Sie ein Binärpaket installiert haben.
+			Sollten Sie CapiSuite von den Sourcen gebaut haben, sollten Sie ihre 
+			alte Konfiguration vor dem Aufruf von <command>make install</command>
+			sichern. Im Prinzip entspricht das Vorgehen hier dem bei jedem anderen
+			Software-Paket, das Sie benutzen - daher möchten wir hier nicht weiter
+			darauf eingehen.</para>
+			
+			<para>Was hier hauptsächlich behandelt werden soll, sind die Änderungen
+			der Konfigurationsdateien und der Anforderungen an andere installierte Tools
+			zwischen verschiedenen CapiSuite-Versionen, so dass Sie Ihre Installation
+			schnell auf den aktuellen Stand bringen könnnen. Eine umfassendere 
+			Liste der neuen Features und wichtigen Änderungen finden Sie in der Datei
+			<filename>NEWS</filename>, die in den CapiSuite-Paketen enthalten ist.
+			Zusätzlich enthält das <filename>ChangeLog</filename> alle einzelnen 
+			Änderungen in den Source-Dateien im Detail, was aber wohl nur für
+			Entwickler interessant sein dürfte.</para>
+			
+			<sect3 id="install_update_0_4_5"><title>0.4.4 auf 0.4.5</title>
+				<para>Die <emphasis>Standardskripte</emphasis> verwenden
+				nun eine SMTP-Verbindung zu localhost, anstatt das 
+				<command>sendmail</command>-Kommando manuell aufzurufen, wie
+				es frühere Versionen taten. Dies wurde auf Grund von diversen
+				Stabilitätsproblemen mit dem alten Mechanismus geändert.
+				Das bedeutet, dass Sie nun einen laufenden SMTP-Dämon benötigen,
+				der Verbindungen auf localhost annimmt. Da dies in der 
+				Standardeinrichtung der meisten Distributionen der Fall ist, 
+				sollte das kein Problem sein.</para>
+				
+				<para>In <filename>answering_machine.conf</filename> und 
+				<filename>fax.conf</filename> stehen zwei neue Optionen zur
+				Verfügung: <option>fax_email_from</option> und 
+				<option>voice_email_from</option> erlauben die Festlegung
+				der von CapiSuite beim Senden von Mails an die User verwendeten 
+				Absenderadresse. Diese Einträge sind allerdings optional - 
+				sind sie nicht gesetzt, wird wie bisher der Username als
+				Absender angegeben.</para>
 			</sect3>
 		</sect2>
 	</sect1>
@@ -608,14 +626,14 @@ make install</screen>
 			in Ihre Start-Skripte einfügen. In LSB-konformen Linux-Distributionen finden Sie die
             Start-Skripte unter <filename>/etc/init.d</filename>. Für eine detaillierte Beschreibung,
 			wie dort ein Service hinzu gefügt wird, schauen Sie bitte in der Dokumentation Ihrer Distribution
-			nach. Ein Beispiel eines Start-Skripts für SuSE-Linux ist in der Source-Distribution enthalten 
+			nach. Ein Beispiel eines Start-Skripts für SUSE-Linux ist in der Source-Distribution enthalten 
             (see <filename>rc.capisuite</filename>). Dieses sollte (hoffentlich) auch mit anderen
 			LSB-komformen Distributionen funktionieren. Wenn Sie es anpassen müssen, würde ich mich über Ihr
 			Feedback freuen und würde hier gerne Anleitungen für andere Distributionen aufnehmen.</para>
 
 			<para>Wenn Sie die richtigen RPM-Pakete von &cs; verwenden, sollten die benötigten Skripte
 			bereits enthalten sein. Bitte verwenden Sie das Konfigurations-Tool Ihres Distributors, um sie
-			zu aktivieren. Wenn Sie das RPM verwenden, das mit SuSE-Linux geliefert wird, und Sie bei den
+			zu aktivieren. Wenn Sie das RPM verwenden, das mit SUSE-Linux geliefert wird, und Sie bei den
 			Standard-Skripten bleiben wollen, sollte alles "out of the box" funktionieren.
 			Sobald Sie die Standard-Skripte konfiguriert haben, rufen Sie einfach
 			<command>rccapisuite restart</command> auf.</para>
@@ -1421,7 +1439,7 @@ make install</screen>
 			zum Senden von Faxen.</para>
 
 			<para>Es wird mit einigen Parametern aufgerufen, um ihm
-			zu sagen, welche Datei (momentan werden nur PostScript-Dateien unterstützt)
+			zu sagen, welche Datei (momentan werden nur PostScript- und PDF-Dateien unterstützt)
 			an welche Nummer verschickt werden soll. Es fügt dann den in das richtige Format konvertierten
             Job in die Send-Queue ein, von wo aus er von einem anderen &cs;-Skript genommen und an den
             Empfänger verschickt wird. Wenn das Versenden erfolgreich beendet wurde oder nach mehreren
@@ -1483,8 +1501,8 @@ make install</screen>
 				</varlistentry>
 				<varlistentry>
 					<term><option>file...</option></term>
-					<listitem><para>Eine oder mehrere PostScript-Dateien, die an diesen Empfänger
-						verschickt werden sollen. Mehrere PostScript-Dateien erzeugen mehrere separate
+					<listitem><para>Eine oder mehrere PostScript/PDF-Dateien, die an diesen Empfänger
+						verschickt werden sollen. Mehrere Dateien erzeugen mehrere separate
 						Fax-Aufträge).
 					</para></listitem>
 				</varlistentry>
@@ -2919,7 +2937,7 @@ def idle(capi):<co id="idle_ex2_4"/>
     für ihre Hilfe danken:</para>
 	
 	<itemizedlist>
-		<listitem><para>Karsten Keil von der SuSE Linux AG (mein Betreuer der Arbeit) für seine
+		<listitem><para>Karsten Keil von der SUSE Linux AG (mein Betreuer der Arbeit) für seine 
         unschätzbare Unterstützung und Geduld beim Beantworten meiner vielen ISDN-Fragen, beim Testen
 		und für seine Vorschäge bzgl. der Architektur von &cs;</para></listitem>
 
@@ -2933,9 +2951,9 @@ def idle(capi):<co id="idle_ex2_4"/>
 		<listitem><para>meiner Freundin Claudia und ihrer Schwester Bethina für das Korrekturlesen
         meiner Arbeit</para></listitem>
 
-		<listitem><para>Peter Reinhart von SuSE für das Korrekturlesen meiner Arbeit</para></listitem>
+		<listitem><para>Peter Reinhart von SUSE für das Korrekturlesen meiner Arbeit</para></listitem>
 
-		<listitem><para>vielen Kollegen bei SuSE für ihre Hilfe bei technischen Problemen, insbesondere
+		<listitem><para>vielen Kollegen bei SUSE für ihre Hilfe bei technischen Problemen, insbesondere
         Andreas Jaeger, Andreas Schwab, Thorsten Kukuk und Andi Kleen</para></listitem>
 
 		<listitem><para>Achim Bohnet, weil er der erste aus der Community war, der versucht hat,

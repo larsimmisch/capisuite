@@ -1,3 +1,12 @@
+2004-11-28  Gernot Hillier  <gernot@hillier.de>
+	* docs/manual.docbook: update to new features of 0.4.5, mention the 
+	  mISDN project, mention other binary packages besides SUSE/Debian,
+	  kick out old Debian documentation, replace occurences of CVS with
+	  SVN, remove requirement of autotools for SVN build, mention
+	  Docbook/XML tools, include documentation for DDI, add update
+	  chapter
+	* docs/manual-de.docbook: Likewise.
+
 2004-11-26  Gernot Hillier  <gernot@hillier.de>
 	* docs/Makefile.am: add man-pages to distribution, hopefully finally
 	  avoid to have them created during normal build

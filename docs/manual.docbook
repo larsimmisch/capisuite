@@ -165,9 +165,9 @@
 				and drivers. Presumable there also never will be one because of the mISDN project
 				which will replace HiSax/ISDN4Linux soon.</para>
 
-				<para>There are some distributions (e.g. current versions of SuSE) which
+				<para>There are some distributions (e.g. current versions of SUSE) which
 				include the Capi4Linux drivers from AVM already - you'll only have to
-				activate them (use YaST2 in SuSE Linux). If you own an active card of AVM
+				activate them (use YaST2 in SUSE Linux). If you own an active card of AVM
 				(e.g. the B1, C2 or C4), then you'll have everything you need already installed.
 				SuSE also provides a small frontend to configure &cs; in YaST.</para>
 
@@ -292,17 +292,16 @@
 			when available for your distribution and platform.</para>
 
 			<para>You can download both binary packages and sources from the download section on
-			<ulink url="http://www.capisuite.de"/>. If you built up your own packages
-			for other distributions, please send me them and I'll copy them there...</para>
+			<ulink url="http://www.capisuite.de"/>. If you built packages for other
+			distributions not yet available, please send me your link and I'll happily include it
+			 there...</para>
 
 			<sect3 id="install_bin"><title>Installation from binary packages</title>
 
 				<para>If you can get binary packages for your distribution and platform,
-				I would advise to use them. I'm building RPM packages for SuSE Linux
-				regularly, as this is the distribution I use (and BTW the company which
-				paid and supported me to write &cs; as diploma thesis ;-) ). There are also
-				packages for other distributions available prepared by other users - please
-				see the download section for links to them.</para>
+				I would advise to use them. There are many binary packages of
+				CapiSuite available for different distributions maintained by different
+				people. It's also part of current versions of SUSE, Debian and Gentoo.</para>
 
 				<para>If you managed to install &cs; on a system not mentioned below,
 				please tell me and I'll include the instructions here. If you have created
@@ -312,7 +311,7 @@
 				<para>Now everything should be setup ready to run. So please read on in
 				<xref linkend="csglobal"/>.</para>
 
-				<sect4 id="install_bin_rpm"><title>Installation from RPM packages (SuSE, RedHat)</title>
+				<sect4 id="install_bin_rpm"><title>Installation from RPM packages (SUSE, Fedora, Mandrake &amp; Co.)</title>
 					<para>To install the &cs; RPM packages you can either use your favorite setup tool -
 					either provided by your distributor or the community - or you can do manually
 					(as root):</para>
@@ -320,32 +319,11 @@
 					<screen>rpm -Uvh capisuite-version.rpm</screen>
 				</sect4>
 
-				<sect4 id="install_bin_debian"><title>Installation from Debian packages</title>
-
-					<para>To install the Debian (woody) packages built by Achim Bohnet, please add
-					the following lines to your <filename>/etc/apt/sources.list</filename>:</para>
-
-					<screen>deb     http://www.mpe.mpg.de/~ach/debian ./
-deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
-
-					<para>Now, issue the following commands:</para>
-
-					<screen>apt-get update            # add package list from repository
-apt-get install capisuite # install and resolve dependencies</screen>
-
-					<para>When a new package is available, <command>apt-get update</command> grabs the new
-					package listing and</para>
-
-        				<screen>apt-get -u (dist-)upgrade</screen>
-
-					<para>updates all out-of-date packages (and new additional package dependencies in the dist-upgrade version).</para>
-
-					<para>Similar procedures are valid for the menu/gui pkg installers <command>dselect</command>,
-					<command>aptitude</command>, <command>kpackage</command>, ...</para>
-
-					<para>For further details, please have a look at the Debian documentation, for example the APT HowTo on
-					<ulink url="http://www.debian.org/doc/manuals/apt-howto/index.en.html"/> (english) or
-					<ulink url="http://www.de.debian.org/doc/user-manuals#apt-howto"/> (german).</para>
+				<sect4 id="install_bin_other"><title>Installation from other packages</title>
+					<para>Please refer to the documentation of your distribution and the 
+					information given in the packages or on the homepage of the
+					maintainers. If someone wants to write a section about these packages, 
+					please contact me.</para>
 				</sect4>
 			</sect3>
 
@@ -372,23 +350,22 @@ make install</screen>
 
 				for options to customize the installation directories.</para>
 			</sect3>
-			<sect3 id="install_CVS"><title>Installation from CVS</title>
+			<sect3 id="install_CVS"><title>Installation from Subversion</title>
 				<para>If you want to live on the bleeding edge and always test the newest features,
-				you may also checkout the current sources of &cs; from the CVS
-				repository.</para>
+				you may also checkout the current sources of &cs; from the repository.</para>
 
 				<para><emphasis>This is not recommended unless you want to test the newest features or
-				want to help in developing &cs;! The sources in CVS may not work, burn your computer
-				or may not even compile. Do this on your own risk!</emphasis></para>
+				want to help in developing &cs;! The development sources may do anything,
+				may not work or not even compile. Do this on your own risk!</emphasis></para>
 
 				<para>You'll need installed and working versions of the usual development tools like
-				autoconf, autoheader, automake, GNU make, gcc/g++ and also the components described
-				above (esp. development packages of Python).</para>
+				GNU make, gcc/g++ and also the components described above (esp. development packages 
+				of Python).</para>
 
 				<para>If you want to build the documentation out of the sources, you'll also need
-				Doxygen.</para>
+				Doxygen and correctly installed Docbook/XML tools.</para>
 
-				<para>For instructions on where to find the CVS repository and how to checkout
+				<para>For instructions on where to find the repository and how to checkout
 				the sources, please refer to the download section on the &cs; homepage
 				on <ulink url="http://www.capisuite.de"/>.</para>
 
@@ -398,8 +375,46 @@ make install</screen>
 
 				<para>Now, you can continue with the normal installation process as described in
 				<xref linkend="install_source"/>.</para>
-
-
+			</sect3>
+		</sect2>
+		<sect2 id="install_update"><title>Updating from previous versions</title>
+			<para>This section will give you an overview of how to update
+			CapiSuite from earlier versions.</para>
+			
+			<para>In general, the usual update mechanism depending on your
+			installation method should be used - that means the update features
+			of your package managers if you installed from binary packages. 
+			If you installed from sources, you should save your configuration
+			files before doing <command>make install</command>. As this is
+			done like for any other software package you use, we won't go into
+			further detail about that here.</para>
+			
+			<para>What this section should mainly cover are the changes in the 
+			configuration files and requirements to other tools between different 
+			versions, so that you'll be able to update your configuration quickly. 
+			For a more complete list of new features and important changes, please 
+			refer to the file <filename>NEWS</filename> distributed with the 
+			CapiSuite packages. In addition, all single changes in the different 
+			source code files can be found in the <filename>ChangeLog</filename>, 
+			which, however, will only be interesting for developers, I suppose.</para>
+			
+			<sect3 id="install_update_0_4_5"><title>From 0.4.4 to 0.4.5</title>
+				<para>The <emphasis>default scripts</emphasis> now use
+				an SMTP connection to localhost instead of calling the 
+				<command>sendmail</command> command manually as previous
+				versions did. This was changed because the other mechanism
+				had many stability problems in the past. This means, you now
+				have to have a running SMTP daemon listening on your localhost.
+				As this is the default configuration of most distributions, 
+				this should be no problem.</para>
+				
+				<para>In <filename>answering_machine.conf</filename> and 
+				<filename>fax.conf</filename>, two new options have been added:
+				<option>fax_email_from</option> and <option>voice_email_from</option>
+				allow the configuration of the from address CapiSuite uses
+				when sending mails to the user. These new entries are optional - 
+				if you don't set them, the user name is used as from address
+				as in previous versions.</para>
 			</sect3>
 		</sect2>
 	</sect1>
@@ -540,7 +555,6 @@ make install</screen>
 					want to use some shorter ones (e.g. the "-0" extension for you switchboard), then
 					you can list these shorter extensions here, separated by commas.</para></listitem>
 				</varlistentry>
-
 			</variablelist>
 			</refsect1>
 			<refsect1 condition="man"><title>See Also</title>
@@ -562,14 +576,14 @@ make install</screen>
 			in your startup scripts. In LSB conforming Linux distributions, you'll
 			find the startup scripts in <filename>/etc/init.d</filename>. For detailled documentation
 			how to add a service there please refer to the documentation of your
-			distribution. There's an example startup script written for SuSE Linux included
+			distribution. There's an example startup script written for SUSE Linux included
 			in the source distribution (see <filename>rc.capisuite</filename>) which should (hopefully)
 			work with other LSB compliant distributions, too. If you need to modify it, I'll
 			welcome your feedback and happily add instructions for other distributions here.</para>
 
 			<para>If you use the right RPM packages of &cs;, the necessary scripts
 			should already be included. For activating them, please use your
-			distributors config tool. If you use the RPM distributed with SuSE Linux
+			distributors config tool. If you use the RPM distributed with SUSE Linux
 			and want to stay with the default scripts, everything should work "out of the box".
 			As soon as you have configured the default scripts, simply run
 			<command>rccapisuite restart</command>.</para>
@@ -1252,7 +1266,7 @@ make install</screen>
 			for sending faxes.</para>
 
 			<para>It will be called with some parameters
-			telling it which file to send (it currently only supports PostScript files)
+			telling it which file to send (it currently only supports PostScript and PDF files)
 			and to which number. It will then enqueue the job converted to the
 			right format into the send queue
 			from which it's collected by another &cs; script and sent to the
@@ -1310,7 +1324,7 @@ make install</screen>
 				</varlistentry>
 				<varlistentry>
 					<term><option>file...</option></term>
-					<listitem><para>One or more PostScript files to send to this destination. More than
+					<listitem><para>One or more PostScript/PDF files to send to this destination. More than
 					one PostScript file will produce several separate fax jobs.</para></listitem>
 				</varlistentry>
 			</variablelist>
@@ -2611,7 +2625,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 	<para>&cs; started as diploma thesis in winter semester 2002/03. I want to thank the following people for helping me with it:</para>
 
 	<itemizedlist>
-		<listitem><para>Karsten Keil from SuSE Linux AG (my tutor for the thesis) for his invaluable support and patience when answering me
+		<listitem><para>Karsten Keil from SUSE Linux AG (my tutor for the thesis) for his invaluable support and patience when answering me
 		many ISDN questions, doing tests and for his suggestions concerning the architecture of &cs;</para></listitem>
 
 		<listitem><para>Prof. Dr. Wolfgang J&uuml;rgensen from the UAS Landshut (my tutor from the UAS) for his help in ISDN
@@ -2621,9 +2635,9 @@ def idle(capi):<co id="idle_ex2_4"/>
 
 		<listitem><para>my girl friend Claudia and her sister Bethina for proof-reading my thesis</para></listitem>
 
-		<listitem><para>Peter Reinhart from SuSE for proof-reading my thesis</para></listitem>
+		<listitem><para>Peter Reinhart from SUSE for proof-reading my thesis</para></listitem>
 
-		<listitem><para>many colleagues from SuSE for helping me with technical problems, esp. Andreas Jaeger, Andreas Schwab, Thorsten Kukuk and Andi Kleen</para></listitem>
+		<listitem><para>many colleagues from SUSE for helping me with technical problems, esp. Andreas Jaeger, Andreas Schwab, Thorsten Kukuk and Andi Kleen</para></listitem>
 
 		<listitem><para>Achim Bohnet for being the first one from the community trying to compile the CVS version and making me quite some suggestions
 		how to improve it</para></listitem>
