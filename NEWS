@@ -6,8 +6,6 @@
 	  an error when sending the mail. Simply don't set these parameters
 	  any more if you don't need them!
 
-	* core: use shorter, more readable format for Python traceback logging
-
 	* documentation: 5 man pages are now also created: capisuite(8),
 	  capisuite.conf(5), fax.conf(5), answering_machine.conf(5),
 	  capisuitefax(1) (fixes bug #13, thx to Achim Bohnet for reporting)
@@ -82,6 +80,8 @@
 	  building CapiSuite. If you change your sfftobmp version later,  
 	  you'll have to adapt the function sfftotif at the beginning of
 	  cs_helpers.py manually.
+	
+	* core: use shorter, more readable format for Python traceback logging
 
 0.4.4
 =====
