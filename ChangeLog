@@ -1,0 +1,14 @@
+2003-10-05  Gernot Hillier  <gernot@hillier.de>
+
+	* started ChangeLog
+
+	* docs/manual.docbook (require_soft): add note that glibc-locales are 
+	  necessary if AVM drivers are used for faxing. They're needed for 
+	  iconv() in Connection::convertToCP437. Thx to M. Koelbl for reporting
+	  the problem.
+	* docs/manual-de.docbook (require_soft): add same note 
+
+	* suse/capisuite-8.0.spec: add dependancy to glibc-locale
+	* suse/capisuite-8.1.spec: add dependancy to glibc-locale
+	* suse/capisuite-8.2.spec: add dependancy to glibc-locale
+	  
