@@ -37,7 +37,7 @@
 		</para>
 	</sect1>
 	<sect1 id="whatis"><title>Was zum Teufel ist "&cs;"?!</title>
-		<para>&cs; versucht, es dem Anwender zu ermöglichen, seine eigenen ISDN-Applikationen zu 
+		<para>&cs; versucht, es dem Anwender zu ermöglichen, seine eigenen ISDN-Applikationen zu
         programmieren, ohne sich mit all den blöden Programmierdetails wie Callback-Funktionen, 
         Datenpuffer, Protokolleinstellungen usw. herumschlagen zu müssen.</para>
 
@@ -1662,9 +1662,9 @@ is not present, current time as returned by localtime() is used.
 				WAV-Dateien wenn nötig konvertieren, aber dies resultiert normalerweise in einer schlechteren
                 Qualität.</para>
 
-				<para>Sie können WAV in inverstiert A-Law konvertieren, indem Sie aufrufen:</para>
+				<para>Sie können WAV in inverstiert A-Law konvertieren, indem Sie aufrufen (danke an Carsten Heesch für den Tipp):</para>
 
-				<screen><command>sox myfile.wav -r 8000 -c 1 -b outfile.la</command></screen>
+				<screen><command>sox myfile.wav -r 8000 -c 1 -b outfile.la resample -ql</command></screen>
 
 			</sect3>
 			<sect3 id="playing_alaw"><title>Abspielen von A-Law-Dateien</title>
