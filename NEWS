@@ -17,6 +17,10 @@
 	* scripts: added new options "fax_email_from" and "voice_email_from" to
 	  answering_machine.conf and fax.conf (thx to Achim Bohnet for submitting
 	  a patch with this feature!; closes bug #46) 
+	
+	* started a detailed ChangeLog file from 2003-10-05. From now on, NEWS
+	  should only contain important changes from a user's point of view, while
+	  ChangeLog records all changes in detail.
 
 0.4.3 (CVS tag CAPISUITE_043):
 ==============================
