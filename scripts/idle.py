@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.8 $
+#    version              : $Revision: 1.9 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ def idle(capi):
 			tries+=1
 			capisuite.log("job "+job_fax+": result was %x,%x" % (result,resultB3),1)
 
-			if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):
+			if (result in (0,0x3400,0x3480,0x3490,0x349f) and resultB3==0):
 				movejob(job_fax,sendq,done,user)
 				capisuite.log("job "+job_fax+": finished successfully",1)
 				mailtext="Your fax job to "+addressee+" ("+dialstring+") was sent successfully.\n\n" \
@@ -163,6 +163,9 @@ def movejob(job,olddir,newdir,user):
 # History:
 #
 # $Log: idle.py,v $
+# Revision 1.9  2003/09/21 12:34:37  gernot
+# - add 0x349f to list of normal results
+#
 # Revision 1.8  2003/06/26 11:53:17  gernot
 # - fax jobs can be given an addressee and a subject now (resolves #18, reported
 #   by Achim Bohnet)
