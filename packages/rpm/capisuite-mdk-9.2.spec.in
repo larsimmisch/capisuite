@@ -74,7 +74,7 @@ install -Dm 755 ${builddir}/capisuite.cron $RPM_BUILD_ROOT%{_sysconfdir}/cron.da
 gzip --recursive --best $RPM_BUILD_ROOT%{_mandir}
 
 %clean
-#rm -rf $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
 
 %post
 %_post_service capisuite
@@ -95,6 +95,9 @@ gzip --recursive --best $RPM_BUILD_ROOT%{_mandir}
 %doc %{_defaultdocdir}/%name-%version
 %doc %{_mandir}/*/*
 %{_datadir}/capisuite
+%{_datadir}/capisuite/README
+%{_datadir}/capisuite/..la
+%{_datadir}/capisuite/*.la
 %{_libdir}/capisuite
 %dir %{_var}/spool/capisuite
 %{_var}/spool/capisuite/*
