@@ -130,7 +130,7 @@ def sendMIMEMail(mail_from, mail_to, mail_subject, mail_type,
             # convert sff -> tif
             sff2tif(attachment, "%s.tif" % basepath)
             # convert tif -> ps -> pdf
-            cmd = "tiff2ps -a %s | ps2pdf - -" % escape("%s.tif" %basepath)
+            cmd = "tiff2ps -h11 -H12 -L.5 -w8.5 -a %s | ps2pdf -sPAPERSIZE=a4 - -" % escape("%s.tif" %basepath)
             try:
                 status, content = commands.getstatusoutput(cmd)
             finally:
@@ -148,7 +148,7 @@ def sendMIMEMail(mail_from, mail_to, mail_subject, mail_type,
             # convert cff -> ps
             cff2ps(attachment, "%s.ps" % basepath)
             # convert ps -> pdf
-            cmd = "ps2pdf %s -" % escape("%s.ps" % basepath)
+            cmd = "ps2pdf -sPAPERSIZE=a4 %s -" % escape("%s.ps" % basepath)
             try:
                 status, content = commands.getstatusoutput(cmd)
             finally:

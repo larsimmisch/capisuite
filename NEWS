@@ -1,6 +1,17 @@
 0.5 (CVS nn):
 =============
 
+	* scripts: prevent cropping of fax pages by auto-scaling
+
+	* scripts: use a SMTP connection to localhost instead of calling the
+	  sendmail binary for sending mails. Many reports showed that calling
+	  sendmail manually doesn't work well on quite some systems
+
+	* core: fixed compile problem with new capi4linux library
+
+	* core: fixed a crash which could be caused by wrong DDI parameters
+	  in capisuite.conf
+	
 	* scripts: Adapted to work with the new parameters of sfftobmp 3.x.
 	  Normally, installed version will be detected automatically when 
 	  building CapiSuite. If you change your sfftobmp version later,  

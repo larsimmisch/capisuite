@@ -7,6 +7,10 @@
 	  issue goes to Edelhard Becker.
 	* scripts/Makefile.am (.pyin.py): Choose the right sfftobmp call
 	  automatically during build.
+	* scripts/cs_helpers.pyin (sendMIMEMail): add parameters to tiff2ps, gs
+	  and ps2pdf which prevent cropping of fax pages. Thanks to all the
+	  people who contributed suggestions and patches to bug #55.
+	* scripts/capisuitefax.in: Likewise.
 
 2004-10-25  Gernot Hillier  <gernot@hillier.de>
 	* src/capisuite-py/config.py.in: minor documentation changes
