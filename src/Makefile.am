@@ -16,8 +16,8 @@ capisuite.conf: capisuite.conf.in
 	  -e 's,@localstatedir\@,$(localstatedir),g' \
 	  -e 's,@spooldir\@,$(spooldir),g' $< >$@
 
-install-data-local:
-	mkdir -p $(localstatedir)/log
+
+	mkdir -p $(DESTDIR)$(localstatedir)/log
 
 clean-local:
 	rm -f capisuite.conf
