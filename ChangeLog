@@ -3,6 +3,8 @@
 	  changes in SUSE 9.1
 	* docs/Makefile.am: create "make install" routines for manpages
 	* capisuite.spec: set mandir in configure call
+	* acinclude.m4: fix underquoted AC_DEFUN calls according to automake
+	  1.8 policy
 
 2004-03-23  Gernot Hillier  <gernot@hillier.de>
 	* docs/manual-de.docbook (capicodes_protocol): fix small typo

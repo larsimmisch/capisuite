@@ -11,7 +11,7 @@
 # Set the name of the docdir to the given value. This is not nice, but I 
 # found no other name to do it than with AC_ARG_WITH. Please tell me if 
 # you have better ideas...
-AC_DEFUN(CS_SET_DOCDIR,
+AC_DEFUN([CS_SET_DOCDIR],
 [AC_ARG_WITH(docdir,
 	     AC_HELP_STRING([--with-docdir=DOCDIR],
 			    [use DOCDIR to install documentation to (default is PREFIX/share/doc/capisuite)]),
@@ -19,7 +19,7 @@ AC_DEFUN(CS_SET_DOCDIR,
 AC_SUBST(docdir)
 ])
 
-AC_DEFUN(CS_TEST_GCC3,
+AC_DEFUN([CS_TEST_GCC3],
 [AC_MSG_CHECKING([for <ostream> header])
 AC_TRY_CPP([#include <ostream>],
   [
