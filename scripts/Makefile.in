@@ -167,6 +167,7 @@ python_prefix = @python_prefix@
 python_version = @python_version@
 pythondir = @pythondir@
 sbindir = @sbindir@
+sfftobmp_major_version = @sfftobmp_major_version@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
@@ -556,7 +557,13 @@ capisuitefax: capisuitefax.in
 
 .pyin.py:
 	rm -f $@
-	sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' $< >$@
+	if test $(sfftobmp_major_version) = "2"; then \
+		sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' \
+		    -e 's,#2 ,,g' $< >$@ ;\
+	else \
+		sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' \
+		    -e 's,#3 ,,g' $< >$@ ;\
+	fi
 
 .confin.conf: 
 	rm -f $@

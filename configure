@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE RANLIB ac_ct_RANLIB doxygen CXXCPP EGREP docdir PYTHON PYTHON_VERSION PYTHON_PREFIX PYTHON_EXEC_PREFIX PYTHON_PLATFORM pythondir pkgpythondir pyexecdir pkgpyexecdir python_version python_prefix python_execprefix python_configdir python_moduledir python_moduleexecdir python_includespec python_linkforshared LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE RANLIB ac_ct_RANLIB doxygen CXXCPP EGREP sfftobmp_major_version docdir PYTHON PYTHON_VERSION PYTHON_PREFIX PYTHON_EXEC_PREFIX PYTHON_PLATFORM pythondir pkgpythondir pyexecdir pkgpyexecdir python_version python_prefix python_execprefix python_configdir python_moduledir python_moduleexecdir python_includespec python_linkforshared LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4519,6 +4519,23 @@ fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 
 
+echo "$as_me:$LINENO: checking for sfftobmp version" >&5
+echo $ECHO_N "checking for sfftobmp version... $ECHO_C" >&6
+sfftobmp_version=`sfftobmp -v 2>&1 | grep Version | sed -e "s,.*Version \([0-9,.]\),\1,"`
+sfftobmp_major_version=`echo $sfftobmp_version | sed -e "s,\..*,,"`
+if test -z $sfftobmp_major_version; then
+	echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+	{ { echo "$as_me:$LINENO: error: sfftobmp not found" >&5
+echo "$as_me: error: sfftobmp not found" >&2;}
+   { (exit 1); exit 1; }; }
+else
+	echo "$as_me:$LINENO: result: $sfftobmp_version" >&5
+echo "${ECHO_T}$sfftobmp_version" >&6
+
+fi
+
+
 
 # Check whether --with-docdir or --without-docdir was given.
 if test "${with_docdir+set}" = set; then
@@ -5627,6 +5644,7 @@ s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@doxygen@,$doxygen,;t t
 s,@CXXCPP@,$CXXCPP,;t t
 s,@EGREP@,$EGREP,;t t
+s,@sfftobmp_major_version@,$sfftobmp_major_version,;t t
 s,@docdir@,$docdir,;t t
 s,@PYTHON@,$PYTHON,;t t
 s,@PYTHON_VERSION@,$PYTHON_VERSION,;t t

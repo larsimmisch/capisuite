@@ -178,6 +178,7 @@ python_prefix = @python_prefix@
 python_version = @python_version@
 pythondir = @pythondir@
 sbindir = @sbindir@
+sfftobmp_major_version = @sfftobmp_major_version@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
