@@ -299,8 +299,8 @@ make install</screen>
 				<para>After you checked out the sources to some directory, please do
 
 				<screen
->automake -a
-autoreconf</screen>
+>autoreconf
+automake -a</screen>
 				</para>
 
 				<para>After that you can continue with the normal installation process as described in
