@@ -1,0 +1,97 @@
+#! /bin/bash
+#
+# capisuite          Start/Stop the CapiSuite daemon daemon.
+#
+# chkconfig: 345 90 60
+# description: CapiSuite is a daemon providing ISDN fax and voice services. 
+# processname: capisuite
+# config: @pkgsysconfdir@/capisuite.cong
+# pidfile: /var/run/capisuite.pid
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# Check for missing binaries (stale symlinks should not happen)
+CAPISUITE_BIN=@sbindir@/capisuite
+test -x $CAPISUITE_BIN || exit 5
+
+# Check for existence of needed config file and read it
+CAPISUITE_CONFIG=@pkgsysconfdir@/capisuite.conf
+test -r $CAPISUITE_CONFIG || exit 6
+
+RETVAL=0
+
+prog="capisuite"
+
+start() {
+	gprintf "Starting %s: " "$prog"
+
+	# Check if there are configured users for fax or
+	# answering machine. Otherwise exit.
+	# IMPORTANT: Change this or comment it out if you want to use
+	#            your own CapiSuite scripts.
+	@sbindir@/capisuite-checkconfig -t > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		daemon $prog -d < /dev/null
+		RETVAL=$?
+		echo
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+	else
+		failure "%s seams to be not configured" $prog
+		RETVAL=6
+	fi
+	return $RETVAL
+}
+
+stop() {
+	gprintf "Stopping %s: " "$prog"
+	killproc $prog
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+	return $RETVAL
+}	
+
+rhstatus() {
+	status $prog
+}	
+
+restart() {
+  	stop
+	start
+}	
+
+reload() {
+	gprintf "Reloading cron daemon configuration: "
+	killproc $prog -HUP
+	retval=$?
+	echo
+	return $RETVAL
+}	
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart)
+  	restart
+	;;
+  reload)
+  	reload
+	;;
+  status)
+  	rhstatus
+	;;
+  condrestart)
+  	[ -f /var/lock/subsys/$prog ] && restart || :
+	;;
+  *)
+	gprintf "Usage: %s {start|stop|status|reload|restart|condrestart}\n" "$0"
+	exit 1
+esac
+
+exit $?

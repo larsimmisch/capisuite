@@ -3,7 +3,7 @@
 Import('env')
 
 specs = []
-for f in Split('capisuite-mdk-9.2.spec'):
+for f in Split('capisuite-mdk-9.2.spec rc.capisuite.mdk'):
     #env.ExtraDist(File(f, Dir('.')))
     env.DistSourcesOf(f)
     specs.append(env.FileSubst(f, '%s.in' % f))
