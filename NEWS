@@ -1,5 +1,8 @@
 0.4.2 (NN):
 ===========
+	* scripts: fixed an overflow in cs_helpery.py which caused hangs for
+          the receive of long (more than about 40 pages) fax documents
+
 	* scripts: fixed a bug in idle.py which caused a fax send delay of one 
 	  hour when daylight saving time is in effect
 
