@@ -2,7 +2,7 @@
     @brief Contains Connection - Encapsulates a CAPI connection with all its states and methods.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.16 $
+    $Revision: 1.17 $
 */
 
 /***************************************************************************
@@ -710,15 +710,14 @@ Connection::data_b3_conf(_cmsg& message) throw (CapiError,CapiWrongState,CapiMsg
 	if (DATA_B3_CONF_INFO(&message))
 		throw CapiMsgError(DATA_B3_CONF_INFO(&message),"DATA_B3_CONF received with Error (Info)","Connection::data_b3_conf()");
 
-	if ( (!buffers_used) || (DATA_B3_CONF_DATAHANDLE(&message)!=buffer_start) )
-		throw CapiError("DATA_B3_CONF received with invalid data handle","Connection::data_b3_conf()");
-
 	pthread_mutex_lock(&send_mutex);
-	// free one buffer
-	buffers_used--;
-	buffer_start=(buffer_start+1)%7;
 
 	try {
+		if ( (!buffers_used) || (DATA_B3_CONF_DATAHANDLE(&message)!=buffer_start) )
+			throw CapiError("DATA_B3_CONF received with invalid data handle","Connection::data_b3_conf()");
+		// free one buffer
+		buffers_used--;
+		buffer_start=(buffer_start+1)%7;
 		while (file_to_send && (buffers_used < conf_send_buffers) )
 			send_block();
 	}

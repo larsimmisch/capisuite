@@ -12,6 +12,8 @@
 	* src/modules/audiosend.{cpp,h} (mainLoop): Likewise.
 	* src/modules/callmodule.{cpp,h} (mainLoop): Likewise.
 	* src/modules/faxsend.{cpp,h} (mainLoop): Likewise.
+	* src/backend/connection.cpp (data_b3_conf): fix behaviour when 
+	  DATA_B3_CONF comes immediately after DATA_B3_REQ
 
 2004-01-18  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (sendMIMEMail): remove space in sox call
