@@ -109,7 +109,7 @@ PythonScript::run() throw (ApplicationError)
 			for (int i=0;i<length-1;i++) {
 				error << traceback[i];
 				if (traceback[i]=='\n')
-					error << prefix(false) << "Python traceback: ";
+					error << prefix(false) << "Traceback: ";
 			}
 			error << endl;
 
