@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -48,12 +48,12 @@ class CapiSuite: public ApplicationInterface
 	public:
 		/** @brief Constructor. General initializations.
 
-		    Creates a Capi object, enables listening, calls readConfiguration, 
+		    Creates a Capi object, enables listening, calls readConfiguration,
 		    and initializes the Python interpreter in multithreading mode.
 		    It immediately releases the global Python lock after doing initialization.
 
 		    Also an IdleScript object is created and will regularly call the given script.
-		    
+
 		    @param argc commandline argument count as given to main()
 		    @param argv commandline arguments as given to main()
 		*/
@@ -61,7 +61,7 @@ class CapiSuite: public ApplicationInterface
 
 		/** @brief Destructor. Kill Python interpreter.
 
-		    Takes lock and calls CallControl::callCompleted().
+		    Request finishing of IdleThread and Python interpreter.
 		*/
 		~CapiSuite();
 
@@ -145,8 +145,6 @@ class CapiSuite: public ApplicationInterface
   		*/
 		void checkOption(string key, string value);
 
-
-		map <Connection*, CallControl*> instances; ///< saving pointers to all created CallControl instances indexed by Connection pointers
 		queue <Connection*> waiting; ///< queue for waiting connection instances
 		IdleScript *idle; ///< reference to the IdleScript object created
 
@@ -158,12 +156,12 @@ class CapiSuite: public ApplicationInterface
 
 		unsigned short debug_level; ///< verbosity level for debug stream
 
-		bool finish_flag; ///< flag to finish mainLoop()    
-		
+		bool finish_flag; ///< flag to finish mainLoop()
+
 		bool daemonmode; ///< flag set when we're running as daemon
 
 		map<string,string> config; ///< holds the configuration read from the configfile
-		string custom_configfile; ///< holds the name of the custom config file if given  
+		string custom_configfile; ///< holds the name of the custom config file if given
 
 };
 
@@ -172,6 +170,10 @@ class CapiSuite: public ApplicationInterface
 /* History
 
 $Log: capisuite.h,v $
+Revision 1.3  2003/02/25 13:23:19  gernot
+- comment fix
+- remove old, unused attribute
+
 Revision 1.2  2003/02/21 23:21:44  gernot
 - follow some a little bit stricter rules of gcc-2.95.3
 
