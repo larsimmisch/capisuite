@@ -2,7 +2,7 @@
     @brief Contains ConnectModule - Call Module for connection establishment at incoming connection
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -40,9 +40,10 @@ class ConnectModule: public CallModule
 		    @param service service to connect with as described in Connection::service_t
 		    @param faxStationID fax station ID, only necessary when connecting in FAXG3 mode
 		    @param faxHeadline fax headline, only necessary when connecting in FAXG3 mode
-		    @throw CapiExternalError Thrown if Connection not in waiting state
+		    @throw CapiExternalError Thrown if Connection already up
+		    @throw CapiWrongState Thrown if Connection not in waiting state
   		*/
-		ConnectModule(Connection *conn, Connection::service_t service, string faxStationID, string faxHeadline) throw (CapiExternalError);
+		ConnectModule(Connection *conn, Connection::service_t service, string faxStationID, string faxHeadline) throw (CapiWrongState,CapiExternalError);
 
  		/** @brief Accept connection and wait for complete establishment
 
@@ -67,6 +68,11 @@ class ConnectModule: public CallModule
 /* History
 
 $Log: connectmodule.h,v $
+Revision 1.4  2003/12/31 16:28:55  gernot
+* src/modules/connectmodule.{h,cpp} (ConnectModule): throw
+  CapiExternalError only when connection's already up, otherwise
+  use CapiWrongState
+
 Revision 1.3  2003/12/28 21:01:04  gernot
 - reworked TODO, disabled automatic log message adding to source files
 

@@ -1,9 +1,12 @@
 2003-12-31  Gernot Hillier  <gernot@hillier.de>
+	* src/modules/connectmodule.{h,cpp} (ConnectModule): throw
+	  CapiExternalError only when connection's already up, otherwise
+	  use CapiWrongState
+
 	* scripts/incoming.py (voiceIncoming): include recorded msg length
 	  and host name were file is stored in sent mail (closes bug #6,
 	  thx to Achim Bohnet and Thomas Niesel for the feature requests)
 
-2003-12-31  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (sendMIMEMail): use 16 bit ouput when
 	  converting sound files from la to wav. Thx to Holger Krull for
 	  the fix (closes bug #51)!
@@ -12,8 +15,6 @@
 	* nearly all files (history block): disabled the automatic
 	  adding of CVS log messages to source files as we now have
 	  this nice ChangeLog file
-
-2003-12-28  Gernot Hillier  <gernot@hillier.de>
 
 	* src/modules/audioreceive.{h,cpp} (AudioReceive,mainLoop),
 	  src/modules/audiosend.{h,cpp} (AudioSend,mainLoop),

@@ -2,7 +2,7 @@
     @brief Contains ConnectModule - Call Module for connection establishment at incoming connection
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -16,11 +16,13 @@
 
 #include "connectmodule.h"
 
-ConnectModule::ConnectModule(Connection *conn_in, Connection::service_t service, string faxStationID, string faxHeadline) throw (CapiExternalError)
+ConnectModule::ConnectModule(Connection *conn_in, Connection::service_t service, string faxStationID, string faxHeadline) throw (CapiWrongState,CapiExternalError)
 :CallModule(conn_in,-1,false,false),service(service),faxStationID(faxStationID),faxHeadline(faxHeadline)
 {
+	if (conn->getState()==Connection::UP)
+		throw CapiExternalError("Call is already connected","ConnectModule::ConnectModule()");
 	if (conn->getState()!=Connection::WAITING)
-		throw CapiExternalError("Can't connect because call not waiting","ConnectModule::ConnectModule()");
+		throw CapiWrongState("Can't connect because call not waiting","ConnectModule::ConnectModule()");
 }
 
 void
