@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.7 $
+    $Revision: 1.8 $
 */
 
 /***************************************************************************
@@ -14,12 +14,13 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <Python.h>
+#include <cStringIO.h>
+
 #ifdef HAVE_CONFIG_H
 #include "../../config.h"
 #endif
 
-#include <Python.h>
-#include <cStringIO.h>
 #include <sstream>
 #include <signal.h>
 #include <getopt.h>

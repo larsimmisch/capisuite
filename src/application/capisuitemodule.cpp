@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.9 $
+    $Revision: 1.10 $
 */
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 // IMPORTANT: every python function MUST call PyErr_Occured() before using the associated
 // Connection object! (connection can be already deleted while the python script is still running
 
+#include <Python.h>
 #include <string>
 #include <unistd.h> // for sleep()
 #include "../backend/connection.h"

@@ -2,7 +2,7 @@
     @brief Contains IncomingScript - Incoming call handling. One object for each incoming call is created.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -14,6 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <Python.h>
 #include "idlescript.h"
 #include "capisuitemodule.h"
 
