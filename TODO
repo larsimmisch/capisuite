@@ -1,9 +1,6 @@
 CRITICAL:
 - finish manual.docbook, provide simple examples
 
-IMPORTANT:
-- fax headline
-
 NICE:
 - ?valgrind-clean the used libs and Python?
 - support more than one send_controller
