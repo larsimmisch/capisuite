@@ -1,3 +1,8 @@
+2004-02-20  Gernot Hillier  <gernot@hillier.de>
+	* scripts/answering_machine.confin: remove spaces in example which
+	  confused the config file parser when not deleted by the user
+	* scripts/fax.confin: Likewise.
+
 2004-02-20  Hartmut Goebel  <h.goeben@goebel-consult.de>
 	* docs/Doxyfile.in: modified variable replacement for possible
 	  change of build system

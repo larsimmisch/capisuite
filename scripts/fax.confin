@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.9 2003/10/03 13:42:09 gernot Exp $
+# $Id: fax.confin,v 1.10 2004/02/20 14:12:20 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -154,10 +154,10 @@ fax_email_from="capisuite daemon <root>"
 # Here's an example of a valid user configuration for "gernot" - just remove
 # the leading #-signs and edit it:
 #
-# [gernot]
-# fax_numbers="11,12"
-# fax_stationID="+49 89 123456"
-# fax_headline="Gernot Hillier - sent by CapiSuite"
-# fax_email=""
-# fax_action="MailAndSave"
+#[gernot]
+#fax_numbers="11,12"
+#fax_stationID="+49 89 123456"
+#fax_headline="Gernot Hillier - sent by CapiSuite"
+#fax_email=""
+#fax_action="MailAndSave"
 
