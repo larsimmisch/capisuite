@@ -26,6 +26,10 @@ def _e_dist(target, source, env):
 
     collected = collect_sources(source, {}, {})
     collected = [ c.srcnode() for c in collected.keys() ]
+    for c in collected:
+        if not c.exists():
+            print 'warning: file', c, 'is missing'
+    collected = [c for c in collected if c.exists()]
     collected.sort(cmp_path)
     return (target, collected)
 
