@@ -16,6 +16,11 @@ An example of how to call xsltproc:
 
 xsltproc -o manual/ /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml/chunk.xsl manual.docbook
 
+You must also copy the images from /usr/share/sgml/docbook/docbook-xsl-stylesheets/xhtml to the created
+"manual" directory:
+
+cp -r /usr/share/sgml/docbook/docbook-xsl-stylesheets/images/ .
+
 To validate the document, use e.g. xmllint:
 
 xmllint --noout --valid manual.docbook
