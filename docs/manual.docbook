@@ -224,7 +224,7 @@
 						AVM cards due to a bug in the AVM CAPI driver. So if someone sends you a color fax (which seems to
 						be a very rare case), you'll need this package - unless you'll get a mail stating this error.
 						If your distribution doesn't have this packages, you can download it from
-						<ulink url="http://www.pdflib.com/jpeg2ps/"/>.</para>
+						<ulink url="http://www.pdflib.com/products/more/jpeg2ps.html"/>.</para>
 						<para>As the color fax protocol uses concatenated JPEG files for transferring multiple pages, you 
 						should also download and apply my multipleJPEG patch from 
 						<ulink url="http://www.hillier.de/linux/jpeg2ps-multi.php3"/></para>

@@ -250,7 +250,7 @@
 						also jemand ein Farbfax schicken sollte (was nach meiner Erfahrung nur sehr selten vorkommt), dann
 						bekommen Sie eine Fehlermeldung per Mail, wenn Sie dieses Programm nicht installiert haben.
 						Wenn Ihre Linux-Distribution dieses Paket nicht enthält, können Sie es von
-						<ulink url="http://www.pdflib.com/jpeg2ps/"/> herunterladen.</para>
+						<ulink url="http://www.pdflib.com/products/more/jpeg2ps.html"/> herunterladen.</para>
 						<para>Da das Farbfaxprotokoll für die Übertragung mehrseitiger Dokumente aneinandergehängte JPEG-Dateien
 						benutzt, sollten Sie außerdem meinen multiJPEG-Patch von
 						<ulink url="http://www.hillier.de/linux/jpeg2ps-multi.php3"/> herunterladen und anwenden.</para>
