@@ -139,7 +139,7 @@ if (not abort and not listqueue and not dialstring):
 # filter out common separators from dialstring, check it
 dialstring=dialstring.translate(string.maketrans("",""),"-/ ()")
 for i in dialstring:
-	if ((i>'9' or i<'0') and i not in ('+')):
+	if ((i>'9' or i<'0') and i not in ('+*#')):
 		usage("Invalid dialstring given.")
 
 if (dialstring and len(args)==0):

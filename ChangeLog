@@ -1,3 +1,6 @@
+2004-04-18  Gernot Hillier  <gernot@hillier.de>
+	* scripts/capisuitefax.in: allow * and # in destination numbers
+
 2004-03-24  Gernot Hillier  <gernot@hillier.de>
 	* docs/Makefile.am: change pathes to Docbook stylesheets to reflect
 	  changes in SUSE 9.1
