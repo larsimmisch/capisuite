@@ -797,11 +797,13 @@ make install</screen>
 					</varlistentry>
 					<varlistentry id="voice_user_audio_files">
 						<term><option>user_audio_files="0"</option></term>
-						<listitem><para>If set to <literal>1</literal>, each user may provide his own audio files
-						in his user directory (see <xref linkend="voice_user_dir"/>). If set to <literal>0</literal>,
-						only the audio_dir (see <xref linkend="voice_audio_dir"/>) will be searched.</para>
+						<listitem>
+							<para>If set to <literal>1</literal>, each user may provide his own audio files
+								in his user directory (see <xref linkend="voice_user_dir"/>). If set to <literal>0</literal>,
+								only the audio_dir (see <xref linkend="voice_audio_dir"/>) will be searched.
+							</para>
+							<para>This option is optional. If not set, it defaults to not reading own user audio files (0).</para>
 						</listitem>
-                                                <para>This option is optional. If not set, it defaults to not reading own user audio files (0).</para>
 					</varlistentry>
 					<varlistentry id="voice_delay">
 						<term><option>voice_delay="15"</option></term>
