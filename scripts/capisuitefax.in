@@ -4,7 +4,7 @@
 #            ---------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.6 $
+#    version              : $Revision: 1.7 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ other options:
 -h, --help			print this usage information
 -l, --list			print jobs in the send queue
 
-The given files must be in Adobe PostScript format"""
+The given files must be in Adobe PostScript or PDF format"""
 	if (error!=""):
 		print
 		print "ERROR:",error
@@ -186,8 +186,9 @@ for i in args:
 	filetype=t.read()
 	if (t.close()):
 		usage("can't execute \"file\"")
-	if (not re.search("application/postscript",filetype)):
-		sys.stderr.write(i+" is not a PostScript file\n")
+	if (not re.search("application/postscript",filetype) \
+	  and not re.search("application/pdf",filetype)):
+		sys.stderr.write(i+" is not a PostScript/PDF file\n")
 		continue
 
 	newname=cs_helpers.uniqueName(sendq,"fax","sff")

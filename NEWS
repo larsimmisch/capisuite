@@ -1,6 +1,9 @@
 0.5 (CVS nn):
 =============
 
+	* scripts: capisuitefax now also accepts PDF files (thx to Jochen Meyer
+	  and Eckhard Rüggeberg for reporting)
+
 	* core: fixed a bug which could lead to a crash when some unexpected
 	  CAPI messages arrived (thx to Karsten Keil for analyzing)
 
