@@ -21,6 +21,11 @@
 #include "capi.h"
 #include "../../config.h"
 
+// initialize static members
+short Capi::numControllers=0;
+string Capi::capiManufacturer, Capi::capiVersion;
+vector <Capi::CardProfileT> Capi::profiles;
+
 void* capi_exec_handler(void* arg)
 {
         if (!arg) {
@@ -33,15 +38,23 @@ void* capi_exec_handler(void* arg)
 }
 
 Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned short DDILength, unsigned short DDIBaseLength, vector<string> DDIStopNumbers, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)
-:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0x10),usedCIPMask(0),numControllers(0),
+:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0x10),usedCIPMask(0),
 DDILength(DDILength),DDIBaseLength(DDIBaseLength),DDIStopNumbers(DDIStopNumbers)
 {
 	if (debug_level >= 2)
 		debug << prefix() << "Capi object created" << endl;
-	readProfile(); // can throw CapiMsgError. Just propagate...
+	Capi::readProfile(); // can throw CapiMsgError. Just propagate...
 
 	if (Capi::numControllers==0)
 		throw (CapiError("No ISDN-Controller installed","Capi::Capi()"));
+
+	if (!maxLogicalConnection) {
+		for (unsigned i=1;i<=Capi::numControllers;i++) {
+			maxLogicalConnection+=profiles[i-1].bChannels;
+		}
+	}
+	if (debug_level >= 2)
+		debug << prefix() << "Registering for handling max. " << maxLogicalConnection << " logical connections" << endl;
 
 	unsigned info = capi20_register(maxLogicalConnection, maxBDataBlocks, maxBDataLen, &applId);
 	if (applId == 0 || info!=0)
@@ -50,7 +63,7 @@ DDILength(DDILength),DDIBaseLength(DDIBaseLength),DDIStopNumbers(DDIStopNumbers)
 	if (DDILength)
 		usedInfoMask|=0x80; // enable Called Party Number Info Element for PtP configuration
 
-	for (int i=1;i<=numControllers;i++)
+	for (int i=1;i<=Capi::numControllers;i++)
 		listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
 
 	int erg=pthread_create(&thread_handle, NULL, capi_exec_handler, this); // create a normal thread
@@ -257,7 +270,7 @@ Capi::setListenFaxG3 (_cdword controller) throw (CapiMsgError,CapiError)
 	usedCIPMask|=0x00020010;
 	if (!controller) {
 		unsigned char buf[64];
-		for (int i=1;i<=numControllers;i++)
+		for (int i=1;i<=Capi::numControllers;i++)
 			if (profiles[i-1].fax || profiles[i-1].faxExt)
 				listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
 	}
@@ -275,7 +288,7 @@ Capi::setListenTelephony (_cdword controller) throw (CapiMsgError,CapiError)
 	usedCIPMask|=0x00010012;
 	if (!controller) {
 		unsigned char buf[64];
-		for (int i=1;i<=numControllers;i++)
+		for (int i=1;i<=Capi::numControllers;i++)
 			if (profiles[i-1].transp)
 				listen_req(i, usedInfoMask, usedCIPMask); // can throw CapiMsgError
 	}
@@ -876,7 +889,7 @@ Capi::readProfile() throw (CapiMsgError)
     	if (info!=0)
       		throw (CapiMsgError(info,"Error in CAPI20_GET_PROFILE: "+describeParamInfo(info),"Capi::getCapiInfo()"));
 
-	numControllers=buf[0]+(buf[1] << 8);
+	Capi::numControllers=buf[0]+(buf[1] << 8);
 
 	// retrieve general information (kernel driver manufacturer, version of kernel driver)
 	if (capi20_get_manufacturer(0,buf))
@@ -892,7 +905,7 @@ Capi::readProfile() throw (CapiMsgError)
 		capiVersion="unknown";
 
 	// retrieve controller specific information (manufacturer, version)
-	for (unsigned i=1;i<=numControllers;i++) {
+	for (unsigned i=1;i<=Capi::numControllers;i++) {
 
 		profiles.push_back(CardProfileT());
 		
@@ -945,14 +958,14 @@ string
 Capi::getInfo(bool verbose)
 {
 	stringstream tmp;
-	tmp << numControllers << " controllers found" << endl;
+	tmp << Capi::numControllers << " controllers found" << endl;
 
 	if (verbose)
 	{
 		tmp << "Capi driver: " << capiManufacturer << ", version " << capiVersion << endl;
 
 		// retrieve controller specific information (manufacturer, version)
-		for (unsigned i=1;i<=numControllers;i++) {
+		for (unsigned i=1;i<=Capi::numControllers;i++) {
 			tmp << "Controller " << i << ": " << profiles[i-1].manufacturer;
 
 			tmp << " (" << profiles[i-1].bChannels << " B channels";

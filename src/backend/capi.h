@@ -36,23 +36,31 @@ void* capi_exec_handler(void* args);
 
     This class is the main encapsulation to use the CAPI ISDN interface.
 
-    There are only a small subset of methods which are of use for the application layer. These are for general purposes like enabling
+    There are only a small subset of methods which are of use for the 
+    application layer. These are for general purposes like enabling
     listening to calls and getting some nice formatted info strings.
 
-    The biggest amount are shadow methods for nearly all CAPI messages, which do the dumb stuff like increasing message numbers,
-    testing for errors, building message structures and so on. Not each parameter of these is described in every detail here. 
-    For more details please have a look in the CAPI 2.0 specification, available from http://www.capi.org
+    The biggest amount are shadow methods for nearly all CAPI messages,
+    which do the dumb stuff like increasing message numbers, testing for 
+    errors, building message structures and so on. Not each parameter of these
+    is described in every detail here.  For more details please have a look in 
+    the CAPI 2.0 specification, available from http://www.capi.org.
 
-    There's also a big message handling routine (readMessage()) which calls special handlers for incoming messages of the CAPI.
+    There's also a big message handling routine (readMessage()) which calls 
+    special handlers for incoming messages of the CAPI.
 
-    A Capi object creates a new thread (with body run()) which waits for incoming messages in an endless loop and hands them to readMessage().
+    A Capi object creates a new thread (with body run()) which waits for 
+    incoming messages in an endless loop and hands them to readMessage().
 
-    This class only does the general things - for handling single connections see Connection. Connection objects will be automatically created
-    by this class for incoming connections and can be created manually to initiate an outgoing connection.
+    This class only does the general things - for handling single connections
+    see Connection. Connection objects will be automatically created by this 
+    class for incoming connections and can be created manually to initiate an 
+    outgoing connection.
 
     The application is supposed to create one single object of this class.
 
-    To communicate with the application via callback functions, the application must provide an implementation of the ApplicationInterface.
+    To communicate with the application via callback functions, the application
+    must provide an implementation of the ApplicationInterface.
     The methods of this interface are called when some special events are received.
 
     @author Gernot Hillier
@@ -70,13 +78,17 @@ class Capi {
 		    @param DDILength if ISDN interface is in PtP mode, the length of the DDI must be set here. 0 means disabled (PtMP)
 		    @param DDIBaseLength the base number length w/o extension (and w/o 0) if DDI is used
 		    @param DDIStopNumbers list of DDIs shorter than DDILength we will accept
-		    @param maxLogicalConnection max. number of logical connections we will handle
+		    @param maxLogicalConnection max. number of logical connections we will handle. 0 means autodetect.
         	    @param maxBDataBlocks max. number of unconfirmed B3-datablocks, 7  is the maximum supported by CAPI
 	 	    @param maxBDataLen max. B3-Datablocksize, 2048 is the maximum supported by CAPI
 		    @throw CapiError Thrown if no ISDN controller is reported by CAPI
 		    @throw CapiMsgError Thrown if registration at CAPI wasn't successful.
 		*/
-		Capi (ostream &debug, unsigned short debug_level, ostream &error, unsigned short DDILength=0, unsigned short DDIBaseLength=0, vector<string> DDIStopNumbers=vector<string>(), unsigned maxLogicalConnection=2, unsigned maxBDataBlocks=7,unsigned maxBDataLen=2048) throw (CapiError, CapiMsgError);
+		Capi (ostream &debug, unsigned short debug_level, ostream &error, 
+		  unsigned short DDILength=0, unsigned short DDIBaseLength=0, 
+		  vector<string> DDIStopNumbers=vector<string>(), 
+		  unsigned maxLogicalConnection=0, unsigned maxBDataBlocks=7,
+		  unsigned maxBDataLen=2048) throw (CapiError, CapiMsgError);
 
 		/** @brief Destructor. Unregister App at CAPI
 
@@ -154,7 +166,7 @@ class Capi {
 		     Fills the members profiles, capiVersion, capiManufacturer, numControllers
 		     @throw CapiMsgError Thrown when requesting information fails
 		*/
-		void readProfile() throw (CapiMsgError);
+		static void readProfile() throw (CapiMsgError);
 
 
 		/********************************************************************************/
@@ -415,15 +427,15 @@ class Capi {
 			bool suppServ; ///< does this controller support Supplementary Services?
 		};
 
-		short numControllers;  ///< number of installed controllers, set by readProfile() method
-                string capiManufacturer, ///< manufacturer of the general CAPI driver
+		static short numControllers;  ///< number of installed controllers, set by readProfile() method
+                static string capiManufacturer, ///< manufacturer of the general CAPI driver
 		       capiVersion; ///< version of the general CAPI driver
 
 		unsigned short DDILength; ///< length of extension number (DDI) when ISDN PtP mode is used (0=PtMP)
 		unsigned short DDIBaseLength; ///< base number length for the ISDN interface if PtP mode is used
 		vector<string> DDIStopNumbers; ///< list of DDIs shorten than DDILength we'll accept
 		
-		vector <CardProfileT> profiles; ///< vector containing profiles for all found cards (ATTENTION: starts with index 0,
+		static vector <CardProfileT> profiles; ///< vector containing profiles for all found cards (ATTENTION: starts with index 0,
 						///< while CAPI numbers controllers starting by 1 (sigh)
 
 		map <_cdword,Connection*> connections; ///< containing pointers to the currently active Connection
@@ -444,145 +456,3 @@ class Capi {
 };
 
 #endif
-
-/*  History
-
-Old Log (for new changes see ChangeLog):
-
-Revision 1.5.2.3  2003/11/06 18:32:15  gernot
-- implemented DDIStopNumbers
-
-Revision 1.5.2.2  2003/11/02 14:58:16  gernot
-- use DDI_base_length instead of DDI_base
-- added DDI_stop_numbers option
-- use DDI_* options in the Connection class
-- call the Python script if number is complete
-
-Revision 1.5.2.1  2003/10/26 16:51:55  gernot
-- begin implementation of DDI, get DDI Info Elements
-
-Revision 1.5  2003/04/17 10:39:42  gernot
-- support ALERTING notification (to know when it's ringing on the other side)
-- cosmetical fixes in capi.cpp
-
-Revision 1.4  2003/04/08 07:50:48  gernot
-- fix wrong exception order which gcc-2.95 doesn't like...
-
-Revision 1.3  2003/04/04 09:14:02  gernot
-- setListenTelephony() and setListenFaxG3 now check if the given controller
-  supports this service and throw an error otherwise
-
-Revision 1.2  2003/04/03 21:16:03  gernot
-- added new readProfile() which stores controller profiles in attributes
-- getInfo() only creates the string out of the stored values and doesn't
-  do the real inquiry any more
-- getInfo() and numControllers aren't static any more
-
-Revision 1.1.1.1  2003/02/19 08:19:53  gernot
-initial checkin of 0.4
-
-Revision 1.22  2003/02/10 14:20:52  ghillie
-merged from NATIVE_PTHREADS to HEAD
-
-Revision 1.21.2.1  2003/02/09 15:05:36  ghillie
-- rewritten to use native pthread_* calls instead of CommonC++ Thread
-
-Revision 1.21  2003/01/06 16:29:52  ghillie
-- destructor doesn't throw any exceptions any more
-
-Revision 1.20  2003/01/04 16:07:42  ghillie
-- log improvements: log_level, timestamp
-
-Revision 1.19  2002/12/18 14:40:44  ghillie
-- removed this nasty listen_state. Made nothing than problems
-
-Revision 1.18  2002/12/11 13:05:34  ghillie
-- minor comment improvements
-
-Revision 1.17  2002/12/09 15:33:23  ghillie
-- debug and error stream now given in constructor
-
-Revision 1.16  2002/12/05 15:02:36  ghillie
-- constructor: removed param application (pointer to ApplicationInterface, now given by registerApplInterface()), added param debug giving debug stream
-- new methods registerApplicationInterface(), unregisterConnection()
-- connect_req gets COnnection* now
-
-Revision 1.15  2002/11/29 11:38:13  ghillie
-- missed some changes because CapiCommThread was deleted
-
-Revision 1.14  2002/11/29 11:11:12  ghillie
-- moved communication thread from own class (CapiCommThread) to Capi class
-
-Revision 1.13  2002/11/29 10:23:07  ghillie
-- updated comments, use doxygen format now
-
-Revision 1.12  2002/11/27 15:58:13  ghillie
-updated comments for doxygen
-
-Revision 1.11  2002/11/25 20:58:47  ghillie
-- improved documentation, is now readable by doxygen
-- setListen* can now set listen state for all available controllers
-
-Revision 1.10  2002/11/22 15:08:22  ghillie
-- new method select_b_protocol_req()
-- added SELECT_B_PROTOCOL_CONF case in readMessage()
-
-Revision 1.9  2002/11/19 15:57:18  ghillie
-- Added missing throw() declarations
-- phew. Added error handling. All exceptions are caught now.
-
-Revision 1.8  2002/11/18 14:24:09  ghillie
-- moved global severity_t to CapiError::severity_t
-- added throw() declarations
-
-Revision 1.7  2002/11/17 14:39:23  ghillie
-removed CapiError from this header -> exceptions are now defined in capiexception.h
-
-Revision 1.6  2002/11/15 15:25:53  ghillie
-added ALERT_REQ so we don't loose a call when we wait before connection establishment
-
-Revision 1.5  2002/11/13 08:34:54  ghillie
-moved history to the bottom
-
-Revision 1.4  2002/11/08 07:57:07  ghillie
-added functions to initiate a call
-corrected FACILITY calls to use PLCI instead of NCCI in DTMF processing as told by Mr. Ortmann on comp.dcom.isdn.capi
-
-Revision 1.3  2002/10/31 15:39:04  ghillie
-added missing FACILITY_RESP message (oops...)
-
-Revision 1.2  2002/10/31 12:37:35  ghillie
-added DTMF support
-
-Revision 1.1  2002/10/25 13:29:38  ghillie
-grouped files into subdirectories
-
-Revision 1.8  2002/10/09 14:36:22  gernot
-added CallModule base class for all call handling modules
-
-Revision 1.7  2002/10/09 11:18:59  gernot
-cosmetic changes (again...) and changed info function of CAPI class
-
-Revision 1.6  2002/10/08 12:01:26  gernot
-cosmetic... (indentation)
-
-Revision 1.5  2002/10/01 09:02:04  gernot
-changes for compilation with gcc3.2
-
-Revision 1.4  2002/09/22 14:22:53  gernot
-some cosmetic comment improvements ;-)
-
-Revision 1.3  2002/09/19 12:08:19  gernot
-added magic CVS strings
-
-* Sun Sep 15 2002 - gernot@hillier.de
-- put under CVS, cvs changelog follows above
-
-* Sun May 19 2002 - gernot@hillier.de
-- changed to not using QT libs any more
-- modified to conform to CAPI20-Spec, 4th edition (parameter names, ...)
-
-* Sun Apr 1 2002 - gernot@hillier.de
-- first version
-
-*/
