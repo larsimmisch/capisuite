@@ -18,7 +18,13 @@ capisuitefax: capisuitefax.in
 
 .pyin.py:
 	rm -f $@
-	sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' $< >$@
+	if test $(sfftobmp_major_version) = "2"; then
+		sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' \
+		    -e 's,#2,,g' $< >$@
+	else
+		sed -e 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' \
+		    -e 's,#3,,g' $< >$@
+	fi
 
 .confin.conf: 
 	rm -f $@

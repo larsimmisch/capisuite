@@ -1,6 +1,12 @@
 0.5 (CVS nn):
 =============
 
+	* scripts: Adapted to work with the new parameters of sfftobmp 3.x.
+	  Normally, installed version will be detected automatically when 
+	  building CapiSuite. If you change your sfftobmp version later,  
+	  you'll have to adapt the function sfftotif at the beginning of
+	  cs_helpers.py manually.
+
 	* scripts: removed the special support for giving an empty voice_email/
 	  fax_email parameter. This is NOT allowed any more and will result in
 	  an error when sending the mail. Simply don't set these parameters

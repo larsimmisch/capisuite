@@ -19,6 +19,9 @@ AC_DEFUN([CS_SET_DOCDIR],
 AC_SUBST(docdir)
 ])
 
+# CS_TEST_GCC3
+# ------------
+# Test for special gcc3 features needed by CapiSuite
 AC_DEFUN([CS_TEST_GCC3],
 [AC_MSG_CHECKING([for <ostream> header])
 AC_TRY_CPP([#include <ostream>],
@@ -50,6 +53,24 @@ AC_TRY_COMPILE([#include <capiutils.h>],
   AC_MSG_RESULT([no])
 )
 ]) dnl CS_TEST_CAPI4LINUX
+
+# CS_TEST_SFFTOBMP
+# ----------------
+# Test for the sfftobmp version installed as different versions
+# need different parameters. :-(
+AC_DEFUN([CS_TEST_SFFTOBMP],
+[
+AC_MSG_CHECKING([for sfftobmp version])
+sfftobmp_version=`sfftobmp -v 2>&1 | grep Version | sed -e "s,.*Version \([[0-9,.]]\),\1,"`
+sfftobmp_major_version=`echo $sfftobmp_version | sed -e "s,\..*,,"`
+if test -z $sfftobmp_major_version; then
+	AC_MSG_RESULT([no])
+	AC_MSG_ERROR([sfftobmp not found])
+else
+	AC_MSG_RESULT([$sfftobmp_version])
+	AC_SUBST(sfftobmp_major_version)
+fi
+]) dnl CS_TEST_SFFTOBMP	
 
 # PGAC_CHECK_PYTHON_DIRS
 # -----------------------
