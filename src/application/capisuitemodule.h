@@ -14,7 +14,7 @@
     found in @ref python.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -33,7 +33,6 @@
 #include "applicationexception.h"
 
 class Connection;
-class CallControl;
 
 /** @brief Initializes and registers C implementation of python module capisuite
 
@@ -63,8 +62,11 @@ void capisuitemodule_destruct_connection(void* conn);
 /* History
 
 $Log: capisuitemodule.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/02/25 13:24:21  gernot
+- remove old forward declaration
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.5  2002/12/07 22:36:21  ghillie
 - capisuitemodule_init: doesn't return __main__ any more
