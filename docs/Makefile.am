@@ -10,10 +10,18 @@ docs: Doxyfile
 
 dist-hook: Doxyfile 
 	$(doxygen) Doxyfile
+	if test ! -d reference; then \
+		echo "Creation of reference didn't succeed. Please install doxygen and try again" ;\
+		exit 1; \
+	fi
+	if test ! -d manual/images/callouts; then \
+		echo "You didn't create the manual pages or forgot to copy images to manual/. Please read docs/manual.README" ;\
+		exit 1; \
+	fi
 	mkdir $(distdir)/reference
 	cp $(srcdir)/reference/* $(distdir)/reference/ 
 	mkdir $(distdir)/manual
-	cp $(srcdir)/manual/* $(distdir)/manual/
+	cp -r $(srcdir)/manual/* $(distdir)/manual/
 
 Doxyfile: Doxyfile.in
 	sed -e 's,@version\@,$(VERSION),g' \
@@ -29,10 +37,8 @@ install-data-local:
 	fi
 
 	if test -d manual; then \
-		$(mkinstalldirs) $(DESTDIR)$(docdir)/manual ; \
-		(cd manual; for i in *; do \
-			$(INSTALL_DATA) $$i $(DESTDIR)$(docdir)/manual/$$i  ;\
-		done;) ;\
+		$(mkinstalldirs) $(DESTDIR)$(docdir) ; \
+		cp -r manual $(DESTDIR)$(docdir)/ ; \
 	fi
 
 uninstall-local:
