@@ -49,11 +49,11 @@
 		<para>To give you an impression, coding a simple answering machine is as easy as:
 
 		<informalexample>
-		<programlisting>def callIncoming (call, service, call_from, call_to):   # defines a function executed at incoming calls
-        connect_voice (call, 10)                        # answer the call after 10 seconds
-        audio_send (call, "my-announcement.la")         # wave file containing the announcement
-        audio_send (call, "beep.la")                    # wave file containing BEEP
-        audio_receive (call, "call.la", 10)             # record max. 10 seconds into call.la</programlisting>
+		<programlisting>def callIncoming (call, service, call_from, call_to):
+    connect_voice (call, 10)            # answer call after 10 secs
+    audio_send (call, "announcemnt.la") # play announcement
+    audio_send (call, "beep.la")        # play beep
+    audio_receive (call, "call.la", 10) # record call</programlisting>
 		</informalexample>
 		</para>
 
@@ -194,7 +194,7 @@
 						<term>tiff2ps</term>
 						<listitem><para>A small utility to convert TIFF files to the Postscript format. It's needed by
 							the default script to convert faxes to PDF files (SFF->TIFF->PS->PDF :-} ).
-							It's often included in a package called <literal>tiff</literal> or 
+							It's often included in a package called <literal>tiff</literal> or
 							<literal>tifftools</literal>. Details on <ulink url="http://www.libtiff.org"/>
 						</para></listitem>
 					</varlistentry>
@@ -262,15 +262,20 @@
 				</sect4>
 
 				<sect4 id="install_bin_debian"><title>Installation from Debian packages</title>
-					<para>Add the following lines to your <filename>/etc/apt/sources.list</filename>:</para>
+
+					<para>Thanks to Achim Bohnet, we also have binary and source packages of CapiSuite
+					and the necessary tools for Debian (woody).</para>
+
+					<para>To access them, please add the following lines to your <filename>/etc/apt/sources.list</filename>
+					:</para>
 
 					<screen>deb     http://www.mpe.mpg.de/~ach/debian ./
 deb-src http://www.mpe.mpg.de/~ach/debian ./</screen>
 
 					<para>Now, issue the following commands:</para>
 
-					<screen>apt-get update                  # add Pkg list from Achim's repository
-apt-get install capisuite       # installs all necessary pkg dependencies + capisuite</screen>
+					<screen>apt-get update            # add package list from repository
+apt-get install capisuite # install and resolve denpendencies</screen>
 
 					<para>When a new package is available, <command>apt-get update</command> grabs the new
 					package listing and</para>
@@ -285,14 +290,6 @@ apt-get install capisuite       # installs all necessary pkg dependencies + capi
 					<para>For further details, please have a look at the Debian documentation, for example the APT HowTo on
 					<ulink url="http://www.debian.org/doc/manuals/apt-howto/index.en.html"/> (english) or
 					<ulink url="http://www.de.debian.org/doc/user-manuals#apt-howto"/> (german).</para>
-
-					<para>If you really want to build your own Debian package from the sources
-					(this is normally NOT necessary), do:</para>
-
-        				<screen>sudo apt-get build-dep capisuite        # get necessary pkgs to build pkg from source
-fakeroot apt-get --build source         # download and compile
-dpkg -i ../capisuite_0.x.y-u_i386.deb   # apt-get install &lt;missing-pkgs&gt;; dpkg is as dump as rpm ;)</screen>
-
 				</sect4>
 			</sect3>
 
@@ -601,7 +598,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/fax.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/fax.conf</filename> (depending on the installation).</para>
 
-				<variablelist><title>Available options for [GLOBAL] section in fax config</title>
+				<variablelist id="options_fax_global"><title>Available options for [GLOBAL] section in fax config</title>
 					<varlistentry id="fax_spool_dir">
 						<term><option>spool_dir="/path/to/spooldir/"</option></term>
 						<listitem><para>This directory is used to archive sent (or failed) jobs. It must exist and
@@ -616,7 +613,7 @@ make install</screen>
 									<term><filename>spooldir/failed/</filename></term>
 									<listitem><para>Job which have failed finally end up here.</para></listitem>
 								</varlistentry>
-							</variablelist> 
+							</variablelist>
 							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
@@ -636,7 +633,7 @@ make install</screen>
 									<term><filename>user_dir/username/sendq/</filename></term>
 									<listitem><para>Fax files to be sent are queued here by <command>capisuitefax</command>.</para></listitem>
 								</varlistentry>
-							</variablelist> 
+							</variablelist>
 							<para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
@@ -645,7 +642,7 @@ make install</screen>
 						<listitem>
 							<para>When a fax can't be sent to the destination for any reason, it's tried for several times.
 								This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir
-								(see <xref linkend="fax_spool_dir"/>) and the user will get a mail.
+								(see <option>fax_spool_dir</option>) and the user will get a mail.
 							</para>
 							<para>This option is optional. If not given, it defaults to 10 tries.</para>
 						</listitem>
@@ -655,7 +652,7 @@ make install</screen>
 						<listitem><para>When a fax can't be sent to the destination for any reason, it's tried again.
 							This setting specifies the delays in seconds between subsequent tries. The different values are
 							separated with commas and <emphasis>no blanks</emphasis>. The list should have send_tries-1
-							(see <xref linkend="fax_send_tries"/>) values - if not, surplus entries are ignored and missing
+							(see <option>fax_send_tries</option>) values - if not, surplus entries are ignored and missing
 							entries are filled up with the last value. The default should just be ok giving you increasing
 							delays for up to 10 tries.</para>
 							<para>This option is optional. If not given, it defaults to the list shown above.</para>
@@ -678,9 +675,9 @@ make install</screen>
 					<varlistentry id="fax_outgoing_MSN">
 						<term><option>outgoing_MSN="&lt;your MSN&gt;"</option></term>
 						<listitem><para>This number is used as our own number for outgoing calls. If it's not given,
-							the first number of fax_numbers is used (see <xref linkend="fax_numbers"/>). Please
+							the first number of fax_numbers is used (see <xref linkend="options_fax_user"/>). Please
 							replace with one valid MSN of your ISDN interface or leave empty. This value can be
-							overwritten in the user sections individually.</para> 
+							overwritten in the user sections individually.</para>
 							<para>This option is optional. If not given, it defaults to empty.</para>
 						</listitem>
 					</varlistentry>
@@ -723,22 +720,22 @@ make install</screen>
 						</listitem>
 					</varlistentry>
 				</variablelist>
-				<variablelist><title>Available options for user sections in fax config</title>
+				<variablelist id="options_fax_user"><title>Available options for user sections in fax config</title>
 					<varlistentry>
 						<term><option>outgoing_MSN</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="fax_outgoing_MSN"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>outgoing_timeout</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="fax_outgoing_timeout"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>fax_stationID</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="fax_stationID"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>fax_headline</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="fax_headline"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry id="fax_numbers">
 						<term><option>fax_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
@@ -746,10 +743,10 @@ make install</screen>
 							These numbers are used to differ between users - so the same number must not appear in more
 							than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
 							are allowed. The first number of the list also serves as our own number when
-							sending a fax if outgoing_MSN is not set (see <xref linkend="fax_outgoing_MSN"/>)</para>
+							sending a fax if outgoing_MSN is not set (see <option>outgoing_MSN</option>)</para>
 							<para>If you want to use the same number for receiving fax and voice calls, please
 							<emphasis>do not</emphasis> enter it here. Use the voice_numbers option instead
-							(see <xref linkend="voice_numbers"/>) - the answering machine has a built in fax detection
+							(see <xref linkend="options_voice_user"/>) - the answering machine has a built in fax detection
 							and can also receive faxes.</para>
 							<para>When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
@@ -767,7 +764,7 @@ make install</screen>
 							be sent to. More addresses are separated by commas. If it is empty, they will be sent
 							to the user account on the system &cs; is running on. The address is also used to send
 							status reports for sent fax jobs to. If you don't want emails to be sent at all, use the
-							action option (see <xref linkend="fax_action"/>).</para>
+							action option (see <option>fax_action</option>).</para>
 							<para>This option is optional. If not given, the mail is sent to the system account.</para>
 						</listitem>
 					</varlistentry>
@@ -779,13 +776,13 @@ make install</screen>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
 										<listitem><para>The received call will be mailed to the given address (see
-											<xref linkend="fax_email"/> above) and saved to the user_dir (see <xref linkend="fax_user_dir"/>)
+											<option>fax_email</option> above) and saved to the fax_user_dir (see <xref linkend="options_fax_global"/>)
 											</para>
 										</listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>SaveOnly</option></term>
-										<listitem><para>The call will be only saved to the user_dir (see <xref linkend="fax_user_dir"/>)</para>
+										<listitem><para>The call will be only saved to the fax_user_dir (see <xref linkend="options_fax_global"/>)</para>
 										</listitem>
 									</varlistentry>
 								</variablelist>
@@ -801,14 +798,14 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/answering_machine.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (depending on the installation).</para>
 
-				<variablelist><title>Available options for [GLOBAL] section in answering machine config</title>
+				<variablelist id="options_voice_global"><title>Available options for [GLOBAL] section in answering machine config</title>
 					<varlistentry id="voice_audio_dir">
 						<term><option>audio_dir="/path/to/audiodir/"</option></term>
 						<listitem><para>The answering machine script uses several wave files, for example
 							a global announcement if the user hasn't set his own and some spoken word fragments
 							for the remote inquiry and the menu presented there. These audio files are searched
-							in this directory. If user_audio_files is enabled (see <xref linkend="voice_user_audio_files"/>), each user can also
-							provide his own audio snippets in his user_dir (see <xref linkend="voice_user_dir"/>).</para>
+							in this directory. If user_audio_files is enabled (see <option>user_audio_files</option>), each user can also
+							provide his own audio snippets in his user_dir (see <option>voice_user_dir</option>).</para>
 						 <para>This option is mandatory.</para>
 						</listitem>
 					</varlistentry>
@@ -822,7 +819,7 @@ make install</screen>
 								<varlistentry>
 									<term><filename>user_dir/username/</filename></term>
 									<listitem><para>Here the user may provide his own audio_files
-									(see also option <xref linkend="voice_user_audio_files"/> below).
+									(see also option <option>user_audio_files</option> below).
 									The user defined announcement is also saved here.</para></listitem>
 								</varlistentry>
 								<varlistentry>
@@ -837,8 +834,8 @@ make install</screen>
 						<term><option>user_audio_files="0"</option></term>
 						<listitem>
 							<para>If set to <literal>1</literal>, each user may provide his own audio files
-								in his user directory (see <xref linkend="voice_user_dir"/>). If set to <literal>0</literal>,
-								only the audio_dir (see <xref linkend="voice_audio_dir"/>) will be searched.
+								in his user directory (see <option>voice_user_dir</option>). If set to <literal>0</literal>,
+								only the audio_dir (see <option>voice_audio_dir</option>) will be searched.
 							</para>
 							<para>This option is optional. If not set, it defaults to not reading own user audio files (0).</para>
 						</listitem>
@@ -878,22 +875,22 @@ make install</screen>
 						</listitem>
 					</varlistentry>
 				</variablelist>
-				<variablelist><title>available options for user sections in answering machine config</title>
+				<variablelist id="options_voice_user"><title>available options for user sections in answering machine config</title>
 					<varlistentry>
 						<term><option>voice_delay</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="voice_delay"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>announcement</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="voice_announcement"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>record_length</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="voice_record_length"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry>
 						<term><option>record_silence_timeout</option></term>
-						<listitem><para>User specific value for the global option <xref linkend="voice_record_silence_timeout"/> above</para></listitem>
+						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
 					</varlistentry>
 					<varlistentry id="voice_numbers">
 						<term><option>voice_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</option></term>
@@ -903,7 +900,7 @@ make install</screen>
 							are allowed. The answering machine script does also automatic fax detection, so a fax can
 							be sent to this number. When this list is set to <literal>*</literal>,
 							<emphasis>all</emphasis> incoming calls will be accepted for this user (use with care!).
-							This is only useful for a setup with only one user which wants to receive any call.
+							This is only useful for a setup with only one user which wants to receive any call.</para>
 
 							<para>If for any reason <emphasis>no destination</emphasis> number is signalled for special MSNs
 							(austrian telecom seems to do this for the main MSN, where it is called "Global Call"), you can
@@ -917,7 +914,7 @@ make install</screen>
 						<listitem><para>If given, this string indicates email-addresses where the received faxes and
 							voice calls will be sent to. If it is empty, they will be sent to the user account on the
 							system &cs; is running on. More addresses are separated by commas. If you don't want emails
-							to be sent at all, use the action option (see <xref linkend="voice_action"/>).</para>
+							to be sent at all, use the action option (see <option>voice_action</option>).</para>
 							<para>This option is optional. If not set, the calls are mailed to the system account.</para>
 						</listitem>
 					</varlistentry>
@@ -940,15 +937,15 @@ make install</screen>
 									<varlistentry>
 										<term><option>MailAndSave</option></term>
 										<listitem><para>The received call will be mailed to the given address (see
-											<xref linkend="voice_email"/> above) and saved to the <filename>user_dir</filename>
-											(see <xref linkend="voice_user_dir"/>)
+											<option>voice_email</option> above) and saved to the <filename>voice_user_dir</filename>
+											(see <xref linkend="options_voice_global"/>)
 											</para>
 										</listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>SaveOnly</option></term>
-										<listitem><para>The call will be only saved to the <filename>user_dir</filename> 
-										(see <xref linkend="voice_user_dir"/>)</para></listitem>
+										<listitem><para>The call will be only saved to the <filename>voice_user_dir</filename>
+										(see <xref linkend="options_voice_global"/>)</para></listitem>
 									</varlistentry>
 									<varlistentry>
 										<term><option>None</option></term>
@@ -1122,7 +1119,8 @@ make install</screen>
 		>gernot@linux:~> python
 Python 2.2.1 (#1, Sep 10 2002, 17:49:17)
 [GCC 3.2] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
+Type "help", "copyright", "credits" or "license" for more
+information.
 &gt;&gt;&gt;</screen>
 
 		<para>As you can see, the Python prompt is <literal>&gt;&gt;&gt;</literal>.
@@ -1173,10 +1171,12 @@ b is hello
 1
 7
 3
-&gt;&gt;&gt; a[1:3]=[0] # replace positions 1 to 3 (without 3) with 0
+&gt;&gt;&gt; # replace positions 1 to 3 (without 3) with 0
+&gt;&gt;&gt; a[1:3]=[0]
 &gt;&gt;&gt; a
 [1, 0]
-&gt;&gt;&gt; a[-1]=7; a[-2]=8 # a[-i] is the i-the element counted from the back
+&gt;&gt;&gt; # a[-i] is the i-the element counted from the back
+&gt;&gt;&gt; a[-1]=7; a[-2]=8
 &gt;&gt;&gt; a
 [8, 7]</screen>
 
