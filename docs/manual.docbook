@@ -1489,7 +1489,8 @@ is not present, current time as returned by localtime() is used.
 				with your favourite sound-tools and convert it to the destination format using
 				<command>sox</command>. You'll get the best results when your WAV file already
 				is in 8kHz, mono, 8 bit format. <command>sox</command> is able to convert
-				other waves if necessary but this usually will result in worse quality.</para>
+				other waves if necessary but this usually will result in worse quality. You should
+				also normalize your sound file to about 50% of the maximum amplitude.</para>
 
 				<para>You can convert WAV to inversed A-Law by calling (thx to Carsten Heesch for the tip):</para>
 

@@ -1656,11 +1656,12 @@ is not present, current time as returned by localtime() is used.
 				enthalten sollte, was Sie wollen.</para>
 
 				<para>Die zweite Möglichkeit, eine invertierte A-Law-Datei zu erzeugen, ist, eine normale 
-                WAV-Datei mit Ihrem Lieblings-Sound-Tool aufzunehmen und sie mit <command>sox</command>
-                in das Zielformat zu konvertieren. Sie erzielen die besten Ergebnisse, wenn Ihre WAV-Dateien
-                bereits das Format 8kHz, Mono, 8 Bit haben. <command>sox</command> kann auch andere
+				WAV-Datei mit Ihrem Lieblings-Sound-Tool aufzunehmen und sie mit <command>sox</command>
+				in das Zielformat zu konvertieren. Sie erzielen die besten Ergebnisse, wenn Ihre WAV-Dateien
+				bereits das Format 8kHz, Mono, 8 Bit haben. <command>sox</command> kann auch andere
 				WAV-Dateien wenn nötig konvertieren, aber dies resultiert normalerweise in einer schlechteren
-                Qualität.</para>
+				Qualität. Empfehlenswert ist auch, die Aufnahme auf maximal 50% der maximalen Amplitude
+				zu normalisieren.</para>
 
 				<para>Sie können WAV in inverstiert A-Law konvertieren, indem Sie aufrufen (danke an Carsten Heesch für den Tipp):</para>
 
