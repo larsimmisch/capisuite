@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.17 $
+#    version              : $Revision: 1.18 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 
 	if (os.access(filename,os.R_OK)):
 		cs_helpers.writeDescription(filename,
-		  "call_from=\"%s\"\ncall_to=\"%s\"\ntime=\"%s\"\n" \ 
+		  "call_from=\"%s\"\ncall_to=\"%s\"\ntime=\"%s\"\n" \
 		  "cause=\"0x%x/0x%x\"\n" % (call_from,call_to,time.ctime(),cause,causeB3))
 		userdata=pwd.getpwnam(curr_user)
 		os.chmod(filename,0600)
@@ -155,7 +155,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 		if (action=="mailandsave"):
 			mailText="You got a fax from %s to %s\nDate: %s" % (call_from,call_to,time.ctime())
 			if (faxInfo!=None and len(faxInfo)>=5):
-				mailText="%sStation ID: %s\nTransmission Details: bit rate %i " \ 
+				mailText="%sStation ID: %s\nTransmission Details: bit rate %i " \
 				  "%s %s\nPages: %i\n\nSee attached file.\n" \
 				  "The original file was saved to file://%s " \
 				  "on host \"%s\"." % (mailText,faxInfo[0], \
@@ -439,7 +439,7 @@ def newAnnouncement(call,userdir,curr_user,config):
 # - started implementing faxInfo output in sent mails, not working currently
 #
 # Revision 1.9  2003/06/27 07:51:09  gernot
-# - replaced german umlaut in filename "nachricht-gelöscht.la", can cause
+# - replaced german umlaut in filename "nachricht-gelscht.la", can cause
 #   problems on Redhat, thx to Herbert Hübner for reporting
 #
 # Revision 1.8  2003/06/16 10:21:05  gernot

@@ -2,7 +2,7 @@
     @brief Contains AudioReceive - Call Module for receiving audio.
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.3 $
+    $Revision: 1.4 $
 */
 
 /***************************************************************************
@@ -62,7 +62,7 @@ class AudioReceive: public CallModule
 		    @throw CapiExternalError Thrown if connection is not in speech mode
 		    @throw CapiWrongState Thrown if connection is not up (thrown by base class constructor)
 		*/
-		AudioReceive(Connection *conn, string file, int timeout, int silence_timeout, bool DTMF_exit) throw (CapiWrongState,CapiExternalError);
+		AudioReceive(Connection *conn, string file, int timeout, int silence_timeout, bool DTMF_exit) throw (CapiExternalError,CapiWrongState);
 
  		/** @brief Start file reception, wait for one of the timeouts or disconnection and stop the reception.
 

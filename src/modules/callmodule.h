@@ -2,7 +2,7 @@
     @brief Contains CallModule - Base class for all call handling modules
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.7 $
+    $Revision: 1.8 $
 */
 
 /***************************************************************************
@@ -78,7 +78,7 @@ class CallModule: public CallInterface
 		    @throw CapiExternalError A given command didn't succeed for a reason not caused by the CAPI (not thrown by CallModule, but may be thrown in subclasses)
 		    @throw CapiWrongState Not thrown here, but sub classes may throw it
 		*/
-		virtual void mainLoop() throw (CapiError,CapiWrongState,CapiMsgError,CapiExternalError);
+		virtual void mainLoop() throw (CapiWrongState,CapiMsgError,CapiExternalError,CapiError);
 
  		/** @brief empty here.
 

@@ -1,3 +1,10 @@
+2004-02-11  Gernot Hillier  <gernot@hillier.de>
+	* scripts/incoming.py (faxIncoming,CVS log): fixed two typos /
+	  removed not allowed german umlauts
+	* src/modules/audioreceive.h (AudioReceive): correct exception
+	  declaration order (thx to Matthias Haberkorn for the patch)
+	* src/modules/callmodule.h (mainLoop): Likewise.
+
 2004-02-08  Gernot Hillier  <gernot@hillier.de>
 	* src/application/capisuitemodule.cpp (capisuite_audio_send, 
 	  capisuite_fax_send): catch some missing Exceptions
