@@ -171,7 +171,7 @@
 
 				<variablelist>
 					<varlistentry>
-						<term>Python</term>
+						<term>Python >= 2.2</term>
 						<listitem><para>&cs; verwendet einen eingebauten Python-Interpreter, um die 
                             Skripte zu interpretieren - deshalb brauchen Sie eine installierte und lauffähige
                             Version von Python. Diese sollte in nahezu jeder aktuellen Linux-Distribution

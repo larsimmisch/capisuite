@@ -158,7 +158,7 @@
 
 				<variablelist>
 					<varlistentry>
-						<term>Python</term>
+						<term>Python >= 2.2</term>
 						<listitem><para>&cs; uses an embedded Python interpreter to interpret the given scripts -
 							so you'll need an installed and working version of Python. This should be included
 							in mostly every up-to-date Linux distribution. For further infos on Python, a nice
