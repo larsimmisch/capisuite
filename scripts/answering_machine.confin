@@ -101,7 +101,7 @@ text =
   Length: %(msg_length)i seconds
 
   See attached file.
-  The original file was saved to file:%(filename)s on host "%(hostname)s".
+  The original file was saved to file://%(hostname)s/%(filename)s on host "%(hostname)s".
 
 
 ###############################################################################

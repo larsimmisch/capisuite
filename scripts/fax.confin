@@ -132,7 +132,7 @@ text =
   Pages: %(numPages)i
 
   See attached file.
-  The original file was saved to file:%(filename)s on host "%(hostname)s".
+  The original file was saved to file://%(hostname)s/%(filename)s on host "%(hostname)s".
 
 #########
 # defined for fax send: addressee, dialstring, subject, filename, tries,
@@ -148,7 +148,7 @@ text =
   Number of tries: %(tries)s
   Last result: 0x%(result)x/0x%(resultB3)x
   
-  It was moved to file:%(filename)s on host %(hostname)s.
+  It was moved to file://%(hostname)s/%(filename)s on host %(hostname)s.
 
 
 [MailFaxFailed]
@@ -161,7 +161,7 @@ text =
   Number of tries: %(tries)s
   Last result: 0x%(result)x/0x%(resultB3)x
   
-  It was moved to file:%(filename)s on host %(hostname)s.
+  It was moved to file://%(hostname)s/%(filename)s on host %(hostname)s.
 
 
 ###############################################################################
