@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -20,8 +20,6 @@
 #include "applicationinterface.h"
 #include "capi.h"
 
-short Capi::numControllers=0;
-          
 void* capi_exec_handler(void* arg)
 {
         if (!arg) {
@@ -34,11 +32,11 @@ void* capi_exec_handler(void* arg)
 }
 
 Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)
-:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0),usedCIPMask(0)
+:debug(debug),debug_level(debug_level),error(error),messageNumber(0),usedInfoMask(0),usedCIPMask(0),numControllers(0)
 {
 	if (debug_level >= 2)
 		debug << prefix() << "Capi object created" << endl;
-	getInfo(); // can throw CapiMsgError. Just propagate...
+	readProfile(); // can throw CapiMsgError. Just propagate...
 
 	if (Capi::numControllers==0)
 		throw (CapiError("No ISDN-Controller installed","Capi::Capi()"));
@@ -799,13 +797,12 @@ Capi::prefix()
 	s << ct << " Capi " << hex << this << ": ";
 	return (s.str());
 }
-
-string
-Capi::getInfo(bool verbose) throw (CapiMsgError)
+    
+void
+Capi::readProfile() throw (CapiMsgError)
 {
 	unsigned char buf[64];
- 	_cdword buf2[4];
-	stringstream tmp;
+ 	_cdword buf2[4]; 
 
 	// is CAPI correctly installed?
 	unsigned info=CAPI20_ISINSTALLED();
@@ -819,53 +816,97 @@ Capi::getInfo(bool verbose) throw (CapiMsgError)
 
 	numControllers=buf[0]+(buf[1] << 8);
 
+	// retrieve general information (kernel driver manufacturer, version of kernel driver)
+	if (capi20_get_manufacturer(0,buf))
+		capiManufacturer=reinterpret_cast<char *> (buf);
+	else
+		capiManufacturer="unknown";
+
+	if (capi20_get_version(0, reinterpret_cast<unsigned char *>(buf2))) {
+		stringstream tmp;
+		tmp << buf2[0] << "." << buf2[1] << "/" << buf2[2] << "." << buf2[3] << ends;
+		capiVersion=tmp.str();
+    	} else
+		capiVersion="unknown";
+
+	// retrieve controller specific information (manufacturer, version)
+	for (unsigned i=1;i<=numControllers;i++) {
+
+		profiles.push_back(CardProfileT());
+		
+		if (capi20_get_manufacturer(i,buf))
+			profiles[i-1].manufacturer=reinterpret_cast<char *> (buf);
+		else
+			profiles[i-1].manufacturer="unknown";
+			
+		info = CAPI20_GET_PROFILE(i, buf);
+		if (info!=0)
+			throw (CapiMsgError(info,"Error in CAPI20_GET_PROFILE/2: "+Capi::describeParamInfo(info),"Capi::getCapiInfo()"));
+
+		profiles[i-1].bChannels=buf[2] + (buf[3]<<8);
+
+		if (buf[4] & 0x08)
+			profiles[i-1].dtmf=true;
+		else
+			profiles[i-1].dtmf=false;
+
+		if (buf[4] & 0x10)
+			profiles[i-1].suppServ=true;
+		else
+			profiles[i-1].suppServ=false;
+
+		if (buf[8] & 0x02 && buf[12] & 0x02 && buf[16] & 0x01)
+			profiles[i-1].transp=true;
+		else
+			profiles[i-1].transp=false;
+
+		if (buf[8] & 0x10 && buf[12] & 0x10 && buf[16] & 0x10)
+			profiles[i-1].fax=true;
+		else
+			profiles[i-1].fax=false;
+
+		if (buf[8] & 0x10 && buf[12] & 0x10 && buf[16] & 0x20)
+			profiles[i-1].faxExt=true;
+		else
+			profiles[i-1].faxExt=false;
+
+		if (capi20_get_version(i,reinterpret_cast<unsigned char*>(buf2))) {
+			stringstream tmp;
+			tmp << buf2[0] << "." << buf2[1] << "/" << buf2[2] << "." << buf2[3];
+			profiles[i-1].version=tmp.str();
+		} else
+			profiles[i-1].version="unknown";
+	}
+}
+
+string
+Capi::getInfo(bool verbose)
+{
+	stringstream tmp;
 	tmp << numControllers << " controllers found" << endl;
 
 	if (verbose)
 	{
-		// retrieve general information (kernel driver manufacturer, version of kernel driver)
-		if (capi20_get_manufacturer(0,buf))
-			tmp << reinterpret_cast<char *> (buf);
-		else
-			tmp << "unknown";
-
-	    	if (capi20_get_version(0, reinterpret_cast<unsigned char *>(buf2))) {
-			tmp << ", version " << buf2[0] << "." << buf2[1] << "/" << buf2[2] << "." << buf2[3] << endl;
-	    	} else
-			tmp << ", version unknown" << endl;
+		tmp << "Capi driver: " << capiManufacturer << ", version " << capiVersion << endl;
 
 		// retrieve controller specific information (manufacturer, version)
 		for (unsigned i=1;i<=numControllers;i++) {
-			tmp << "Controller " << i << ": ";
+			tmp << "Controller " << i << ": " << profiles[i-1].manufacturer;
 
-			if (capi20_get_manufacturer(i,buf))
-				tmp << reinterpret_cast<char *> (buf);
-			else
-				tmp << "unknown";
+			tmp << " (" << profiles[i-1].bChannels << " B channels";
 
-			info = CAPI20_GET_PROFILE(i, buf);
-			if (info!=0)
-				throw (CapiMsgError(info,"Error in CAPI20_GET_PROFILE/2: "+Capi::describeParamInfo(info),"Capi::getCapiInfo()"));
-
-			tmp << " (" << buf[2] + (buf[3]<<8) << " B channels";
-
-			if (buf[4] & 0x08)
+			if (profiles[i-1].dtmf)
 				tmp << ", DTMF";
-			if (buf[4] & 0x10)
+			if (profiles[i-1].suppServ)
 				tmp << ", SuppServ";
-			if (buf[8] & 0x02 && buf[12] & 0x02 && buf[16] & 0x01)
+			if (profiles[i-1].transp)
 				tmp << ", transparent";
-			if (buf[8] & 0x10 && buf[12] & 0x10 && buf[16] & 0x10)
+			if (profiles[i-1].fax)
 				tmp << ", FaxG3";
-			if (buf[8] & 0x10 && buf[12] & 0x10 && buf[16] & 0x20)
+			if (profiles[i-1].faxExt)
 				tmp << ", FaxG3ext";
 
-			if (capi20_get_version(i,reinterpret_cast<unsigned char*>(buf2)))
-				tmp << "), driver version " << buf2[0] << "." << buf2[1] << "/" << buf2[2] << "." << buf2[3];
-			else
-				tmp << "), unknown driver version";
-
-			tmp << endl;
+			tmp << "), driver version " << profiles[i-1].version << endl;
 		}
 	}
 	return tmp.str();
@@ -874,6 +915,12 @@ Capi::getInfo(bool verbose) throw (CapiMsgError)
 /* History
 
 $Log: capi.cpp,v $
+Revision 1.3  2003/04/03 21:16:03  gernot
+- added new readProfile() which stores controller profiles in attributes
+- getInfo() only creates the string out of the stored values and doesn't
+  do the real inquiry any more
+- getInfo() and numControllers aren't static any more
+
 Revision 1.2  2003/02/21 23:21:44  gernot
 - follow some a little bit stricter rules of gcc-2.95.3
 

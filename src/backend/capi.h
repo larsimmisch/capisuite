@@ -2,7 +2,7 @@
     @brief Contains Capi - Main Class for communication with CAPI
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -19,10 +19,9 @@
 
 #include <capi20.h>
 #include <string>
-#include <map>
+#include <map>  
+#include <vector>
 #include "capiexception.h"
-
-using namespace std;
 
 class Connection;
 class ApplicationInterface;
@@ -110,7 +109,7 @@ class Capi {
 		*/
   		void setListenTelephony (_cdword Controller=0) throw (CapiMsgError);
 
-		/**  @brief Static function which returns some info about the installed Controllers
+		/** @brief Static Returns some info about the installed Controllers
 
 		     The returned string has the following format (UPPERCASE words replaced):
 
@@ -124,10 +123,12 @@ class Capi {
 
 		     The following services are checked currently and printed as SERVICEX if found: DTMF, SuppServ, transparent, FaxG3, FaxG3ext
 
+		     The method uses values stored by readProfile which must have been called before (constructor does it).
+
 		     @param verbose controls verbosity of output (see above).
 		     @return string containing details (see above).
 		*/
-	  	static string getInfo(bool verbose=false) throw (CapiMsgError);
+	  	string getInfo(bool verbose=false);
 
 	private:
 
@@ -135,7 +136,15 @@ class Capi {
 
 		    This method is used by Connection::~Connection()
 		*/
-		void unregisterConnection (_cdword plci);
+		void unregisterConnection (_cdword plci);  
+
+		/** @brief Get informations about CAPI driver and installed controllers
+
+		     Fills the members profiles, capiVersion, capiManufacturer, numControllers
+		     @throw CapiMsgError Thrown when requesting information fails
+		*/
+		void readProfile() throw (CapiMsgError);
+
 
 		/********************************************************************************/
     		/*	    methods to send CAPI messages - called by the Connection class	*/
@@ -366,10 +375,36 @@ class Capi {
 		/*	    			attributes					*/
 		/********************************************************************************/
 
-		map <_cdword,Connection*> connections; ///< @brief containing pointers to the currently active Connection
-							///< objects, referenced by PLCI (or 0xFACE & messageNum when Connection is in plci_state Connection::P01
+		/** @brief type for storing controller profiles
+		*/
+		class CardProfileT
+		{
+			public:
+			/** @brief default constructor
+			*/
+			CardProfileT()
+			:manufacturer(""),version(""),bChannels(0),fax(false),faxExt(false),dtmf(false)
+			{}
 
-		static short numControllers;  ///< number of installed controllers, set by getInfo() method
+			string manufacturer; ///< manufacturer of controller
+			string version; ///< version of controller driver
+			int bChannels; ///< number of supported B channels
+			bool transp; ///< does this controller support transparent protocols?
+			bool fax; ///< does this controller support fax?
+			bool faxExt; ///< does this controller support extended fax protocols (polling,...)?
+			bool dtmf; ///< does this controller support DTMF recognition?
+			bool suppServ; ///< does this controller support Supplementary Services?
+		};
+
+		short numControllers;  ///< number of installed controllers, set by readProfile() method
+                string capiManufacturer, ///< manufacturer of the general CAPI driver
+		       capiVersion; ///< version of the general CAPI driver
+
+		vector <CardProfileT> profiles; ///< vector containing profiles for all found cards (ATTENTION: starts with index 0,
+						///< while CAPI numbers controllers starting by 1 (sigh)
+
+		map <_cdword,Connection*> connections; ///< containing pointers to the currently active Connection
+							///< objects, referenced by PLCI (or 0xFACE & messageNum when Connection is in plci_state Connection::P01
 
 		_cword messageNumber;  ///< sequencial message number, must be increased for every sent message
 		_cdword usedInfoMask;  ///< InfoMask currently used (in last listen_req)
@@ -379,9 +414,9 @@ class Capi {
 
 		ApplicationInterface *application; ///< pointer to the application object implementing ApplicationInterface
 		ostream &debug, ///< stream to write debug info to
-			&error; ///< stream for error messages       
-		unsigned short debug_level; ///< debug level 
-		
+			&error; ///< stream for error messages
+		unsigned short debug_level; ///< debug level
+
 		pthread_t thread_handle; ///< handle for the created message reading thread
 };
 
@@ -390,8 +425,14 @@ class Capi {
 /*  History
 
 $Log: capi.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/04/03 21:16:03  gernot
+- added new readProfile() which stores controller profiles in attributes
+- getInfo() only creates the string out of the stored values and doesn't
+  do the real inquiry any more
+- getInfo() and numControllers aren't static any more
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.22  2003/02/10 14:20:52  ghillie
 merged from NATIVE_PTHREADS to HEAD
