@@ -598,7 +598,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/fax.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/fax.conf</filename> (depending on the installation).</para>
 
-				<variablelist id="options_fax_global"><title>Available options for [GLOBAL] section in fax config</title>
+				<variablelist id="options_fax_global"><title>The [GLOBAL] section</title>
 					<varlistentry id="fax_spool_dir">
 						<term><option>spool_dir="/path/to/spooldir/"</option></term>
 						<listitem><para>This directory is used to archive sent (or failed) jobs. It must exist and
@@ -720,7 +720,7 @@ make install</screen>
 						</listitem>
 					</varlistentry>
 				</variablelist>
-				<variablelist id="options_fax_user"><title>Available options for user sections in fax config</title>
+				<variablelist id="options_fax_user"><title>The user sections</title>
 					<varlistentry>
 						<term><option>outgoing_MSN</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="options_fax_global"/> above</para></listitem>
@@ -742,8 +742,8 @@ make install</screen>
 						<listitem><para>A list containing the numbers on which this user wants to receive incoming fax calls.
 							These numbers are used to differ between users - so the same number must not appear in more
 							than one user section! The numbers are separated with commas and <emphasis>no blanks</emphasis>
-							are allowed. The first number of the list also serves as our own number when
-							sending a fax if outgoing_MSN is not set (see <option>outgoing_MSN</option>)</para>
+							are allowed. The first number of the list also serves as our own number for
+							sending a fax if outgoing_MSN is not set (see <option>outgoing_MSN</option>).</para>
 							<para>If you want to use the same number for receiving fax and voice calls, please
 							<emphasis>do not</emphasis> enter it here. Use the voice_numbers option instead
 							(see <xref linkend="options_voice_user"/>) - the answering machine has a built in fax detection
@@ -798,7 +798,7 @@ make install</screen>
 				<para>It's read from <filename>/etc/capisuite/answering_machine.conf</filename> or
 				  <filename>/usr/local/etc/capisuite/answering_machine.conf</filename> (depending on the installation).</para>
 
-				<variablelist id="options_voice_global"><title>Available options for [GLOBAL] section in answering machine config</title>
+				<variablelist id="options_voice_global"><title>The [GLOBAL] section</title>
 					<varlistentry id="voice_audio_dir">
 						<term><option>audio_dir="/path/to/audiodir/"</option></term>
 						<listitem><para>The answering machine script uses several wave files, for example
@@ -875,7 +875,7 @@ make install</screen>
 						</listitem>
 					</varlistentry>
 				</variablelist>
-				<variablelist id="options_voice_user"><title>available options for user sections in answering machine config</title>
+				<variablelist id="options_voice_user"><title>The user sections</title>
 					<varlistentry>
 						<term><option>voice_delay</option></term>
 						<listitem><para>User specific value for the global option <xref linkend="options_voice_global"/> above</para></listitem>
@@ -1237,7 +1237,7 @@ You divided by zero, message was: integer division or modulo by zero</screen>
 			<screen>&gt;&gt;&gt; import time
 &gt;&gt;&gt; # what is in time?
 &gt;&gt;&gt; dir(time)
-['__doc__', '__file__', '__name__', 'accept2dyear', 'altzone', 'asctime', 'clock', 'ctime', 'daylight', 'gmtime', 'localtime', 'mktime', 'sleep', 'strftime', 'strptime', 'struct_time', 'time', 'timezone', 'tzname']
+['__doc__', '__file__', '__name__', 'accept2dyear', ...]
 &gt;&gt;&gt; # So - what do all these functions do? Python can tell...
 &gt;&gt;&gt; print time.__doc__
 This module provides various functions to manipulate time values.
@@ -1259,8 +1259,8 @@ ctime() -- convert time in seconds to string
 ctime(seconds) -> string
 
 Convert a time in seconds since the Epoch to a string in local time.
-This is equivalent to asctime(localtime(seconds)). When the time tuple is
-not present, current time as returned by localtime() is used.
+This is equivalent to asctime(localtime(seconds)). When the time tuple
+is not present, current time as returned by localtime() is used.
 
 &gt;&gt;&gt; time.time()
 1044380131.186987
@@ -1271,7 +1271,7 @@ not present, current time as returned by localtime() is used.
 500
 &gt;&gt;&gt; import pwd
 &gt;&gt;&gt; pwd.getpwuid(500)
-('gernot', 'x', 500, 100, 'Gernot Hillier', '/home/gernot', '/bin/bash')</screen>
+('hans', 'x', 500, 100, 'Hans Meier', '/home/hans', '/bin/bash')</screen>
 
 			<para>Ok, now I hope you got a small idea of Python. Have fun with
 			it. I had... :-)</para>
@@ -1307,7 +1307,7 @@ not present, current time as returned by localtime() is used.
 					<listitem><para>reference to the incoming call. This will be used
 					later in all &cs;-functions you call to tell the system which call
 					you mean. You'll only pass this parameter on to other functions - the
-					script can't do anything other with it (it's 
+					script can't do anything other with it (it's
 					<emphasis>opaque</emphasis>).</para></listitem>
 				</varlistentry>
 				<varlistentry>
@@ -1476,7 +1476,7 @@ not present, current time as returned by localtime() is used.
 				by nearly any audio player without problems.</para>
 			</sect3>
 		</sect2>
-		<sect2 id="fax_fileformat"><title>Format of fax files (Structured Fax Files) format</title>
+		<sect2 id="fax_fileformat"><title>Format of fax files (Structured Fax Files)</title>
 			<para>CAPI-compliant drivers will expect and provide fax files in a so called
 			Structured Fax File (SFF). As this seems to be a CAPI-specific format, there
 			are not much tools out there for GNU/Linux which are capable of handling it.
@@ -1495,7 +1495,7 @@ not present, current time as returned by localtime() is used.
 				when you choose "print to file") first. Now you can call GhostScript to
 				convert it to a SFF:</para>
 
-				<screen><command>gs -dNOPAUSE -dQUIET -dBATCH -sDEVICE=cfax -sOutputFile=outfile.sff myfile.ps</command></screen>
+				<screen><command>gs -dNOPAUSE -dBATCH -sDEVICE=cfax -sOutputFile=outfile.sff file.ps</command></screen>
 
 				<para>If you're not sure if it worked you can use <command>sffview</command>
 				as described below.</para>
@@ -1998,22 +1998,25 @@ def idle(capi):<co id="idle_ex2_4"/>
 		destination=job[4:-4]
 		capisuite.log("sending "+job+" to destination "+destination,1)<co id="idle_ex2_5"/>
 		try:
-			(call,result)=capisuite.call_faxG3(capi,1,my_number,destination,60,my_stationID,my_headline)<co id="idle_ex2_6"/>
+			(call,result)=capisuite.call_faxG3(capi,1,my_number,destination,
+			              60,my_stationID,my_headline)<co id="idle_ex2_6"/>
 			if (result!=0):<co id="idle_ex2_7"/>
-				capisuite.log("job "+job+" failed at call setup with reason "+str(hex(result)),1)
+				capisuite.log("job "+job+" failed at call setup with reason "
+				              +str(hex(result)),1)
 				os.rename(my_path+job,my_path+"failed-"+job)<co id="idle_ex2_9"/>
 				return<co id="idle_ex2_10"/>
 			capisuite.fax_send(call,my_path+job)<co id="idle_ex2_11"/>
 			(result,resultB3)=capisuite.disconnect(call)<co id="idle_ex2_12"/>
 		except capisuite.CallGoneError:
 			(result,resultB3)=capisuite.disconnect(call)
-			
+
 		if (result in (0,0x3400,0x3480,0x3490) and resultB3==0):<co id="idle_ex2_13"/>
 			capisuite.log("job "+job+" was successful",1)
 			os.rename(my_path+job,my_path+"done-"+job)
 			return
 		else:
-			capisuite.log("job "+job+" failed during send with reasons "+str(hex(result))+","+str(hex(resultB3)),1)
+			capisuite.log("job "+job+" failed during send with reasons "
+			              +str(hex(result))+","+str(hex(resultB3)),1)
 			os.rename(my_path+job,my_path+"failed-"+job)</programlisting>
 		</example>
 
@@ -2152,7 +2155,7 @@ def idle(capi):<co id="idle_ex2_4"/>
 				played and the function returns. If locking has succeeded, a list of the recorded voice calls is compiled by listing the 
 				user directory, filtering and sorting it. Now, a file called <filename>last_inquiry</filename> is read when it exists.
 				It contains the number of the last heard message. With this information, the old messages can be filtered out to a seperate
-				list and thus the caller can listen to messages he doesn't know alredy first.</para>
+				list and thus the caller can listen to messages he doesn't know already first.</para>
 
 				<para>The number of new messages is said, followed by a small menu where the caller can choose to either record an announcment
 				or hear the recorded messages. If he chooses announcement recording, the function <function>newAnnouncement</function> is called,
