@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.3 $
+#    version              : $Revision: 1.4 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -96,9 +96,9 @@ def uniqueName(directory,basename,suffix):
 	import fcntl,os,re
 	# acquire lock
 	lockfile=open(directory+"cs_lock","w")
-        fcntl.lockf(lockfile,fcntl.LOCK_EX)
+	fcntl.lockf(lockfile,fcntl.LOCK_EX)
 
-        try:
+	try:
 		 countfile=open(directory+basename+"-nextnr","r")
 		 nextnr=int(countfile.readline())
 		 countfile.close()
@@ -113,7 +113,7 @@ def uniqueName(directory,basename,suffix):
 			nextnr=0
 		files.sort()
 
-        newname=directory+basename+"-"+str(nextnr)+"."+suffix
+	newname=directory+basename+"-"+str(nextnr)+"."+suffix
 
 	countfile=open(directory+basename+"-nextnr","w")
 	countfile.write(str(nextnr+1)+'\n')
@@ -140,17 +140,17 @@ def uniqueName(directory,basename,suffix):
 # @param text a string containing the text of the first part of the mail
 # @param attachment name of the file to send as attachment
 def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
-        import email.MIMEBase,email.MIMEText,email.MIMEAudio,email.Encoders,os,sys,popen2,capisuite
-        msg = email.MIMEBase.MIMEBase("multipart","mixed")
-        msg['Subject']=mail_subject
-        msg['From']=mail_from
-        msg['To']=mail_to
+	import email.MIMEBase,email.MIMEText,email.MIMEAudio,email.Encoders,os,sys,popen2,capisuite
+	msg = email.MIMEBase.MIMEBase("multipart","mixed")
+	msg['Subject']=mail_subject
+	msg['From']=mail_from
+	msg['To']=mail_to
 
-        msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
-        msg.epilogue = '' # To guarantee the message ends with a newline
+	msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
+	msg.epilogue = '' # To guarantee the message ends with a newline
 
-        basename=attachment[:attachment.rindex('.')+1]
-        try:
+	basename=attachment[:attachment.rindex('.')+1]
+	try:
 		if (mail_type=="sff"):
 			# sff -> tif
 			ret=os.spawnlp(os.P_WAIT,"sfftobmp","sfftobmp","-tif",attachment,basename+"tif")
@@ -166,7 +166,7 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 				raise "conv-error","Error while calling ps2pdf. Not installed?\n"
 			ps2pdf.tochild.write(tiff2ps.fromchild.read())
 			tiff2ps.fromchild.close()
-			ret=tiff2ps.wait() 
+			ret=tiff2ps.wait()
 			if (ret!=0):
 				raise "conv-error","Error "+str(ret)+" occured during tiff2ps"
 			os.unlink(basename+"tif")
@@ -187,7 +187,7 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 			if (ret or not os.access(basename+"wav",os.R_OK)):
 				raise "conv-error","Error while calling sox. Not installed?"
 			filepart = email.MIMEAudio.MIMEAudio(open(basename+"wav").read(),"x-wav",email.Encoders.encode_base64,name=os.path.basename(basename)+"wav")
-                        filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"wav")
+			filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"wav")
 			os.unlink(basename+"wav")
 		textpart = email.MIMEText.MIMEText(text)
 		msg.attach(textpart)
@@ -309,6 +309,9 @@ def sayNumber(call,number,curr_user,config):
 			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
 
 # $Log: cs_helpers.pyin,v $
+# Revision 1.4  2003/04/08 07:59:56  gernot
+# - replace some wrong space indentations by tabs...
+#
 # Revision 1.3  2003/04/07 15:58:37  gernot
 # - attachments to sent e-mails now get a valid filename
 #
