@@ -1,3 +1,11 @@
+2004-01-17  Gernot Hillier  <gernot@hillier.de>
+	* scripts/cs_helpers.pyin (escape,getAudio,uniqueName,sendMIMEMail,
+	  sendSimpleMail,sayNumber), scripts/idle.py (idle,sendfax,movejob),
+	  scripts/incoming.py (callIncoming,faxIncoming,voiceIncoming,
+	  remoteInquiry,newAnnouncement): use % instead of + operator for
+	  string concatenation (faster; thx to Hartmut Goebel for the hint);
+	  use os.path.join where appropriate
+
 2004-01-11  Gernot Hillier  <gernot@hillier.de>
 	* docs/manual[-de].docbook: many small improvements, typos, etc.
 	* docs/manual[-de].docbook (require_hard): mention Linux 2.6 & mISDN,

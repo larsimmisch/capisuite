@@ -2,7 +2,7 @@
 #         -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.16 $
+#    version              : $Revision: 1.17 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ def readConfig(file=""):
 #
 # @return the escaped filename
 def escape(filename):
-	return "'"+filename.replace("'","'\\''")+"'"
+	return "'%s'" % filename.replace("'","'\\''")
 
 # @brief get an option from the user or global section
 #
@@ -79,12 +79,12 @@ def getAudio(config,user,filename):
 	userdir=getOption(config,"","voice_user_dir")
 	if (userdir==None):
 		raise IOError("option voice_user_dir not found.")
-	userdir=os.path.join(userdir,user)+"/"
+	userdir=os.path.join(userdir,user)
 	if (int(getOption(config,"","user_audio_files","0"))
-	and os.access(userdir+filename,os.R_OK)):
-		return userdir+filename
+	and os.access(os.path.join(userdir,filename),os.R_OK)):
+		return os.path.join(userdir,filename) 
 	else:
-		return systemdir+filename
+		return os.path.join(systemdir,filename)
 
 # @brief thread-safe creation of a unique filename in a directory
 #
@@ -105,17 +105,17 @@ def getAudio(config,user,filename):
 def uniqueName(directory,basename,suffix):
 	import fcntl,os,re
 	# acquire lock
-	lockfile=open(directory+"cs_lock","w")
+	lockfile=open(os.path.join(directory,"cs_lock"),"w")
 	fcntl.lockf(lockfile,fcntl.LOCK_EX)
 
 	try:
-		 countfile=open(directory+basename+"-nextnr","r")
+		 countfile=open("%s-nextnr" % os.path.join(directory,basename),"r")
 		 nextnr=int(countfile.readline())
 		 countfile.close()
 	except IOError:
 		# search for next free sequence number
 		files=os.listdir(directory)
-		files=filter (lambda s: re.match(re.escape(basename)+"-.*\."+re.escape(suffix),s),files)
+		files=filter (lambda s: re.match("%s-.*\.%s" % (re.escape(basename),re.escape(suffix)),s),files)
 		if (len(files)):
 			files=map(lambda s: int(s[len(basename)+1:-len(suffix)-1]),files)
 			nextnr=max(files)+1 # take nr of last file and increase it by one
@@ -123,16 +123,16 @@ def uniqueName(directory,basename,suffix):
 			nextnr=0
 		files.sort()
 
-	newname=directory+basename+"-"+str(nextnr)+"."+suffix
+	newname="%s-%i.%s" % (os.path.join(directory,basename),nextnr,suffix)
 
-	countfile=open(directory+basename+"-nextnr","w")
-	countfile.write(str(nextnr+1)+'\n')
+	countfile=open("%s-nextnr" % os.path.join(directory,basename),"w")
+	countfile.write('%i\n' % (nextnr+1))
 	countfile.close()
 
 	# unlock
 	fcntl.lockf(lockfile,fcntl.LOCK_UN)
 	lockfile.close()
-	os.unlink(directory+"cs_lock")
+	os.unlink(os.path.join(directory,"cs_lock"))
 	return newname
 
 # @brief send email with text and attachment of type sff or la converted to pdf/wav
@@ -163,70 +163,70 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 	try:
 		if (mail_type=="sff"): # normal fax file
 			# sff -> tif
-			ret=os.spawnlp(os.P_WAIT,"sfftobmp","sfftobmp","-tif",attachment,basename+"tif")
-			if (ret or not os.access(basename+"tif",os.F_OK)):
+			ret=os.spawnlp(os.P_WAIT,"sfftobmp","sfftobmp","-tif",attachment,"%stif" % basename)
+			if (ret or not os.access("%stif" % basename,os.F_OK)):
 				raise "conv-error","Error while converting sff to tif. File damaged or sfftobmp not installed?"
 			# tif -> ps -> pdf
 			# the first pipe must be handled by the shell so that the output of
 			# of ps2pdf can be read immediately. Handling this shell in Python
 			# leads to an overflow of the ps2pdf output pipe...
-			command="tiff2ps -a "+escape(basename+"tif")+" | ps2pdf - -"
+			command="tiff2ps -a %s | ps2pdf - -" % escape("%stif" % basename)
 			tiff2pdf=popen2.Popen3(command)
 			if (tiff2pdf.poll()!=-1):
 				raise "conv-error","Error while calling tiff2ps or ps2pdf. Not installed?"
 			tiff2pdf.tochild.close() # we don't need the input pipe
 			# create attachment with pdf stream
-			filepart = email.MIMEBase.MIMEBase("application","pdf",name=os.path.basename(basename)+"pdf")
-			filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"pdf")
+			filepart = email.MIMEBase.MIMEBase("application","pdf",name="%spdf" % os.path.basename(basename))
+			filepart.add_header('Content-Disposition','attachment',filename="%spdf" % os.path.basename(basename))
 			filepart.set_payload(tiff2pdf.fromchild.read())
 			tiff2pdf.fromchild.close()
 			ret=tiff2pdf.wait()
 			if (ret!=0):
-				raise "conv-error","Error "+str(ret)+" occured during tiff2ps or ps2pdf"
-			os.unlink(basename+"tif")
+				raise "conv-error","Error %i occured during tiff2ps or ps2pdf" % ret
+			os.unlink("%stif" % basename)
 			email.Encoders.encode_base64(filepart)
 		elif (mail_type=="cff"): # color fax file
 			# cff -> ps
-			ret=os.spawnlp(os.P_WAIT,"jpeg2ps","jpeg2ps","-m",attachment,"-o",basename+"ps")
-			if (ret or not os.access(basename+"ps",os.F_OK)):
+			ret=os.spawnlp(os.P_WAIT,"jpeg2ps","jpeg2ps","-m",attachment,"-o","%sps" % basename)
+			if (ret or not os.access("%sps" % basename,os.F_OK)):
 				raise "conv-error","Can't convert cff to ps. File damaged or jpeg2ps not installed?"
 			# tif -> ps -> pdf
 			# the first pipe must be handled by the shell so that the output of
 			# of ps2pdf can be read immediately. Handling this shell in Python
 			# leads to an overflow of the ps2pdf output pipe...
-			command="ps2pdf "+escape(basename+"ps")+" -"
+			command="ps2pdf %s -" % escape("%sps" % basename)
 			ps2pdf=popen2.Popen3(command)
 			if (ps2pdf.poll()!=-1):
 				raise "conv-error","Error while calling ps2pdf. Not installed?"
 			ps2pdf.tochild.close() # we don't need the input pipe
 			# create attachment with pdf stream
-			filepart = email.MIMEBase.MIMEBase("application","pdf",name=os.path.basename(basename)+"pdf")
-			filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"pdf")
+			filepart = email.MIMEBase.MIMEBase("application","pdf",name="%spdf" % os.path.basename(basename))
+			filepart.add_header('Content-Disposition','attachment',filename="%spdf" % os.path.basename(basename))
 			filepart.set_payload(ps2pdf.fromchild.read())
 			ps2pdf.fromchild.close()
 			ret=ps2pdf.wait()
 			if (ret!=0):
-				raise "conv-error","Error "+str(ret)+" occured during ps2pdf"
-			os.unlink(basename+"ps")
+				raise "conv-error","Error %i occured during ps2pdf" % ret
+			os.unlink("%sps" % basename)
 			email.Encoders.encode_base64(filepart)
 		elif (mail_type=="la"): # voice file
 			# la -> wav
 			# don't use stdout as sox needs a file to be able to seek in it otherwise the header will be incomplete
-			ret = os.spawnlp(os.P_WAIT,"sox","sox",attachment,"-w ",basename+"wav")
-			if (ret or not os.access(basename+"wav",os.R_OK)):
+			ret = os.spawnlp(os.P_WAIT,"sox","sox",attachment,"-w ","%swav" % basename)
+			if (ret or not os.access("%swav" % basename,os.R_OK)):
 				raise "conv-error","Error while calling sox. File damaged or sox not installed?"
-			filepart = email.MIMEAudio.MIMEAudio(open(basename+"wav").read(),"x-wav",email.Encoders.encode_base64,name=os.path.basename(basename)+"wav")
-			filepart.add_header('Content-Disposition','attachment',filename=os.path.basename(basename)+"wav")
-			os.unlink(basename+"wav")
+			filepart = email.MIMEAudio.MIMEAudio(open("%swav" % basename).read(),"x-wav",email.Encoders.encode_base64,name="%swav" % os.path.basename(basename))
+			filepart.add_header('Content-Disposition','attachment',filename="%swav" % os.path.basename(basename))
+			os.unlink("%swav" % basename)
 		textpart = email.MIMEText.MIMEText(text)
 		msg.attach(textpart)
 		msg.attach(filepart)
 	except "conv-error",errormessage:
-		text+="\n\nERROR occured while converting file: "+errormessage+"\nPlease talk to your friendly administrator.\n"
+		text="%s\n\nERROR occured while converting file: %s\nPlease talk to your friendly administrator.\n" % (text,errormessage)
 		textpart = email.MIMEText.MIMEText(text)
 		msg.attach(textpart)
 
-	sendmail = popen2.Popen3("sendmail -t -f "+escape(mail_from))
+	sendmail = popen2.Popen3("sendmail -t -f %s" % escape(mail_from))
 	if (sendmail.poll()!=-1):
 		capisuite.error("Error while calling sendmail. Not installed?\n")
 		return
@@ -235,7 +235,7 @@ def sendMIMEMail(mail_from,mail_to,mail_subject,mail_type,text,attachment):
 	sendmail.fromchild.close()
 	ret=sendmail.wait()
 	if (ret!=0):
-		capisuite.error("Error while calling sendmail, return code="+str(ret))
+		capisuite.error("Error while calling sendmail, return code=%i" % ret)
 	else:
 		capisuite.log("sendmail finished successful",3)
 
@@ -257,7 +257,7 @@ def sendSimpleMail(mail_from,mail_to,mail_subject,text):
 	msg['From'] = mail_from
 	msg['To'] = mail_to
 
-	sendmail = popen2.Popen3("sendmail -t -f "+escape(mail_from))
+	sendmail = popen2.Popen3("sendmail -t -f %s" % escape(mail_from))
 	if (sendmail.poll()!=-1):
 		capisuite.error("Error while calling sendmail. Not installed?\n")
 		return
@@ -266,7 +266,7 @@ def sendSimpleMail(mail_from,mail_to,mail_subject,text):
 	sendmail.fromchild.close()
 	ret=sendmail.wait()
 	if (ret!=0):
-		capisuite.error("Error while calling sendmail, return code="+str(ret))
+		capisuite.error("Error while calling sendmail, return code=%i" % ret)
 	else:
 		capisuite.log("sendmail finished successful",3)
 
@@ -280,12 +280,12 @@ def sendSimpleMail(mail_from,mail_to,mail_subject,text):
 # @param filename the data filename (with extension!)
 # @param content the content as string
 def writeDescription(filename,content):
-	descr=open(filename[:filename.rindex('.')+1]+"txt","w")
-	descr.write("# Description file for "+filename+"\n")
+	descr=open("%stxt" % filename[:filename.rindex('.')+1],"w")
+	descr.write("# Description file for %s\n" % filename)
 	descr.write("# This if for internal use of CapiSuite.\n")
 	descr.write("# Only change if you know what you do!!\n")
 	descr.write("[GLOBAL]\n")
-	descr.write("filename=\""+filename+"\"\n")
+	descr.write("filename=\"%s\"\n" % filename)
 	descr.write(content)
 	descr.close()
 
@@ -327,18 +327,18 @@ def sayNumber(call,number,curr_user,config):
 				capisuite.audio_send(call,getAudio(config,curr_user,"19.la"),1)
 		else:
 			if (number[1]=="0"):
-				capisuite.audio_send(call,getAudio(config,curr_user,number+".la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,"%s.la" % number),1)
 			elif (number[1]=="1"):
 				capisuite.audio_send(call,getAudio(config,curr_user,"ein.la"),1)
 				capisuite.audio_send(call,getAudio(config,curr_user,"und.la"),1)
-				capisuite.audio_send(call,getAudio(config,curr_user,number[0]+"0.la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,"%s0.la" % number[0]),1)
 			else:
-				capisuite.audio_send(call,getAudio(config,curr_user,number[1]+".la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,"%s.la" % number[1]),1)
 				capisuite.audio_send(call,getAudio(config,curr_user,"und.la"),1)
-				capisuite.audio_send(call,getAudio(config,curr_user,number[0]+"0.la"),1)
+				capisuite.audio_send(call,getAudio(config,curr_user,"%s0.la" % number[0]),1)
 	else:
 		for i in number:
-			capisuite.audio_send(call,getAudio(config,curr_user,i+".la"),1)
+			capisuite.audio_send(call,getAudio(config,curr_user,"%s.la" % i),1)
 
 # Old Log (for new changes see ChangeLog):
 # Revision 1.14  2003/10/19 20:17:54  gernot

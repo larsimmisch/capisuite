@@ -2,7 +2,7 @@
 #              ---------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.12 $
+#    version              : $Revision: 1.13 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ def idle(capi):
 		capisuite.error("global option spool_dir not found.")
 		return
 	
-	done=os.path.join(spool,"done")+"/"
-	failed=os.path.join(spool,"failed")+"/"
+	done=os.path.join(spool,"done")
+	failed=os.path.join(spool,"failed")
 
 	if (not os.access(done,os.W_OK) or not os.access(failed,os.W_OK)):
 		capisuite.error("Can't read/write to the necessary spool dirs")
@@ -45,8 +45,8 @@ def idle(capi):
 		if (udir==None):
 			capisuite.error("global option fax_user_dir not found.")
 			return
-		udir=os.path.join(udir,user)+"/"
-		sendq=os.path.join(udir,"sendq")+"/"
+		udir=os.path.join(udir,user)
+		sendq=os.path.join(udir,"sendq")
 		if (not os.access(udir,os.F_OK)):
 			os.mkdir(udir,0700)
 			os.chown(udir,userdata[2],userdata[3])
@@ -58,31 +58,31 @@ def idle(capi):
 		files=filter (lambda s: re.match("fax-.*\.txt",s),files)
 
 		for job in files:
-			job_fax=job[:-3]+"sff"
-			real_user_c=os.stat(sendq+job).st_uid
-			real_user_j=os.stat(sendq+job_fax).st_uid
+			job_fax="%ssff" % job[:-3]
+			real_user_c=os.stat(os.path.join(sendq,job)).st_uid
+			real_user_j=os.stat(os.path.join(sendq,job_fax)).st_uid
 			if (real_user_j!=pwd.getpwnam(user)[2] or real_user_c!=pwd.getpwnam(user)[2]):
-				capisuite.error("job "+sendq+job_fax+" seems to be manipulated (wrong uid)! Ignoring...")
+				capisuite.error("job %s seems to be manipulated (wrong uid)! Ignoring..." % os.path.join(sendq,job_fax))
 				continue
 
-			lockfile=open(sendq+job[:-3]+"lock","w")
+			lockfile=open(os.path.join(sendq,"%slock" % job[:-3]),"w")
 			# read directory contents
 			fcntl.lockf(lockfile,fcntl.LOCK_EX) # lock so that it isn't deleted while sending
 
-			if (not os.access(sendq+job,os.W_OK)): # perhaps it was cancelled?
+			if (not os.access(os.path.join(sendq,job),os.W_OK)): # perhaps it was cancelled?
 				fcntl.lockf(lockfile,fcntl.LOCK_UN)
 				lockfile.close()
-				os.unlink(sendq+job[:-3]+"lock")
+				os.unlink(os.path.join(sendq,"%slock" % job[:-3]))
 				continue
 
-			control=cs_helpers.readConfig(sendq+job)
+			control=cs_helpers.readConfig(os.path.join(sendq,job))
 			# set DST value to -1 (unknown), as strptime sets it wrong for some reason
 			starttime=(time.strptime(control.get("GLOBAL","starttime")))[0:8]+(-1,)
 			starttime=time.mktime(starttime)
 			if (starttime>time.time()):
 				fcntl.lockf(lockfile,fcntl.LOCK_UN)
 				lockfile.close()
-				os.unlink(sendq+job[:-3]+"lock")
+				os.unlink(os.path.join(sendq,"%slock" % job[:-3]))
 				continue
 
 			tries=control.getint("GLOBAL","tries")
@@ -96,21 +96,23 @@ def idle(capi):
 			if (fromaddress==""):
 				fromaddress=user
 
-			capisuite.log("job "+job_fax+" from "+user+" to "+dialstring+" initiated",1)
-			result,resultB3 = sendfax(capi,sendq+job_fax,outgoing_nr,dialstring,user,config)
+			capisuite.log("job %s from %s to %s initiated" % (job_fax,user,dialstring),1)
+			result,resultB3 = sendfax(capi,os.path.join(sendq,job_fax),outgoing_nr,dialstring,user,config)
 			tries+=1
-			capisuite.log("job "+job_fax+": result was %x,%x" % (result,resultB3),1)
+			capisuite.log("job %s: result was %x,%x" % (job_fax,result,resultB3),1)
 
 			if (result in (0,0x3400,0x3480,0x3490,0x349f) and resultB3==0):
 				movejob(job_fax,sendq,done,user)
-				capisuite.log("job "+job_fax+": finished successfully",1)
-				mailtext="Your fax job to "+addressee+" ("+dialstring+") was sent successfully.\n\n" \
-				  +"Subject: "+subject+"\nFilename: "+job_fax \
-				  +"\nNeeded tries: "+str(tries) \
-				  +("\nLast result: 0x%x/0x%x" % (result,resultB3)) \
-				  +"\n\nIt was moved to file://"+done+user+"-"+job_fax
+				capisuite.log("job %s: finished successfully" % job_fax,1)
+				mailtext="Your fax job to %s (%s) was sent successfully.\n\n" \
+				  "Subject: %s\nFilename: %s\nNeeded tries: %i\n" \
+				  "Last result: 0x%x/0x%x\n\nIt was moved to " \
+				  "file://%s on host \"%s\"" % (addressee,dialstring, \
+				  subject,job_fax,tries,result,resultB3, \
+				  os.path.join(done,"%s-%s" % (user,job_fax)), \
+				  os.uname()[1])
 				cs_helpers.sendSimpleMail(fromaddress,mailaddress,
-				  "Fax to "+addressee+" ("+dialstring+") sent successfully.",
+				  "Fax to %s (%s) sent successfully." % (addressee,dialstring),
 				  mailtext)
 			else:
 				max_tries=int(cs_helpers.getOption(config,"","send_tries","10"))
@@ -121,25 +123,29 @@ def idle(capi):
 				else:
 					next_delay=delays[-1]
 				starttime=time.time()+next_delay
-				capisuite.log("job "+job_fax+": delayed for "+str(next_delay)+" seconds",2)
-				cs_helpers.writeDescription(sendq+job_fax,"dialstring=\""+dialstring+"\"\n"
-				  +"starttime=\""+time.ctime(starttime)+"\"\ntries=\""+str(tries)+"\"\n"
-				  +"user=\""+user+"\"\naddressee=\""+addressee+"\"\nsubject=\""+subject+"\"\n")
+				capisuite.log("job %s: delayed for %i seconds" % (job_fax,next_delay),2)
+				cs_helpers.writeDescription(os.path.join(sendq,job_fax), \
+				  "dialstring=\"%s\"\nstarttime=\"%s\"\ntries=\"%i\"\n" \
+				  "user=\"%s\"\naddressee=\"%s\"\nsubject=\"%s\"\n" \
+				  % (dialstring,time.ctime(starttime),tries,user, \
+				  addressee,subject))
 				if (tries>=max_tries):
 					movejob(job_fax,sendq,failed,user)
-					capisuite.log("job "+job_fax+": failed finally",1)
-					mailtext="I'm sorry, but your fax job to "+addressee+" ("+dialstring \
-					  +") failed finally.\n\nSubject: "+subject \
-					  +"\nFilename: "+job_fax+"\nTries: "+str(tries) \
-					  +"\nLast result: 0x%x/0x%x" % (result,resultB3) \
-					  +"\n\nIt was moved to file://"+failed+user+"-"+job_fax
+					capisuite.log("job %s: failed finally" % job_fax,1)
+					mailtext="I'm sorry, but your fax job to %s (%s) " \
+					  "failed finally.\n\nSubject: %s\n" \
+					  "Filename: %s\nTries: %i\n" \
+					  "Last result: 0x%x/0x%x\n\n" \
+					  "It was moved to file://%s-%s on host %s.\n\n" \
+					  % (addressee,dialstring,subject,job_fax,tries,result, \
+					  resultB3,os.path.join(failed,user),job_fax,os.uname()[1]) 
 					cs_helpers.sendSimpleMail(fromaddress,mailaddress,
-					  "Fax to "+addressee+" ("+dialstring+") FAILED.",
+					  "Fax to %s (%s) FAILED." % (addressee,dialstring),
 					  mailtext)
 
 			fcntl.lockf(lockfile,fcntl.LOCK_UN)
 			lockfile.close()
-			os.unlink(sendq+job[:-3]+"lock")
+			os.unlink("%slock" % os.path.join(sendq,job[:-3]))
 
 def sendfax(capi,job,outgoing_nr,dialstring,user,config):
 	try:
@@ -147,7 +153,7 @@ def sendfax(capi,job,outgoing_nr,dialstring,user,config):
 		timeout=int(cs_helpers.getOption(config,user,"outgoing_timeout","60"))
 		stationID=cs_helpers.getOption(config,user,"fax_stationID")
 		if (stationID==None):
-			capisuite.error("Warning: fax_stationID for user "+user+" not set")
+			capisuite.error("Warning: fax_stationID for user %s not set" % user)
 			stationID=""
  		headline=cs_helpers.getOption(config,user,"fax_headline","")
 		(call,result)=capisuite.call_faxG3(capi,controller,outgoing_nr,dialstring,timeout,stationID,headline)
@@ -159,8 +165,8 @@ def sendfax(capi,job,outgoing_nr,dialstring,user,config):
 		return(capisuite.disconnect(call))
 
 def movejob(job,olddir,newdir,user):
-	os.rename(olddir+job,newdir+user+"-"+job)
-	os.rename(olddir+job[:-3]+"txt",newdir+user+"-"+job[:-3]+"txt")
+	os.rename(os.path.join(olddir,job),os.path.join(newdir,"%s-%s" % (user,job)))
+	os.rename(os.path.join(olddir,"%stxt" % job[:-3]),os.path.join(newdir, "%s-%stxt" % (user,job[:-3])))
 
 #
 # History:

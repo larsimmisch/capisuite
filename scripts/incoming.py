@@ -2,7 +2,7 @@
 #              ----------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
-#    version              : $Revision: 1.15 $
+#    version              : $Revision: 1.16 $
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -54,22 +54,22 @@ def callIncoming(call,service,call_from,call_to):
 						break
 
 	except IOError,e:
-		capisuite.error("Error occured during config file reading: "+e+" Disconnecting...")
+		capisuite.error("Error occured during config file reading: %s Disconnecting..." % e)
 		capisuite.reject(call,0x34A9)
 		return
         # answer the call with the right service
 	if (curr_user==""):
-		capisuite.log("call from "+call_from+" to "+call_to+" ignoring",1,call)
+		capisuite.log("call from %s to %s ignoring" % (call_from,call_to),1,call)
 		capisuite.reject(call,1)
 		return
 	try:
 		if (curr_service==capisuite.SERVICE_VOICE):
 			delay=cs_helpers.getOption(config,curr_user,"voice_delay")
 			if (delay==None):
-				capisuite.error("voice_delay not found for user "+curr_user+"! -> rejecting call")
+				capisuite.error("voice_delay not found for user %s! -> rejecting call" % curr_user)
 				capisuite.reject(call,0x34A9)
 				return
-			capisuite.log("call from "+call_from+" to "+call_to+" for "+curr_user+" connecting with voice",1,call)
+			capisuite.log("call from %s to %s for %s connecting with voice" % (call_from,call_to,curr_user),1,call)
 			capisuite.connect_voice(call,int(delay))
 			voiceIncoming(call,call_from,call_to,curr_user,config)
 		elif (curr_service==capisuite.SERVICE_FAXG3):
@@ -79,7 +79,7 @@ def callIncoming(call,service,call_from,call_to):
 		capisuite.log("connection lost with cause 0x%x,0x%x" % (cause,causeB3),1,call)
 
 # @brief called by callIncoming when an incoming fax call is received
-#
+#  
 # @param call reference to the call. Needed by all capisuite functions
 # @param call_from string containing the number of the calling party
 # @param call_to string containing the number of the called party
@@ -93,17 +93,17 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 			capisuite.error("global option fax_user_dir not found! -> rejecting call")
 			capisuite.reject(call,0x34A9)
 			return
-		udir=os.path.join(udir,curr_user)+"/"
-		if (not os.access(udir,os.F_OK)):
+		udir=os.path.join(udir,curr_user)
+		if (not os.path.exists(udir)):
 			userdata=pwd.getpwnam(curr_user)
 			os.mkdir(udir,0700)
 			os.chown(udir,userdata[2],userdata[3])
-		if (not os.access(udir+"received/",os.F_OK)):
+		if (not os.path.exists(os.path.join(udir,"received"))):
 			userdata=pwd.getpwnam(curr_user)
-			os.mkdir(udir+"received/",0700)
-			os.chown(udir+"received/",userdata[2],userdata[3])
+			os.mkdir(os.path.join(udir,"received"),0700)
+			os.chown(os.path.join(udir,"received"),userdata[2],userdata[3])
 	except KeyError:
-		capisuite.error("user "+curr_user+" is not a valid system user. Disconnecting",call)
+		capisuite.error("user %s is not a valid system user. Disconnecting" % curr_user,call)
 		capisuite.reject(call,0x34A9)
 		return
 	filename="" # assure the variable is defined...
@@ -111,10 +111,10 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 	try:
 		stationID=cs_helpers.getOption(config,curr_user,"fax_stationID")
 		if (stationID==None):
-			capisuite.error("Warning: fax_stationID not found for user "+curr_user+" -> using empty string")
+			capisuite.error("Warning: fax_stationID not found for user %s -> using empty string" % curr_user)
 			stationID=""
 		headline=cs_helpers.getOption(config,curr_user,"fax_headline","") # empty string is no problem here
-		capisuite.log("call from "+call_from+" to "+call_to+" for "+curr_user+" connecting with fax",1,call)
+		capisuite.log("call from %s to %s for %s connecting with fax" % (call_from,call_to,curr_user),1,call)
 		if (already_connected):
 			faxInfo=capisuite.switch_to_faxG3(call,stationID,headline)
 		else:
@@ -123,7 +123,7 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 			faxFormat="cff" # color fax
 		else:
 			faxFormat="sff" # normal b&w fax
-		filename=cs_helpers.uniqueName(udir+"received/","fax",faxFormat)
+		filename=cs_helpers.uniqueName(os.path.join(udir,"received"),"fax",faxFormat)
 		faxInfo=capisuite.fax_receive(call,filename)
 		(cause,causeB3)=capisuite.disconnect(call)
 		capisuite.log("connection finished with cause 0x%x,0x%x" % (cause,causeB3),1,call)
@@ -134,13 +134,13 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 
 	if (os.access(filename,os.R_OK)):
 		cs_helpers.writeDescription(filename,
-		  "call_from=\""+call_from+"\"\ncall_to=\""+call_to+"\"\ntime=\""
-		  +time.ctime()+"\"\ncause=\"0x%x/0x%x\"\n" % (cause,causeB3))
+		  "call_from=\"%s\"\ncall_to=\"%s\"\ntime=\"%s\"\n" \ 
+		  "cause=\"0x%x/0x%x\"\n" % (call_from,call_to,time.ctime(),cause,causeB3))
 		userdata=pwd.getpwnam(curr_user)
 		os.chmod(filename,0600)
 		os.chown(filename,userdata[2],userdata[3])
-		os.chmod(filename[:-3]+"txt",0600)
-		os.chown(filename[:-3]+"txt",userdata[2],userdata[3])
+		os.chmod("%stxt" % filename[:-3],0600)
+		os.chown("%stxt" % filename[:-3],userdata[2],userdata[3])
 
 		fromaddress=cs_helpers.getOption(config,curr_user,"fax_email_from","")
 		if (fromaddress==""):
@@ -150,18 +150,19 @@ def faxIncoming(call,call_from,call_to,curr_user,config,already_connected):
 			mailaddress=curr_user
                 action=cs_helpers.getOption(config,curr_user,"fax_action","").lower()
 		if (action not in ("mailandsave","saveonly")):
-			capisuite.error("Warning: No valid fax_action definition found for user "+curr_user+" -> assuming SaveOnly")
+			capisuite.error("Warning: No valid fax_action definition found for user %s -> assuming SaveOnly" % curr_user)
 			action="saveonly"
 		if (action=="mailandsave"):
-			mailText="You got a fax from "+call_from+" to "+call_to+"\nDate: "+time.ctime()
-			mailText+=str(faxInfo)
+			mailText="You got a fax from %s to %s\nDate: %s" % (call_from,call_to,time.ctime())
 			if (faxInfo!=None and len(faxInfo)>=5):
-				mailText+="Station ID: "+faxInfo[0]+"\nTransmission Details: bit rate "+str(faxInfo[1]) \
-				  +(faxInfo[2] and "hiRes" or "loRes")+(faxInfo[3] and "color" or "")+"\nPages: " \
-				  +str(faxInfo[4])
-			mailText+="\n\nSee attached file.\nThe original file was saved to file://"+filename \
-			  +" on host \""+os.uname()[1]+"\"."
-			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Fax received from "+call_from+" to "+call_to,
+				mailText="%sStation ID: %s\nTransmission Details: bit rate %i " \ 
+				  "%s %s\nPages: %i\n\nSee attached file.\n" \
+				  "The original file was saved to file://%s " \
+				  "on host \"%s\"." % (mailText,faxInfo[0], \
+				  faxInfo[1],(faxInfo[2] and "hiRes" or "loRes"), \
+				  (faxInfo[3] and "color" or ""),faxInfo[4], \
+				  fileName,os.uname()[1])
+			cs_helpers.sendMIMEMail(fromaddress, mailaddress, "Fax received from %s to %s" % (call_from,call_to),
 			  faxFormat, mailText, filename)
 
 # @brief called by callIncoming when an incoming voice call is received
@@ -178,27 +179,27 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 			capisuite.error("global option voice_user_dir not found! -> rejecting call")
 			capisuite.reject(call,0x34A9)
 			return
-		udir=os.path.join(udir,curr_user)+"/"
-		if (not os.access(udir,os.F_OK)):
+		udir=os.path.join(udir,curr_user)
+		if (not os.path.exists(udir)):
 			userdata=pwd.getpwnam(curr_user)
 			os.mkdir(udir,0700)
 			os.chown(udir,userdata[2],userdata[3])
-		if (not os.access(udir+"received/",os.F_OK)):
+		if (not os.path.exists(os.path.join(udir,"received"))):
 			userdata=pwd.getpwnam(curr_user)
-			os.mkdir(udir+"received/",0700)
-			os.chown(udir+"received/",userdata[2],userdata[3])
+			os.mkdir(os.path.join(udir,"received"),0700)
+			os.chown(os.path.join(udir,"received"),userdata[2],userdata[3])
 	except KeyError:
-		capisuite.error("user "+curr_user+" is not a valid system user. Disconnecting",call)
+		capisuite.error("user %s is not a valid system user. Disconnecting" % curr_user,call)
 		capisuite.reject(call,0x34A9)
 		return
-	filename=cs_helpers.uniqueName(udir+"received/","voice","la")
+	filename=cs_helpers.uniqueName(os.path.join(udir,"received"),"voice","la")
 	action=cs_helpers.getOption(config,curr_user,"voice_action","").lower()
 	if (action not in ("mailandsave","saveonly","none")):
-		capisuite.error("Warning: No valid voice_action definition found for user "+curr_user+" -> assuming SaveOnly")
+		capisuite.error("Warning: No valid voice_action definition found for user %s -> assuming SaveOnly" % curr_user)
 		action="saveonly"
 	try:
 		capisuite.enable_DTMF(call)
-		userannouncement=udir+cs_helpers.getOption(config,curr_user,"announcement","announcement.la")
+		userannouncement=os.path.join(udir,cs_helpers.getOption(config,curr_user,"announcement","announcement.la"))
 		pin=cs_helpers.getOption(config,curr_user,"pin","")
 		if (os.access(userannouncement,os.R_OK)):
 			capisuite.audio_send(call,userannouncement,1)
@@ -220,7 +221,7 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 				os.unlink(filename)
 			faxIncoming(call,call_from,call_to,curr_user,config,1)
 		elif (dtmf_list!="" and pin!=""):
-			dtmf_list+=capisuite.read_DTMF(call,3) # wait 5 seconds for input
+			dtmf_list="%s%s" % (dtmf_list,capisuite.read_DTMF(call,3)) # wait 5 seconds for input
 			count=1
 			while (count<3 and pin!=dtmf_list):  # try again if input was wrong
 				capisuite.log("wrong PIN entered...",1,call)
@@ -242,13 +243,13 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 
 	if (os.access(filename,os.R_OK)):
 		cs_helpers.writeDescription(filename,
-		  "call_from=\""+call_from+"\"\ncall_to=\""+call_to+"\"\ntime=\""
-		  +time.ctime()+"\"\ncause=\"0x%x/0x%x\"\n" % (cause,causeB3))
+		  "call_from=\"%s\"\ncall_to=\"%s\"\ntime=\"%s\"\n" \
+		  "cause=\"0x%x/0x%x\"\n" % (call_from,call_to,time.ctime(),cause,causeB3))
 		userdata=pwd.getpwnam(curr_user)
 		os.chmod(filename,0600)
 		os.chown(filename,userdata[2],userdata[3])
-		os.chmod(filename[:-2]+"txt",0600)
-		os.chown(filename[:-2]+"txt",userdata[2],userdata[3])
+		os.chmod("%stxt" % filename[:-2],0600)
+		os.chown("%stxt" % filename[:-2],userdata[2],userdata[3])
 
 		fromaddress=cs_helpers.getOption(config,curr_user,"voice_email_from","")
 		if (fromaddress==""):
@@ -257,12 +258,12 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 		if (mailaddress==""):
 			mailaddress=curr_user
 		if (action=="mailandsave"):
-			mailText="You got a voice call from "+call_from+" to " \
-			  +call_to+"\nDate: "+time.ctime()+"\nLength: " \
-			  +str(msg_length)+" s\n\nSee attached file.\n" \
-			  +"The original file was saved to file://"+filename \
-			  +" on host \""+os.uname()[1]+"\".\n\n"
-			subject="Voice call received from "+call_from+" to "+call_to
+			mailText="You got a voice call from %s to %s\n" \
+			  "Date: %s\nLength: %i s\n\nSee attached file.\n" \
+			  "The original file was saved to file://%s on" \
+			  "host \"%s\".\n\n" % (call_from,call_to,time.ctime(), \
+			  msg_length,filename,os.uname()[1])
+			subject="Voice call received from %s to %s" % (call_from,call_to)
 			cs_helpers.sendMIMEMail(fromaddress,mailaddress,subject,"la",mailText,filename)
 
 # @brief remote inquiry function (uses german wave snippets!)
@@ -280,7 +281,7 @@ def voiceIncoming(call,call_from,call_to,curr_user,config):
 def remoteInquiry(call,userdir,curr_user,config):
 	import time,fcntl,errno,os
 	# acquire lock
-	lockfile=open(userdir+"received/inquiry_lock","w")
+	lockfile=open(os.path.join(userdir,"received/inquiry_lock"),"w")
 	try:
 		fcntl.lockf(lockfile,fcntl.LOCK_EX | fcntl.LOCK_NB) # only one inquiry at a time!
 
@@ -292,15 +293,15 @@ def remoteInquiry(call,userdir,curr_user,config):
 
 	try:
 		# read directory contents
-		messages=os.listdir(userdir+"received/")
+		messages=os.listdir(os.path.join(userdir,"received"))
 		messages=filter (lambda s: re.match("voice-.*\.la",s),messages)  # only use voice-* files
 		messages=map(lambda s: int(re.match("voice-([0-9]+)\.la",s).group(1)),messages) # filter out numbers
 		messages.sort()
 
 		# read the number of the message heard last at the last inquiry
 		lastinquiry=-1
-		if (os.access(userdir+"received/last_inquiry",os.W_OK)):
-			lastfile=open(userdir+"received/last_inquiry","r")
+		if (os.access(os.path.join(userdir,"received/last_inquiry"),os.W_OK)):
+			lastfile=open(os.path.join(userdir,"received/last_inquiry"),"r")
 			lastinquiry=int(lastfile.readline())
 			lastfile.close()
 
@@ -347,8 +348,8 @@ def remoteInquiry(call,userdir,curr_user,config):
 
 			i=0
 			while (i<len(curr_msgs)):
-				filename=userdir+"received/voice-"+str(curr_msgs[i])+".la"
-				descr=cs_helpers.readConfig(filename[:-2]+"txt")
+				filename=os.path.join(userdir,"received/voice-%i.la" % curr_msgs[i])
+				descr=cs_helpers.readConfig("%stxt" % filename[:-2])
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht.la"),1)
 				cs_helpers.sayNumber(call,str(i+1),curr_user,config)
 				capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"von.la"),1)
@@ -372,14 +373,14 @@ def remoteInquiry(call,userdir,curr_user,config):
 					cmd=capisuite.read_DTMF(call,0,1)
 				if (cmd=="1"):
 					os.remove(filename)
-					os.remove(filename[:-2]+"txt")
+					os.remove("%stxt" % filename[:-2])
 					del curr_msgs[i]
 					capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"nachricht-geloescht.la"))
 				elif (cmd=="4"):
 					if (curr_msgs[i]>lastinquiry):
 						lastinquiry=curr_msgs[i]
-						lastfile=open(userdir+"received/last_inquiry","w")
-						lastfile.write(str(curr_msgs[i])+"\n")
+						lastfile=open(os.path.join(userdir,"received/last_inquiry"),"w")
+						lastfile.write("%i\n" % curr_msgs[i])
 						lastfile.close()
 					i+=1
 				elif (cmd=="5"):
@@ -390,7 +391,7 @@ def remoteInquiry(call,userdir,curr_user,config):
 		# unlock
 		fcntl.lockf(lockfile,fcntl.LOCK_UN)
 		lockfile.close()
-		os.unlink(userdir+"received/inquiry_lock")
+		os.unlink(os.path.join(userdir,"received/inquiry_lock"))
 
 # @brief remote inquiry: record new announcement (uses german wave snippets!)
 #
@@ -403,16 +404,16 @@ def newAnnouncement(call,userdir,curr_user,config):
 	capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"beep.la"))
 	cmd=""
 	while (cmd!="1"):
-		capisuite.audio_receive(call,userdir+"announcement-tmp.la",60,3)
+		capisuite.audio_receive(call,os.path.join(userdir,"announcement-tmp.la"),60,3)
 		capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"neue-ansage-lautet.la"))
-		capisuite.audio_send(call,userdir+"announcement-tmp.la")
+		capisuite.audio_send(call,os.path.join(userdir,"announcement-tmp.la"))
 		capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"wenn-einverstanden-1.la"))
 		cmd=capisuite.read_DTMF(call,0,1)
 		if (cmd!="1"):
 			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"bitte-neue-ansage-kurz.la"))
 			capisuite.audio_send(call,cs_helpers.getAudio(config,curr_user,"beep.la"))
-	userannouncement=userdir+cs_helpers.getOption(config,curr_user,"announcement","announcement.la")
-	os.rename(userdir+"announcement-tmp.la",userannouncement)
+	userannouncement=os.path.join(userdir,cs_helpers.getOption(config,curr_user,"announcement","announcement.la"))
+	os.rename(os.path.join(userdir,"announcement-tmp.la"),userannouncement)
 	userdata=pwd.getpwnam(curr_user)
 	os.chown(userannouncement,userdata[2],userdata[3])
 
