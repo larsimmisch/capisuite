@@ -2,7 +2,7 @@
     @brief Contains CallOutgoingModule - Call Module for establishment of an outgoing connection and wait for successful connect
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -17,7 +17,10 @@
 #include "calloutgoing.h"
 
 CallOutgoing::CallOutgoing(Capi *capi, _cdword controller, string call_from, string call_to, Connection::service_t service, int timeout, string faxStationID, string faxHeadline, bool clir)
-:CallModule(NULL,timeout,false),capi(capi),controller(controller),call_from(call_from),call_to(call_to),service(service),faxStationID(faxStationID),faxHeadline(faxHeadline),clir(clir)
+:CallModule(NULL,-1,false),capi(capi),controller(controller)
+,call_from(call_from),call_to(call_to),service(service),
+faxStationID(faxStationID),faxHeadline(faxHeadline),clir(clir)
+,saved_timeout(timeout)
 {}
 
 void
@@ -25,8 +28,9 @@ CallOutgoing::mainLoop() throw (CapiExternalError, CapiMsgError)
 {
 	conn=new Connection(capi,controller,call_from,clir,call_to,service,faxStationID,faxHeadline);
 	conn->registerCallInterface(this);
-	
+
 	try {
+		// first, we have no timeout, timeout is activated in alerting()!
 		CallModule::mainLoop();
 	}
 	catch (CapiWrongState) {} // filter abort exception
@@ -53,6 +57,13 @@ CallOutgoing::callConnected()
 	finish=true;
 }
 
+void
+CallOutgoing::alerting()
+{
+	// now activate the timeout!
+	resetTimer(saved_timeout);
+}
+
 Connection*
 CallOutgoing::getConnection()
 {
@@ -68,8 +79,12 @@ CallOutgoing::getResult()
 /*  History
 
 $Log: calloutgoing.cpp,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/04/17 10:52:12  gernot
+- timeout value is now measured beginning at the moment the other party is
+  signalled
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.3  2002/12/06 13:10:34  ghillie
 - corrected some wrong semantics, don't throw CapiWrongState any more

@@ -2,7 +2,7 @@
     @brief Contains CallOutgoing - Call Module for establishment of an outgoing connection and wait for successful connect
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.1 $
+    $Revision: 1.2 $
 */
 
 /***************************************************************************
@@ -30,6 +30,9 @@ using namespace std;
     	- timeout for connecting exceeded
 	- error during call setup
 	- successful connect
+
+    The timeout will be counted from the moment the other party is alerted,
+    not from the moment we initiate the call!
 
     You can get the reason for exiting with getResult().
 
@@ -66,6 +69,10 @@ class CallOutgoing: public CallModule
 		*/
 		void callConnected();
 
+		/** @brief activate the timeout in the moment the other party starts getting alerted
+		*/
+		void alerting();
+
 		/** @brief return reference to the established connection
 
 		    @return reference to the established connection, NULL if timout exceeded w/o successful connection
@@ -90,8 +97,9 @@ class CallOutgoing: public CallModule
 		       faxHeadline; ///< fax headlint to use
 		Capi *capi; ///< reference to object of Capi to use
 		_cdword controller; ///< controller to use
-		bool clir; ///< enable CLIR? (don't show own number to called party)   
+		bool clir; ///< enable CLIR? (don't show own number to called party)
 		int result; ///< result of the call establishment process (0=success, 1=timeout exceeded, 2=aborted w/o reason, 0x3301-0x34FF=CAPI errors)
+		int saved_timeout; ///< we'll save the given timeout for later as first phase (wait for alerting) doesn't need timeout
 };
 
 #endif
@@ -99,8 +107,12 @@ class CallOutgoing: public CallModule
 /* History
 
 $Log: calloutgoing.h,v $
-Revision 1.1  2003/02/19 08:19:53  gernot
-Initial revision
+Revision 1.2  2003/04/17 10:52:12  gernot
+- timeout value is now measured beginning at the moment the other party is
+  signalled
+
+Revision 1.1.1.1  2003/02/19 08:19:53  gernot
+initial checkin of 0.4
 
 Revision 1.2  2002/12/06 13:12:23  ghillie
 - mainLoop() doesn't throw CapiWrongState any more
