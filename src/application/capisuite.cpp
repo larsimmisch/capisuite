@@ -2,7 +2,7 @@
     @brief Contains CapiSuite - Main application class, implements ApplicationInterface
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.2 $
+    $Revision: 1.3 $
 */
 
 /***************************************************************************
@@ -48,7 +48,7 @@ void hup_handler(int)
 }
  
 CapiSuite::CapiSuite(int argc,char **argv)
-:capi(NULL),waiting(),instances(),config(),idle(NULL),py_state(NULL),debug(NULL),error(NULL),finish_flag(false),custom_configfile(),daemonmode(false)
+:capi(NULL),waiting(),config(),idle(NULL),py_state(NULL),debug(NULL),error(NULL),finish_flag(false),custom_configfile(),daemonmode(false)
 {
 	if (capisuiteInstance!=NULL) {
 		cerr << "FATAL error: More than one instances of CapiSuite created";
@@ -202,8 +202,6 @@ CapiSuite::mainLoop()
 		while (waiting.size()) {
 			Connection* conn=waiting.front();
 			waiting.pop();
-			if (instances.count(conn))
-				throw ApplicationError("double used connection reference","CapiSuite::mainLoop()");
 
 			IncomingScript *instance;
 			try {
@@ -211,7 +209,7 @@ CapiSuite::mainLoop()
 			}
 			catch (ApplicationError e)
 			{
-				(*error) << prefix() << "ERROR: can't start CallControl thread, message was: " << e << endl;
+				(*error) << prefix() << "ERROR: can't start IncomingScript thread, message was: " << e << endl;
 				delete instance;
 			}
 			// otherwise it will self-delete!
@@ -400,6 +398,10 @@ CapiSuite::help()
 /* History
 
 $Log: capisuite.cpp,v $
+Revision 1.3  2003/02/25 13:22:42  gernot
+- remove old, unused attribute
+- correct some forgotten references to CallControl to IncomingScript
+
 Revision 1.2  2003/02/21 23:21:44  gernot
 - follow some a little bit stricter rules of gcc-2.95.3
 
