@@ -641,6 +641,15 @@ make install</screen>
 							overwritten in the user sections individually.</para>
 						</listitem>
 					</varlistentry>
+					<varlistentry id="fax_dial_prefix">
+						<term><option>dial_prefix=""</option></term>
+						<listitem><para>If anything is entered here, it will be used as a prefix which is added to any
+						number given to <command>capisuitefax</command> as prefix. This is e.g. very helpful if your 
+						ISDN adapter is connected to a PBX which needs "0" for external calls. It's also possible to
+						disable its usage later for a certain fax document, so setting this will certainly not prevent
+						you from placing internal calls without prefix.</para>
+						</listitem>
+					</varlistentry>
 					<varlistentry id="fax_outgoing_timeout">
 						<term><option>outgoing_timeout="60"</option></term>
 						<listitem><para>Default setting which defines how many seconds we will wait for a successful connection after
@@ -941,7 +950,7 @@ make install</screen>
 
 			<para>The following options are recognized by <command>capisuitefax</command>:</para>
 
-			<screen>capisuitefax [-q] -d dialstring file1 [file2...]</screen>
+			<screen>capisuitefax [-q] [-n] -d dialstring file1 [file2...]</screen>
 			<screen>capisuitefax [-q] -a id</screen>
 			<screen>capisuitefax [-h] [-l]</screen>
 			<variablelist>
@@ -961,6 +970,10 @@ make install</screen>
 				<varlistentry>
 					<term><option>-l</option></term>
 					<listitem><para>Shows the jobs which are currenty in the send queue.</para></listitem>
+				</varlistentry>
+				<varlistentry>
+					<term><option>-n</option></term>
+					<listitem><para>Don't use the configured dial prefix for this job. Useful for internal jobs.</para></listitem>
 				</varlistentry>
 				<varlistentry>
 					<term><option>-q</option></term>

@@ -112,5 +112,7 @@
 	* scripts: fixed remote inquiry: mixed new and old messages sometimes
 	* core: fixed quite some problems when doing "make install" to an arbitrary
 	  prefix, thanks to Achim Bohnet for pointing me to these
+	* core: moved "capisuite" to <prefix>/sbin instead of bin
 	* scripts: stricter permissions of received files and dirs, thx to Achim Bohnet
-	  this fixes bug #544	
+	  this fixes bug #544
+	* scripts: dial_prefix implemented, closes bug #537	

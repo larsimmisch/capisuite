@@ -1,4 +1,4 @@
-# $Id: fax.confin,v 1.2 2003/02/21 13:12:19 gernot Exp $
+# $Id: fax.confin,v 1.3 2003/03/18 23:12:00 gernot Exp $
 #
 # This is the fax configuration file for the scripts distributed with CapiSuite
 #
@@ -79,7 +79,15 @@ outgoing_MSN=""
 #
 # This value decides how long to wait for a successful connection if the other
 # party doesn't answer the call at once.
-outgoing_timeout="60"
+outgoing_timeout="60"   
+
+# dial_prefix
+#
+# This value is used as a prefix for all outgoing numbers when using
+# capisuitefax for enqueueing a fax document. It will be saved in the
+# description file and so won't change anything for already enqueued
+# documents.
+dial_prefix=""
 
 # fax_stationID
 #
