@@ -2,7 +2,7 @@
     @brief Contains the Python module and integration routines
 
     @author Gernot Hillier <gernot@hillier.de>
-    $Revision: 1.4 $
+    $Revision: 1.5 $
 */
 
 /***************************************************************************
@@ -316,7 +316,12 @@ capisuite_audio_receive(PyObject *, PyObject *args)
     @param args Contains the python parameters. These are:
     	- <b>call</b> Reference to the current call
     	- <b>filename (string)</b> where to save received fax
-    @return None
+    @return None or a tuple (stationID,rate,hiRes,format,pages) containing the values:
+    	- fax station ID from the calling party (String)
+	- bit rate which was used for connecting (Integer)
+	- high (1) or low (0) resolution (Integer)
+	- transmit format: 0=SFF,black&white, 1=ColorJPEG (Integer)
+	- number of received pages (Integer)
 */
 static PyObject*
 capisuite_fax_receive(PyObject *, PyObject *args)
@@ -345,8 +350,14 @@ capisuite_fax_receive(PyObject *, PyObject *args)
 		return NULL;
 	}
 
-	Py_XINCREF(Py_None);
-	return (Py_None);
+	Connection::fax_info_t* fax_info = conn->getFaxInfo();
+	if (fax_info) {
+		PyObject *r=Py_BuildValue("siiii",fax_info->stationID.c_str(),fax_info->rate,fax_info->hiRes,fax_info->format,fax_info->pages);
+		return (r);
+	} else {
+		Py_XINCREF(Py_None);
+		return (Py_None);
+	}
 }
 
 /** @brief Send a fax in a fax mode connection
@@ -362,6 +373,12 @@ capisuite_fax_receive(PyObject *, PyObject *args)
     @param args Contains the python parameters. These are:
     	- <b>call</b> Reference to the current call
     	- <b>filename (string)</b> file to send
+    @return None or a tuple (stationID,rate,hiRes,format,pages) containing the values:
+    	- fax station ID from the called party (String)
+	- bit rate which was used for connecting (Integer)
+	- high (1) or low (0) resolution (Integer)
+	- transmit format: 0=SFF,black&white, 1=ColorJPEG (Integer)
+	- number of sent pages (Integer)
     @return None
 */
 static PyObject*
@@ -391,8 +408,14 @@ capisuite_fax_send(PyObject *, PyObject *args)
 		return NULL;
 	}
 
-	Py_XINCREF(Py_None);
-	return (Py_None);
+	Connection::fax_info_t* fax_info = conn->getFaxInfo();
+	if (fax_info) {
+		PyObject *r=Py_BuildValue("siiii",fax_info->stationID.c_str(),fax_info->rate,fax_info->hiRes,fax_info->format,fax_info->pages);
+		return (r);
+	} else {
+		Py_XINCREF(Py_None);
+		return (Py_None);
+	}
 }
 
 /** @brief Disconnect connection.
@@ -955,6 +978,9 @@ capisuitemodule_init () throw (ApplicationError)
 /* History
 
 $Log: capisuitemodule.cpp,v $
+Revision 1.5  2003/07/20 10:31:52  gernot
+- return information about transfers in fax receive/send, audio receive
+
 Revision 1.4  2003/05/25 13:38:30  gernot
 - support reception of color fax documents
 
