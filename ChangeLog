@@ -1,3 +1,6 @@
+2004-01-18  Gernot Hillier  <gernot@hillier.de>
+	* scripts/cs_helpers.pyin (sendMIMEMail): remove space in sox call
+
 2004-01-17  Gernot Hillier  <gernot@hillier.de>
 	* scripts/cs_helpers.pyin (escape,getAudio,uniqueName,sendMIMEMail,
 	  sendSimpleMail,sayNumber), scripts/idle.py (idle,sendfax,movejob),
