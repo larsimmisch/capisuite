@@ -100,4 +100,11 @@
 	* added cron script for cleaning up spool dirs
 	* fixed bug in rc.capisuite (was also started when not configured)
 	* scripts: remote inquiry supports new and old messages now
-	* scripts: capisuitefax can show sendqueue and delete jobs now	
+	* scripts: capisuitefax can show sendqueue and delete jobs now
+
+0.4.1 (tag NN):
+===============
+	* cron script: redirect error output to /dev/null
+	* scripts: removed os.setuid() in incoming.py: it's not allowed
+          to setuid a thread -> this lead to bug #527 (idle.py freezed)
+	* cosmetical improvements to make old gcc-2.95 more happy	
