@@ -2,7 +2,7 @@ spooldir = @localstatedir@/spool/capisuite
 pkgsysconfdir = @sysconfdir@/capisuite
 docdir = @docdir@
 doc_DATA = COPYING NEWS README
-EXTRA_DIST = rc.capisuite.in capisuite.spec capisuite.cronin
+EXTRA_DIST = rc.capisuite.in capisuite.cronin cronjob.conf
 
 SUBDIRS = src scripts docs
 
