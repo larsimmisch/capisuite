@@ -6,15 +6,8 @@
 	  an error when sending the mail. Simply don't set these parameters
 	  any more if you don't need them!
 
-	* documentation: 5 man pages are now also created: capisuite(8),
-	  capisuite.conf(5), fax.conf(5), answering_machine.conf(5),
-	  capisuitefax(1) (fixes bug #13, thx to Achim Bohnet for reporting)
-
 	* scripts: remote inquiry now uses correct female form ("eine Nachricht"
 	  instead of "eins Nachricht", thx to Eckhard Rggeberg and J�g Fester)
-
-	* scripts: capisuitefax now also accepts PDF files (thx to Jochen Meyer
-	  and Eckhard Rggeberg for reporting)
 
 	* scripts: capisuitefax now submits a single job if several
 	  files are given (implemented by Hartmut Goebel, fixes bug #38)
@@ -31,9 +24,6 @@
 	* scripts: the mails sent can now be configured in the special sections
 	  MailFaxReceived, MailFaxSent, MailFaxFailed and MailVoiceReceived in
 	  answering_machine.conf and fax.conf (implemented by Hartmut Goebel)
-
-	* core: fixed a bug which could lead to a crash when some unexpected
-	  CAPI messages arrived (thx to Karsten Keil for analyzing)
 
 	* scripts: the mails sent with received voice and fax calls will now
 	  contain some general information like length of calls, number of
@@ -61,14 +51,24 @@
 0.4.5
 =====
 
+	* documentation: 5 man pages are now also created: capisuite(8),
+	  capisuite.conf(5), fax.conf(5), answering_machine.conf(5),
+	  capisuitefax(1) (fixes bug #13, thx to Achim Bohnet for reporting)
+
 	* scripts: prevent cropping of fax pages by auto-scaling
 
 	* scripts: use a SMTP connection to localhost instead of calling the
 	  sendmail binary for sending mails. Many reports showed that calling
 	  sendmail manually doesn't work well on quite some systems
 
+	* scripts: capisuitefax now also accepts PDF files (thx to Jochen Meyer
+	  and Eckhard Rggeberg for reporting)
+
 	* core: behave correctly when DATA_B3_CONF messages come early (thx to
 	  Karsten Keil for analyzing and a nice fix!)
+
+	* core: fixed a bug which could lead to a crash when some unexpected
+	  CAPI messages arrived (thx to Karsten Keil for analyzing)
 
 	* core: fixed compile problem with new capi4linux library
 
