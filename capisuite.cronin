@@ -1,13 +1,12 @@
 #!/bin/sh
 #
-# capisuite. CapiSuite cleanup script, should be run regularly 
+# CapiSuite cleanup script, should be run regularly 
 # by cron. It's only useful for the default scripts provided 
 # with CapiSuite. 
 #
 # It will read a central configuration file placed in 
-# /etc/capisuite/cronjob.conf where you must define a variable
-# called MAX_DAYS which defines how many days a received or sent
-# file may stay in the spool dirs. 
+# @pkgsysconfdir@/cronjob.conf where you must define variables
+# which defines how many days a file may stay in the spool dirs
 #
 # Author: Gernot Hillier <gernot@hillier.de>
 #
@@ -20,19 +19,31 @@ umask 022
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 export PATH
 
+# make sure default values are set
+MAX_DAYS_RCVD=0 
+MAX_DAYS_DONE=0
+MAX_DAYS_FAILED=0
+
 # do nothing if there is no global config
 test -r @pkgsysconfdir@/cronjob.conf || exit
+# read cronjob.conf
+. @pkgsysconfdir@/cronjob.conf
 
-for i in @spooldir@/users/*/received @spooldir@/done @spooldir@/failed; do
-   # reset defaults
-   test -r @pkgsysconfdir@/cronjob.conf && . @pkgsysconfdir@/cronjob.conf
-   # user can overwrite default values
-   test -r $i/cronjob.conf && . $i/cronjob.conf
-   
-   test "$MAX_DAYS" -gt 0 2> /dev/null || continue
-   find $i/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \; 2>/dev/null
-   find $i/. -name "*voice-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS -exec rm {} \; 2>/dev/null
-done;
+if test "$MAX_DAYS_RCVD" -gt 0; then
+	for i in `find @spooldir@/users/ -mindepth 2 -maxdepth 2 -type d -name received`; do
+		find $i/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS_RCVD -exec rm {} \; 
+		find $i/. -name "*voice-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS_RCVD -exec rm {} \; 
+	done
+fi
+
+if test "$MAX_DAYS_DONE" -gt 0; then
+	find @spooldir@/done/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS_DONE -exec rm {} \; 
+
+fi
+
+if test "$MAX_DAYS_FAILED" -gt 0; then
+	find @spooldir@/failed/. -name "*fax-[0-9]*.*" ! -type d ! -type s -atime +$MAX_DAYS_FAILED -exec rm {} \;
+fi
 
 exit 0
 
