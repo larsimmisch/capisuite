@@ -18,6 +18,7 @@
 #include <fstream>
 #include <stdexcept> // for out_of_range
 #include <pthread.h>
+#include <string.h>
 #include <errno.h> // for errno
 #include <iconv.h> // for iconv(), iconv_open(), iconv_close()
 #include "capi.h"
