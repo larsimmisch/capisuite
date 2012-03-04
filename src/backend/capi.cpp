@@ -133,9 +133,9 @@ Capi::alert_req(_cdword plci) throw (CapiMsgError)
 	}
 	unsigned info=ALERT_REQ(&CMSG, applId, messageNumber++, plci, 
 	    NULL, NULL, NULL, NULL
-	#ifdef HAVE_NEW_CAPI4LINUX
+#ifndef HAVE_CAPI_LIBRARY_V2
 	    , NULL
-	#endif
+#endif
 	    );
 	if (debug_level >= 2) {
 	    	debug << prefix() << "info: " << info << endl;
@@ -160,8 +160,19 @@ Capi::connect_req(Connection *conn, _cdword controller, _cword CIPValue, _cstruc
 		debug << prefix() << ">CONNECT_REQ: ApplId 0x" << hex << applId << ", MsgNr 0x" << messageNumber << ", Controller 0x" << controller
 		<< " CIPValue 0x" << CIPValue << ", B1proto 0x" << B1protocol << ", B2proto 0x" << B2protocol <<", B3proto 0x" << B3protocol << endl;
 	}
-	unsigned info=CONNECT_REQ(&CMSG, applId, messageNumber, controller, CIPValue, calledPartyNumber, callingPartyNumber, NULL, NULL,
-		B1protocol, B2protocol, B3protocol, B1configuration, B2configuration, B3configuration, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	unsigned info=CONNECT_REQ(
+		&CMSG, applId, messageNumber, controller, CIPValue, 
+		calledPartyNumber, callingPartyNumber, NULL, NULL,
+		B1protocol, B2protocol, B3protocol, B1configuration, B2configuration, 
+		B3configuration,
+#ifndef HAVE_CAPI_LIBRARY_V2
+		NULL,
+#endif
+		NULL, NULL, NULL, NULL, NULL, NULL, NULL
+#ifndef HAVE_CAPI_LIBRARY_V2
+		, NULL
+#endif
+		);
 	if (debug_level >= 2) {
 		debug << prefix() << "info: " << info << endl;
 	}
@@ -194,7 +205,13 @@ Capi::select_b_protocol_req (_cdword plci, _cword B1protocol, _cword B2protocol,
 
 	if (debug_level >= 2)	    	debug << prefix() << ">SELECT_B_PROTOCOL_REQ: ApplId 0x" << hex << applId << ", MsgNr 0x" << messageNumber << ", PLCI 0x" << plci
 	 		     << ", B1protocol " << B1protocol << ", B2protocol " << B2protocol << ", B3protocol " << B3protocol << endl;
-	unsigned info=SELECT_B_PROTOCOL_REQ(&CMSG, applId, messageNumber++, plci, B1protocol, B2protocol, B3protocol, B1configuration, B2configuration, B3configuration);
+	unsigned info=SELECT_B_PROTOCOL_REQ(
+		&CMSG, applId, messageNumber++, plci, B1protocol, B2protocol, 
+		B3protocol, B1configuration, B2configuration, B3configuration
+#ifndef HAVE_CAPI_LIBRARY_V2
+		, NULL
+#endif
+		);
 	if (debug_level >= 2)
 			debug << prefix() << "info: " << info << endl;
 
@@ -308,7 +325,15 @@ Capi::connect_resp (_cword messageNumber, _cdword plci, _cword reject, _cword B1
 		 << reject << ", B1proto 0x" << B1protocol << ", B2proto 0x" << B2protocol << ", B3proto 0x" << B3protocol << endl;
 
 	_cmsg new_message;
-	unsigned info=CONNECT_RESP(&new_message, applId, messageNumber, plci, reject, B1protocol, B2protocol, B3protocol, B1configuration, B2configuration, B3configuration, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	unsigned info=CONNECT_RESP(
+		&new_message, applId, messageNumber, plci, reject, B1protocol, 
+		B2protocol, B3protocol, B1configuration, B2configuration, 
+		B3configuration, 
+#ifndef HAVE_CAPI_LIBRARY_V2
+		NULL,
+#endif
+		NULL, NULL, NULL, NULL, NULL, NULL, NULL
+		);
 	if (debug_level >= 2)
 		debug << prefix() << "info: " << info << endl;
 
