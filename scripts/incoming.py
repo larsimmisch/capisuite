@@ -16,7 +16,8 @@
 import time, os
 
 # CapiSuite imports
-import capisuite, cs_helpers
+import capisuite
+import capisuite.helpers as helpers
 from capisuite.config import NoOptionError
 import capisuite.fileutils as fileutils
 import capisuite.fax
@@ -72,7 +73,7 @@ def callIncoming(call, service, call_from, call_to):
 
     # answer the call with the right service
     try:
-	if service == core.SERVICE_VOICE:
+        if service == core.SERVICE_VOICE:
             voiceIncoming(config, user, call)
         elif service == core.SERVICE_FAXG3:
             faxIncoming(config, user, call, 0)
@@ -152,7 +153,7 @@ def faxIncoming(config, user, call, already_connected):
                 fromaddress = config.getUser(user, "fax_email_from", user)
                 mailaddress = config.getUser(user, "fax_email", user)
 
-                cs_helpers.sendMIMEMail(
+                helpers.sendMIMEMail(
                     fromaddress, mailaddress,
                     config.get('MailFaxReceived', 'subject') % faxInfo,
                     faxInfo['format'],
@@ -192,8 +193,9 @@ def voiceIncoming(config, user, call):
         action = _getAction(config, user, "voice_action",
                             ("saveonly", "mailandsave", "none"))
         receivedQ = fileutils._mkuserdir(user, userdir, user, "received")
-        userannouncement = os.path.join(userdir, user,
-                        config.getUser(user, "announcement", "announcement.la"))
+        userannouncement = os.path.join(
+            userdir, user,
+            config.getUser(user, "announcement", "announcement.la"))
         pin = config.getUser(user, "pin", "")
         filename = None # assure it's defined
 
@@ -256,7 +258,7 @@ def voiceIncoming(config, user, call):
         if action == "mailandsave":
             info['hostname'] = os.uname()[1]
             info['msg_length'] = msg_length
-            cs_helpers.sendMIMEMail(
+            helpers.sendMIMEMail(
                 fromaddress, mailaddress,
                 config.get('MailVoiceReceived', 'subject') % info,
                 "la",

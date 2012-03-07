@@ -21,7 +21,7 @@ from capisuite.config import NoOptionError
 import capisuite.core as core
 
 # todo: eliminate this
-import cs_helpers
+import capisuite.helpers as helpers
 
 # sendfax is now imported from capisuite.fax
 
@@ -136,7 +136,7 @@ def idle(capi):
                     core.log("job %s: finished successfully" % jobnum, 1)
                     control = capisuite.fax.moveJob(controlfile, doneQ, user)
                     sendinfo.update(control.items())
-                    cs_helpers.sendSimpleMail(
+                    helpers.sendSimpleMail(
                         fromaddress, mailaddress,
                         config.get('MailFaxSent', 'subject') % sendinfo,
                         config.get('MailFaxSent', 'text') % sendinfo)
@@ -145,7 +145,7 @@ def idle(capi):
                     core.log("job %s: failed finally" % jobnum, 1)
                     control = capisuite.fax.moveJob(controlfile, failedQ, user)
                     sendinfo.update(control.items())
-                    cs_helpers.sendSimpleMail(
+                    helpers.sendSimpleMail(
                         fromaddress, mailaddress,
                         config.get('MailFaxFailed', 'subject') % sendinfo,
                         config.get('MailFaxFailed', 'text') % sendinfo)

@@ -1,0 +1,239 @@
+# -*- mode: python -*-
+#         cs_helpers.py - some helper functions for CapiSuite scripts
+#         -----------------------------------------------------------
+#    copyright            : (C) 2002 by Gernot Hillier
+#    email                : gernot@hillier.de
+#    version              : $Revision: 1.20 $
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+
+import os, commands
+from capisuite.config import *
+from capisuite.voice import sayNumber, getAudio
+
+# Convert sff files to tiff files. This is placed in an extra function
+# because the sfftobmp tool used for this conversion has changed its
+# parameters recently.
+sfftobmp_major_version = 3
+if sfftobmp_major_version <= 2:
+    def sff2tif(infile, outfile):
+        __call('sff to tif', "sfftobmp", "-tif", infile, outfile)
+else:
+    def sff2tif(infile, outfile):
+        __call('sff to tif', "sfftobmp", "-tif", infile, "-o", outfile)
+
+# Note: readConfig is now imported from capisuite.config
+
+# @brief escape a argument to include it savely in a shell command
+#
+# This is just a wrapper to commands.mkarg which strips the leading
+# space which mkarg() adds.
+#
+# @return the escaped argument
+def escape(arg):
+    arg = commands.mkarg(arg)
+    if arg[0] == ' ':
+        arg = arg[1:]
+    return arg
+
+def getOption(config, user, option, default=None):
+    return config.getUser(user, option, default)
+
+# Note: getAudio is now imported from capisuite.voice
+# Note: uniqueName is now imported from capisuite.fileutils
+def uniqueName(*args, **kwargs):
+    return capisuite.fileutils.uniqueName(*args, **kwargs)[1]
+
+def __sendmail(mail_from, mail_to, msg):
+    import popen2, capisuite.core
+
+    r,w = popen2.popen2("{ /usr/sbin/sendmail -t -f %s } 2>&1" % escape(mail_from))
+    try:
+        w.write(msg.as_string())
+    except IOError: #Errno 32: Broken Pipe
+        capisuite.core.error("Error while calling sendmail. Not installed?\n")
+        return 0
+    w.close()
+    #ret = sendmail.wait()
+    text = r.read()
+    r.close()
+    if text:
+        capisuite.core.error("Error while calling sendmail")#, return code=%i" % ret)
+        capisuite.core.error(text)
+        return 0
+    capisuite.core.log("sendmail finished successful",3)
+    return 1
+
+def __sendmail(fromaddr, toaddr, msg):
+    import smtplib, capisuite.core
+    smtpserver, port = 'localhost', 25
+    server = smtplib.SMTP(smtpserver, port)
+    server.sendmail(fromaddr, (toaddr), msg.as_string())
+    server.quit()
+    capisuite.core.log("mail sent successfully",3)
+    return 1
+
+
+def __call(msg, cmd, *args):
+    """
+    outfile MUST be last parameter!
+    """
+    # todo: think about using commands.getstatusoutput() here
+    ret = os.spawnlp(os.P_WAIT, cmd, cmd, *(args))
+    if ret or not os.access(args[-1], os.F_OK):
+        raise ConvertionError("Error while converting %s. "
+                              "File damaged or %s not installed?" %(msg, cmd))
+
+def cff2ps(infile, outfile):
+    __call("cff to ps", "jpeg2ps", "-m", infile , "-o", outfile)
+
+def la2wav(infile, outfile):
+    __call('la to wav', "sox", infile, '-w', outfile)
+
+class ConvertionError(Exception): pass
+
+# @brief send email with text and attachment of type sff or la converted to pdf/wav
+#
+# This function creates a multipart MIME-message containing a text/plain
+# part with a string and one attachment of type application/pdf or audio/wav.
+#
+# The given attachment is automatically converted from Structured Fax File
+# (.sff) or inversed A-Law (.la) to the well known PDF or WAV format.
+#
+# @param mail_from the From: address for the mail
+# @param mail_to the To: address for the mail
+# @param mail_subject the subject of the mail
+# @param mail_type containing either "sff" or "la"
+# @param text a string containing the text of the first part of the mail
+# @param attachment name of the file to send as attachment
+def sendMIMEMail(mail_from, mail_to, mail_subject, mail_type,
+                 text, attachment):
+    import email.MIMEBase, email.MIMEText, email.MIMEAudio, email.Encoders
+    import encodings.ascii, os
+
+    msg = email.MIMEBase.MIMEBase("multipart","mixed")
+    msg['Subject']=mail_subject
+    msg['From']=mail_from
+    msg['To']=mail_to
+
+    msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
+    msg.epilogue = '' # To guarantee the message ends with a newline
+
+    basepath = os.path.splitext(attachment)[0]
+    basename = os.path.basename(basepath)
+    try:
+        if mail_type == "sff": # normal fax file
+            # convert sff -> tif
+            sff2tif(attachment, "%s.tif" % basepath)
+            # convert tif -> ps -> pdf
+            cmd = "tiff2ps -h11 -H12 -L.5 -w8.5 -a %s | ps2pdf -sPAPERSIZE=a4 - -" % escape("%s.tif" %basepath)
+            try:
+                status, content = commands.getstatusoutput(cmd)
+            finally:
+                os.unlink("%s.tif" % basepath)
+            if status:
+                raise ConvertionError("Error while calling tiff2ps or ps2pdf. "
+                                      "Not installed?")
+            filepart = email.MIMEBase.MIMEBase("application","pdf",
+                                               name = "%s.pdf" % basename)
+            filepart.add_header('Content-Disposition','attachment',
+                                filename = "%s.pdf" % basename)
+            filepart.set_payload(content)
+            email.Encoders.encode_base64(filepart)
+        elif mail_type == "cff": # color fax file
+            # convert cff -> ps
+            cff2ps(attachment, "%s.ps" % basepath)
+            # convert ps -> pdf
+            cmd = "ps2pdf -sPAPERSIZE=a4 %s -" % escape("%s.ps" % basepath)
+            try:
+                status, content = commands.getstatusoutput(cmd)
+            finally:
+                os.unlink("%s.ps" % basepath)
+            if status:
+                raise ConvertionError("Error while calling ps2pdf. "
+                                     "Not installed?")
+            filepart = email.MIMEBase.MIMEBase("application", "pdf",
+                                               name = "%s.pdf" % basename)
+            filepart.add_header('Content-Disposition', 'attachment',
+                                filename="%s.pdf" % basename)
+            filepart.set_payload(content)
+            email.Encoders.encode_base64(filepart)
+        elif mail_type == "la": # voice file
+            # la -> wav
+            la2wav(attachment, "%s.wav" % basepath)
+            content = open("%s.wav" % basepath).read()
+            os.unlink("%s.wav" % basepath)
+            filepart = email.MIMEAudio.MIMEAudio(content, "x-wav",
+                                                 email.Encoders.encode_base64,
+                                                 name = "%s.wav" % basename)
+            filepart.add_header('Content-Disposition', 'attachment',
+                                filename = "%s.wav" % basename)
+        textpart = email.MIMEText.MIMEText(text)
+        msg.attach(textpart)
+        msg.attach(filepart)
+    except ConvertionError, errormessage:
+        text = [text, ''
+                'The following error occured while converting file:',
+                str(errormessage), ''
+                'Please talk to your friendly administrator.', ''
+                ]
+        # todo: add encoding (at least as example)
+        # todo: use latin-1 as std-encoding instead of ascii
+        textpart = email.MIMEText.MIMEText('\n'.join(text))
+        msg.attach(textpart)
+
+    return __sendmail(mail_from, mail_to, msg)
+
+
+# @brief send a simple text email
+#
+# This function creates a simple mail
+#
+# @param mail_from the From: address for the mail
+# @param mail_to the To: address for the mail
+# @param mail_subject the subject of the mail
+# @param text a string containing the text of the first part of the mail
+#
+# @result returns true on success
+def sendSimpleMail(mail_from, mail_to, mail_subject, text):
+    #import email.Encoders, email.MIMEText, encodings.ascii
+
+    # Create a text/plain message. Don't forget to change charset here
+    # if you want to use non-us-ascii characters in the mail!
+    # todo: add encoding anyway (at least as example)
+    # todo: use latin-1 as std-encoding instead of ascii
+    import email.MIMEText
+    msg = email.MIMEText.MIMEText(text)
+    msg['Subject'] = mail_subject
+    msg['From'] = mail_from
+    msg['To'] = mail_to
+    return __sendmail(mail_from, mail_to, msg)
+
+
+# @brief write description file for received fax or voice
+#
+# This function writes an INI-style description file for the given data file
+# which can later on be read by a ConfigParser instance. The data file name
+# is used, the extension stripped and replaced by .txt
+#
+# @param filename the data filename (with extension!)
+# @param content the content as string
+def writeDescription(filename, content):
+    from types import StringType
+    assert isinstance(content, StringType)
+    import capisuite.fileutils
+    descrname = capisuite.fileutils.controlname(filename)
+    descr = open(descrname, "w")
+    print >> descr, "# Description file for", filename
+    print >> descr, "# This if for internal use of CapiSuite."
+    print >> descr, "# Only change if you know what you do!"
+    print >> descr, "[GLOBAL]"
+    print >> descr, 'filename="%s"' % filename
+    print >> descr, content
+    descr.close()
+
+# sayNumber is now imported from capisuite.voice
+

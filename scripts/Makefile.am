@@ -2,8 +2,8 @@ spooldir = @localstatedir@/spool/capisuite
 pkgsysconfdir = @sysconfdir@/capisuite
 
 dist_pkglib_DATA = idle.py incoming.py README
-python_module_DATA = cs_helpers.py
-EXTRA_DIST = cs_helpers.pyin fax.confin answering_machine.confin capisuitefax.in
+pkgpython_PYTHON = helpers.py
+EXTRA_DIST = helpers.pyin fax.confin answering_machine.confin capisuitefax.in
 
 pkgsysconf_DATA = fax.conf answering_machine.conf
 
@@ -37,6 +37,6 @@ install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(spooldir)/users
 
 clean-local:
-	rm -f cs_helpers.py
+	rm -f helpers.py
 	rm -f fax.conf answering_machine.conf
 
