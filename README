@@ -28,7 +28,7 @@ translation of the manual available at http://www.capisuite.de/.
 Building capisuite from Git
 ---------------------------
 
-git clone https://larsimmisch@github.com/larsimmisch/capisuite.git
+git clone https://github.com/larsimmisch/capisuite.git
 
 cd capisuite
 make -f Makefile.git

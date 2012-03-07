@@ -1,11 +1,11 @@
 # -*- makefile -*-
-# Makefile for bootstrapping the CVS/SVN version
+# Makefile for bootstrapping the Git version
 
 # Avoid rebuild of eg. man-pages due to wrong timestamps from the
 # checkout. (Touch files only if they exist and have a size greater
 # than zero.)
 # Note: If one of these files has not been cheched out from CVS/SVN
-# for some reason, make will cry. This helps finding buggs :-)
+# for some reason, make will cry. This helps finding bugs :-)
 bootstrap: docs/capisuite.8 docs/capisuite.conf.5 docs/fax.conf.5 \
 		docs/answering_machine.conf.5 docs/capisuitefax.1 \
 		aclocal.m4 configure config.h.in \
