@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="en">
-<title>CapiSuite 0.5.cvs</title>
+<title>CapiSuite 0.5.git</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -350,9 +350,15 @@ make install</screen>
 
 				for options to customize the installation directories.</para>
 			</sect3>
-			<sect3 id="install_CVS"><title>Installation from Subversion</title>
+			<sect3 id="install_GIT"><title>Installation from Git</title>
 				<para>If you want to live on the bleeding edge and always test the newest features,
 				you may also checkout the current sources of &cs; from the repository.</para>
+
+	          <para>If you want to live on the bleeding edge and always test the
+    	      newest features, you can also checkout the current sources of &cs;
+			  from github:</para>
+
+          	  <para><screen>git clone https://github.com/larsimmisch/capisuite.git</screen></para>
 
 				<para><emphasis>This is not recommended unless you want to test the newest features or
 				want to help in developing &cs;! The development sources may do anything,
@@ -364,14 +370,6 @@ make install</screen>
 
 				<para>If you want to build the documentation out of the sources, you'll also need
 				Doxygen and correctly installed Docbook/XML tools.</para>
-
-				<para>For instructions on where to find the repository and how to checkout
-				the sources, please refer to the download section on the &cs; homepage
-				on <ulink url="http://www.capisuite.de"/>.</para>
-
-				<para>After you checked out the sources to some directory, please do
-				<screen>make -f Makefile.cvs</screen>
-				</para>
 
 				<para>Now, you can continue with the normal installation process as described in
 				<xref linkend="install_source"/>.</para>

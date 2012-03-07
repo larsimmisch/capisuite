@@ -5,7 +5,7 @@
 <!ENTITY cs "<application>CapiSuite</application>">
 ]>
 <book lang="de">
-<title>CapiSuite 0.5.cvs</title>
+<title>CapiSuite 0.5.git</title>
 <subtitle><ulink url="http://www.capisuite.de"/></subtitle>
 
 
@@ -383,9 +383,11 @@ make install</screen>
 
 				ausgegeben wird. Hier finden Sie Optionen zum ändern des Installationsverzeichnisses.</para>
 			</sect3>
-			<sect3 id="install_CVS"><title>Installation aus dem Subversion-Repository</title>
+			<sect3 id="install_GIT"><title>Installation aus dem Subversion-Repository</title>
 				<para>Wenn Sie ganz innovativ sein und immer die neuesten Features testen wollen,
-				können Sie sich die aktuellen Sorucen von &cs; aus dem Repository holen.</para>
+				können Sie sich die aktuellen Sorucen von &cs;von github holen:</para>
+
+	            <para><screen>git clone https://github.com/larsimmisch/capisuite.git</screen></para>
 
 				<para><emphasis>Dies wird nicht empfohlen, wenn Sie nicht die neuesten Features testen
 				oder bei der Entwicklung von &cs; helfen wollen! Die Entwicklungsversionen können OK sein,
@@ -402,10 +404,6 @@ make install</screen>
 				<para>Eine Anleitung, wo Sie das Repository finden und wie Sie die Sourcen auschecken
 				können, finden Sie im Download-Bereich auf der &cs;-Homepage unter
 				<ulink url="http://www.capisuite.de"/>.</para>
-
-				<para>Wenn Sie die Sourcen in ein Verzeichnis ausgecheckt haben, machen Sie bitte ein
-				<screen>make -f Makefile.cvs</screen>
-				</para>
 
 				<para>Jetzt können Sie ganz normal mit der Installation weiter machen wie im
 				<xref linkend="install_source"/> beschrieben.</para>
