@@ -30,17 +30,17 @@ manual-de-prepare:
 	  manual-de.docbook > manual-de.docbook.new
 	mv manual-de.docbook.new manual-de.docbook
 	xmllint --noout --valid manual-de.docbook
-	
+
 manual-html: manual.docbook
 	xsltproc --stringparam profile.condition html -o manual-profiled.docbook \
-	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/profiling/profile.xsl \
 	   manual.docbook
 	xsltproc --stringparam chunker.output.encoding UTF-8 \
 	  --stringparam chunker.output.doctype-public "-//W3C//DTD XHTML 1.0 Transitional//EN" \
 	  --stringparam chunker.output.doctype-system "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" \
-	  -o manual/ /usr/share/xml/docbook/stylesheet/nwalsh/current/xhtml/chunk.xsl manual-profiled.docbook
+	  -o manual/ /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/chunk.xsl manual-profiled.docbook
 	rm manual-profiled.docbook
-	cp -r /usr/share/xml/docbook/stylesheet/nwalsh/current/images/ manual/ # missing images...
+	cp -r /usr/share/xml/docbook/stylesheet/nwalsh/images/ manual/ # missing images...
 	if test ! -d manual/images/callouts; then \
 		echo "manual pages weren't created succesful." ;\
 		exit 1; \
@@ -49,42 +49,42 @@ manual-html: manual.docbook
 
 manual-de-html: manual-de.docbook
 	xsltproc --stringparam profile.condition html -o manual-profiled.docbook \
-	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/profiling/profile.xsl \
 	  manual-de.docbook
 	xsltproc --stringparam chunker.output.encoding UTF-8 \
 	  --stringparam chunker.output.doctype-public "-//W3C//DTD XHTML 1.0 Transitional//EN" \
 	  --stringparam chunker.output.doctype-system "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" \
-	  -o manual-de/ /usr/share/xml/docbook/stylesheet/nwalsh/current/xhtml/chunk.xsl manual-profiled.docbook
+	  -o manual-de/ /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/chunk.xsl manual-profiled.docbook
 	rm manual-profiled.docbook
-	cp -r /usr/share/xml/docbook/stylesheet/nwalsh/current/images/ manual-de/ # missing images...
+	cp -r /usr/share/xml/docbook/stylesheet/nwalsh/images/ manual-de/ # missing images...
 	if test ! -d manual-de/images/callouts; then \
 		echo "manual wasn't created succesful." ;\
 		exit 1; \
 	fi
 	tar czf capisuite-manual-de-$(VERSION).tar.gz manual-de
-	
+
 capisuite.8 capisuite.conf.5 fax.conf.5 answering_machine.conf.5 capisuitefax.1: manual.docbook
 	xsltproc --stringparam profile.condition man -o manual-profiled.docbook \
-	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/profiling/profile.xsl \
 	  manual.docbook
-	xsltproc /usr/share/xml/docbook/stylesheet/nwalsh/current/manpages/docbook.xsl \
+	xsltproc /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
 	  manual-profiled.docbook
 	rm manual-profiled.docbook
 
 manual-pdf: manual.docbook
 	xsltproc --stringparam profile.condition pdf -o manual.xml \
-	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/profiling/profile.xsl \
 	  manual.docbook
 	db2pdf manual.xml 
 	-rm CATALOG.local manual.aux manual.log manual.out manual.tex suse-*.dsl manual.xml
 
 manual-de-pdf: manual-de.docbook
 	xsltproc --stringparam profile.condition pdf -o manual-de.xml \
-	  /usr/share/xml/docbook/stylesheet/nwalsh/current/profiling/profile.xsl \
+	  /usr/share/xml/docbook/stylesheet/nwalsh/profiling/profile.xsl \
 	  manual-de.docbook
 	db2pdf manual-de.xml 
 	-rm CATALOG.local manual-de.aux manual-de.log manual-de.out manual-de.tex suse-*.dsl manual-de.xml
-	
+
 reference-html: Doxyfile.in
 	sed -e 's,@VERSION\@,$(VERSION),g' \
 	    -e 's,@capisuite_sources\@,$(top_srcdir)/src,g' \
@@ -97,7 +97,7 @@ reference-html: Doxyfile.in
 	fi
 	rm Doxyfile
 	tar czf capisuite-reference-$(VERSION).tar.gz reference
-	
+
 install-data-local:
 	if test -d reference; then \
 		$(mkinstalldirs) $(DESTDIR)$(docdir)/reference ; \
