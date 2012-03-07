@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Chapter 1. Getting Started</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="index.html" title="CapiSuite 0.5.git" /><link rel="prev" href="pr01s02.html" title="Structure of the manual" /><link rel="next" href="ch01s02.html" title="How CapiSuite works, how it is configured and started" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 1. Getting Started</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="pr01s02.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ch01s02.html">Next</a></td></tr></table><hr /></div><div class="chapter" title="Chapter 1. Getting Started"><div class="titlepage"><div><div><h2 class="title"><a id="gettingstarted"></a>Chapter 1. Getting Started</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="ch01.html#install">Requirements and installation of <span class="application">CapiSuite</span></a></span></dt><dd><dl><dt><span class="sect2"><a href="ch01.html#requirements">Requirements</a></span></dt><dt><span class="sect2"><a href="ch01.html#install_install">Installation</a></span></dt><dt><span class="sect2"><a href="ch01.html#install_update">Updating from previous versions</a></span></dt></dl></dd><dt><span class="sect1"><a href="ch01s02.html">How <span class="application">CapiSuite</span> works, how it is configured and started</a></span></dt><dd><dl><dt><span class="sect2"><a href="ch01s02.html#howwork">How does <span class="application">CapiSuite</span> work?</a></span></dt><dt><span class="sect2"><a href="ch01s02.html#configcs">Configuration of <span class="application">CapiSuite</span></a></span></dt><dt><span class="sect2"><a href="ch01s02.html#startcs">Startup of CapiSuite</a></span></dt></dl></dd><dt><span class="sect1"><a href="ch01s03.html">Features and configuration of the default scripts</a></span></dt><dd><dl><dt><span class="sect2"><a href="ch01s03.html#script_features">Script features</a></span></dt><dt><span class="sect2"><a href="ch01s03.html#howscriptswork">How the scripts work</a></span></dt><dt><span class="sect2"><a href="ch01s03.html#script_config">Script configuration</a></span></dt><dt><span class="sect2"><a href="ch01s03.html#deleteoldfiles">Deleting old files</a></span></dt></dl></dd><dt><span class="sect1"><a href="ch01s04.html">Using <span class="application">CapiSuite</span> together with the default scripts</a></span></dt><dd><dl><dt><span class="sect2"><a href="ch01s04.html#usingscripts_receive">Receiving calls</a></span></dt><dt><span class="sect2"><a href="ch01s04.html#usingscripts_remoteinquiry">Doing a remote inquiry</a></span></dt><dt><span class="sect2"><a href="ch01s04.html#usingscripts_send">Sending fax jobs</a></span></dt></dl></dd></dl></div><div class="sect1" title="Requirements and installation of CapiSuite"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="install"></a>Requirements and installation of <span class="application">CapiSuite</span></h2></div></div></div><div class="sect2" title="Requirements"><div class="titlepage"><div><div><h3 class="title"><a id="requirements"></a>Requirements</h3></div></div></div><div class="sect3" title="Hardware and drivers"><div class="titlepage"><div><div><h4 class="title"><a id="require_hard"></a>Hardware and drivers</h4></div></div></div><p>As <span class="application">CapiSuite</span> uses the CAPI (Common ISDN Application Programming Interface)
+				for accessing your ISDN-hardware, you'll need a card for which a CAPI compatible
+				driver is available.</p><p>Currently these are all cards manufactured by AVM and some Eicon cards.
+				If you have one of the passive cards of AVM, you'll have to download and
+				install their CAPI drivers.</p><p>With the upcoming Linux 2.6 and the new mISDN project included therein,
+				also most cards which are supported by the HiSax driver today will soon have
+				a CAPI-compliant driver. Unfortunately, mISDN also won't include a fax protocol
+				implementation and therefore passive cards still won't be able to fax in <span class="application">CapiSuite</span>
+				(or in any other program under Linux); fax support for passive cards is only
+				available in the binary drivers from AVM currently.</p><p>There's no way to get <span class="application">CapiSuite</span> to work with the old ISDN4Linux interface
+				and drivers. Presumable there also never will be one because of the mISDN project
+				which will replace HiSax/ISDN4Linux soon.</p><p>There are some distributions (e.g. current versions of SUSE) which
+				include the Capi4Linux drivers from AVM already - you'll only have to
+				activate them (use YaST2 in SUSE Linux). If you own an active card of AVM
+				(e.g. the B1, C2 or C4), then you'll have everything you need already installed.
+				SuSE also provides a small frontend to configure <span class="application">CapiSuite</span> in YaST.</p><p><span class="application">CapiSuite</span> has mainly been tested on AVM ISDN cards, esp. the Fritz!PCI, the Fritz!USB and
+				the B1 on the i386 platform but there should be no problem with other
+				CAPI-compatible drivers for other cards or on other platforms. Nevertheless,
+				some features aren't mandatory for all CAPI-compatible cards, so perhaps
+				you may not be able to fax or to switch from voice to fax mode with all
+				cards.</p></div><div class="sect3" title="Software"><div class="titlepage"><div><div><h4 class="title"><a id="require_soft"></a>Software</h4></div></div></div><p><span class="application">CapiSuite</span> depends on some packages which must be installed before <span class="application">CapiSuite</span> can be used.</p><p>I will list them here with a short information why these packages are needed and where to
+				find further information on how to install them. It may be always a good idea to check the
+				installation tool of your favourite distribution first and see if they're included with it before
+				trying to download and install them from the net. Don't be afraid, because there are so many -
+				most of them are included in nearly every distribution and perhaps are already installed on your system.</p><div class="variablelist"><dl><dt><span class="term">Python &gt;= 2.2</span></dt><dd><p><span class="application">CapiSuite</span> uses an embedded Python interpreter to interpret the given scripts -
+							so you'll need an installed and working version of Python. This should be included
+							in mostly every up-to-date Linux distribution. For further infos on Python, a nice
+							tutorial and much more, please go to <a class="ulink" href="http://www.python.org" target="_top">http://www.python.org</a></p></dd><dt><span class="term">sox &gt;= 12.17.3</span></dt><dd><p>This is the swiss-knife for converting audio formats. It's not required
+							by the <span class="application">CapiSuite</span> core, but will be very helpful if you want to hear or record the
+							voice files used for calls on your machine. It's also required if you want to
+							use the default scripts of <span class="application">CapiSuite</span>. I'll bet this is included in your distribution
+							and most likely already installed on your system. Just try to start <span class="command"><strong>sox</strong></span>
+							to get sure. As Helmut Gruber pointed out, you need at least version 12.17.3, as this
+							version started to handle inverse A-Law files. You'll find more details on
+							<a class="ulink" href="http://sox.sourceforge.net" target="_top">http://sox.sourceforge.net</a>
+						</p></dd><dt><span class="term">sfftobmp</span></dt><dd><p><span class="application">CapiSuite</span> will save fax files in the CAPI specific format Structured Fax File (SFF).
+							sfftobmp is a small but useful converter to convert this files to more
+							common formats like JPEG, TIFF or BMP. Get it on <a class="ulink" href="http://sfftools.sourceforge.net/sfftobmp.html" target="_top">http://sfftools.sourceforge.net/sfftobmp.html</a>.
+							It's again not needed by the <span class="application">CapiSuite</span> core, but by the default scripts.</p></dd><dt><span class="term">sffview</span></dt><dd><p>This tool is a simple but useful SFF viewer. It's not needed by any
+						<span class="application">CapiSuite</span> component, but very useful if you just want to see a fax file without
+						the need to convert it first. You can get it from <a class="ulink" href="http://sfftools.sourceforge.net/sffview.html" target="_top">http://sfftools.sourceforge.net/sffview.html</a>.</p></dd><dt><span class="term">tiff2ps</span></dt><dd><p>A small utility to convert TIFF files to the Postscript format. It's needed by
+							the default script to convert faxes to PDF files (SFF-&gt;TIFF-&gt;PS-&gt;PDF :-} ).
+							It's often included in a package called <code class="literal">tiff</code> or
+							<code class="literal">tifftools</code>. Details on <a class="ulink" href="http://www.libtiff.org" target="_top">http://www.libtiff.org</a>
+						</p></dd><dt><span class="term">ps2pdf</span></dt><dd><p>Again a small utility for the SFF-&gt;PDF chain - this time for the
+							conversion of Adobe PostScript to Adobe PDF. It's part of Ghostscript, so
+							you most likely have it already. (<a class="ulink" href="http://www.gnu.org/software/ghostscript/ghostscript.html" target="_top">http://www.gnu.org/software/ghostscript/ghostscript.html</a>)
+						</p></dd><dt><span class="term">current Ghostscript with cfax patch</span></dt><dd><p>Current Ghostscript versions will include a device to create the above mentioned
+							SFF files. If you have an older version, you'll need the patch from
+							<a class="ulink" href="http://sfftools.sourceforge.net/ghostscript.html" target="_top">http://sfftools.sourceforge.net/ghostscript.html</a>. To see if your GhostScript
+							version already has this patch, please call <span class="command"><strong>gs --help</strong></span> and see if you can
+							find the device <code class="literal">cfax</code> in the long list of supported devices.</p></dd><dt><span class="term">jpeg2ps</span></dt><dd><p>The <span class="command"><strong>jpeg2ps</strong></span> command is used to convert color fax files to the
+						PostScript format for mail delivery. It's not so important, unless you want to be able to receive
+						color faxes. Unfortunately, there's currently no way to disable the reception of color faxes with
+						AVM cards due to a bug in the AVM CAPI driver. So if someone sends you a color fax (which seems to
+						be a very rare case), you'll need this package - unless you'll get a mail stating this error.
+						If your distribution doesn't have this packages, you can download it from
+						<a class="ulink" href="http://www.pdflib.com/products/more/jpeg2ps.html" target="_top">http://www.pdflib.com/products/more/jpeg2ps.html</a>.</p><p>As the color fax protocol uses concatenated JPEG files for transferring multiple pages, you 
+						should also download and apply my multipleJPEG patch from 
+						<a class="ulink" href="http://www.hillier.de/linux/jpeg2ps-multi.php3" target="_top">http://www.hillier.de/linux/jpeg2ps-multi.php3</a></p></dd><dt><span class="term">glibc locales</span></dt><dd><p>If you want to use an AVM card (which most of you will do ;-) ) to send or receive
+							faxes, you'll need installed glibc locales because <span class="application">CapiSuite</span> needs to convert your fax
+							headline to the historic CP437 encoding which AVM drivers expect. The glibc locales are
+							a part of the default C library glibc which you definitely already have installed, but some
+							distributors make the locales installable separately. SuSE e.g. puts them in a package 
+							called glibc-locale which you probably have to install. To see if you already have them,
+							look for a file called "IBM437.so" in your library paths (in SuSE it's located in 
+							/usr/lib/gconv). If you don't find it, look for sub-packages of glibc which could include 
+							them.</p></dd></dl></div></div></div><div class="sect2" title="Installation"><div class="titlepage"><div><div><h3 class="title"><a id="install_install"></a>Installation</h3></div></div></div><p>First of all, I would suggest to check if your CAPI-driver is setup correctly.
+			To do this, simply run <span class="command"><strong>capiinfo</strong></span> on a root shell.</p><p>If you get many lines of output, your CAPI driver works. If you just get
+			an error message, you'll have to install CAPI-compatible drivers. Refer
+			to the documentation of your ISDN card vendor, your Linux distribution
+			and/or some ISDN mailing lists for this, please.</p><p>The rest of the installation depends on wether you use binary or source
+			packages for installing <span class="application">CapiSuite</span>. If you don't want to change the
+			<span class="application">CapiSuite</span> sources, I would recommend you to use the binary packages
+			when available for your distribution and platform.</p><p>You can download both binary packages and sources from the download section on
+			<a class="ulink" href="http://www.capisuite.de" target="_top">http://www.capisuite.de</a>. If you built packages for other
+			distributions not yet available, please send me your link and I'll happily include it
+			 there...</p><div class="sect3" title="Installation from binary packages"><div class="titlepage"><div><div><h4 class="title"><a id="install_bin"></a>Installation from binary packages</h4></div></div></div><p>If you can get binary packages for your distribution and platform,
+				I would advise to use them. There are many binary packages of
+				CapiSuite available for different distributions maintained by different
+				people. It's also part of current versions of SUSE, Debian and Gentoo.</p><p>If you managed to install <span class="application">CapiSuite</span> on a system not mentioned below,
+				please tell me and I'll include the instructions here. If you have created
+				binary packages for other distributions, I'll be also happy to point
+				to your download section or make them available on my page.</p><p>Now everything should be setup ready to run. So please read on in
+				<a class="xref" href="ch01s02.html" title="How CapiSuite works, how it is configured and started">the section called “How <span class="application">CapiSuite</span> works, how it is configured and started”</a>.</p><div class="sect4" title="Installation from RPM packages (SUSE, Fedora, Mandrake &amp; Co.)"><div class="titlepage"><div><div><h5 class="title"><a id="install_bin_rpm"></a>Installation from RPM packages (SUSE, Fedora, Mandrake &amp; Co.)</h5></div></div></div><p>To install the <span class="application">CapiSuite</span> RPM packages you can either use your favorite setup tool -
+					either provided by your distributor or the community - or you can do manually
+					(as root):</p><pre class="screen">rpm -Uvh capisuite-version.rpm</pre></div><div class="sect4" title="Installation from other packages"><div class="titlepage"><div><div><h5 class="title"><a id="install_bin_other"></a>Installation from other packages</h5></div></div></div><p>Please refer to the documentation of your distribution and the 
+					information given in the packages or on the homepage of the
+					maintainers. If someone wants to write a section about these packages, 
+					please contact me.</p></div></div><div class="sect3" title="Installation from the source packages"><div class="titlepage"><div><div><h4 class="title"><a id="install_source"></a>Installation from the source packages</h4></div></div></div><p>If there are no binary packages you can use or if you like to do
+				everything on your own, you can get the sources from the download section.</p><p>Download the newest source tarball (capisuite-X.Y.tar.gz) from the
+				<span class="application">CapiSuite</span> homepage and copy it to some location. Go there and issue the following
+				commands:</p><pre class="screen">./configure
+make
+su # get root now
+make install</pre><p>This will install <span class="application">CapiSuite</span> completely in the <code class="filename">/usr/local</code>-tree. If you
+				want it to stay in other directories, please see the commandline-help
+				printed by
+
+				</p><pre class="screen">./configure --help</pre><p>
+
+				for options to customize the installation directories.</p></div><div class="sect3" title="Installation from Git"><div class="titlepage"><div><div><h4 class="title"><a id="install_GIT"></a>Installation from Git</h4></div></div></div><p>If you want to live on the bleeding edge and always test the newest features,
+				you may also checkout the current sources of <span class="application">CapiSuite</span> from the repository.</p><p>If you want to live on the bleeding edge and always test the
+    	      newest features, you can also checkout the current sources of <span class="application">CapiSuite</span>
+			  from github:</p><pre class="screen">git clone https://github.com/larsimmisch/capisuite.git</pre><p><span class="emphasis"><em>This is not recommended unless you want to test the newest features or
+				want to help in developing <span class="application">CapiSuite</span>! The development sources may do anything,
+				may not work or not even compile. Do this on your own risk!</em></span></p><p>You'll need installed and working versions of the usual development tools like
+				GNU make, gcc/g++ and also the components described above (esp. development packages 
+				of Python).</p><p>If you want to build the documentation out of the sources, you'll also need
+				Doxygen and correctly installed Docbook/XML tools.</p><p>Now, you can continue with the normal installation process as described in
+				<a class="xref" href="ch01.html#install_source" title="Installation from the source packages">the section called “Installation from the source packages”</a>.</p></div></div><div class="sect2" title="Updating from previous versions"><div class="titlepage"><div><div><h3 class="title"><a id="install_update"></a>Updating from previous versions</h3></div></div></div><p>This section will give you an overview of how to update
+			CapiSuite from earlier versions.</p><p>In general, the usual update mechanism depending on your
+			installation method should be used - that means the update features
+			of your package managers if you installed from binary packages. 
+			If you installed from sources, you should save your configuration
+			files before doing <span class="command"><strong>make install</strong></span>. As this is
+			done like for any other software package you use, we won't go into
+			further detail about that here.</p><p>What this section should mainly cover are the changes in the 
+			configuration files and requirements to other tools between different 
+			versions, so that you'll be able to update your configuration quickly. 
+			For a more complete list of new features and important changes, please 
+			refer to the file <code class="filename">NEWS</code> distributed with the 
+			CapiSuite packages. In addition, all single changes in the different 
+			source code files can be found in the <code class="filename">ChangeLog</code>, 
+			which, however, will only be interesting for developers, I suppose.</p><div class="sect3" title="From 0.4.4 to 0.4.5"><div class="titlepage"><div><div><h4 class="title"><a id="install_update_0_4_5"></a>From 0.4.4 to 0.4.5</h4></div></div></div><p>The <span class="emphasis"><em>default scripts</em></span> now use
+				an SMTP connection to localhost instead of calling the 
+				<span class="command"><strong>sendmail</strong></span> command manually as previous
+				versions did. This was changed because the other mechanism
+				had many stability problems in the past. This means, you now
+				have to have a running SMTP daemon listening on your localhost.
+				As this is the default configuration of most distributions, 
+				this should be no problem.</p><p>In <code class="filename">answering_machine.conf</code> and 
+				<code class="filename">fax.conf</code>, two new options have been added:
+				<code class="option">fax_email_from</code> and <code class="option">voice_email_from</code>
+				allow the configuration of the from address CapiSuite uses
+				when sending mails to the user. These new entries are optional - 
+				if you don't set them, the user name is used as from address
+				as in previous versions.</p></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="pr01s02.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ch01s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Structure of the manual </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> How <span class="application">CapiSuite</span> works, how it is configured and started</td></tr></table></div></body></html>

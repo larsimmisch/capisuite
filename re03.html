@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>fax.conf</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch01s03.html#script_config" title="Script configuration" /><link rel="prev" href="ch01s03.html" title="Features and configuration of the default scripts" /><link rel="next" href="re04.html" title="answering_machine.conf" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">fax.conf</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01s03.html">Prev</a> </td><th width="60%" align="center">Script configuration</th><td width="20%" align="right"> <a accesskey="n" href="re04.html">Next</a></td></tr></table><hr /></div><div class="refentry" title="fax.conf"><a id="fax.conf"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>fax.conf — configuration of the <span class="application">CapiSuite</span> fax services</p></div><div class="refsect1" title="Description"><a id="id2507791"></a><h2>Description</h2><p>This file holds all available config options for the fax
+				services provided by the default scripts distributed with <span class="application">CapiSuite</span>.
+				It is read from <code class="filename">/etc/capisuite/fax.conf</code> or
+				<code class="filename">/usr/local/etc/capisuite/fax.conf</code> (depending on the installation).</p><p>It is divided into one or more sections. A section begins with the section
+				name in square brackets like <code class="literal">[section]</code> while the options are <code class="literal">key="value"</code> lines.</p><p>A special section called <code class="literal">[GLOBAL]</code> and one section
+				for each user called <code class="literal">[&lt;username&gt;]</code> are required.
+				<span class="emphasis"><em>The <code class="literal">&lt;username&gt;</code> must be a valid system user</em></span>.</p><p>The <code class="literal">[GLOBAL]</code>-section defines some global options like
+				pathnames and default settings for options that can be overridden in the user-sections.
+				The user-sections hold all the options which belong to a particular user.</p></div><div class="refsect1" title="The [GLOBAL] section"><a id="id2507875"></a><h2>The [GLOBAL] section</h2><div class="variablelist"><dl><dt><a id="fax_spool_dir"></a><span class="term"><code class="option">spool_dir="/path/to/spooldir/"</code></span></dt><dd><p>This directory is used to archive sent (or failed) jobs. It must exist and
+						the user <span class="application">CapiSuite</span> runs as must have write permission to its subdirectories.
+						Two subdirectories are used:</p><div class="variablelist"><dl><dt><span class="term"><code class="filename">spooldir/done/</code></span></dt><dd><p>Jobs finished successfully are moved to this directory.</p></dd><dt><span class="term"><code class="filename">spooldir/failed/</code></span></dt><dd><p>Job which have failed finally end up here.</p></dd></dl></div><p>This option is mandatory.</p></dd><dt><a id="fax_user_dir"></a><span class="term"><code class="option">fax_user_dir="/path/to/userdir/"</code></span></dt><dd><p>This directory is used to store fax jobs and received documents
+						to. It must exist and
+						the user <span class="application">CapiSuite</span> runs as must have write permission to it. It will contain
+						one subdirectory for each configured user (named like his userid). The
+						following subdirectories are used below the user-specific dir:</p><div class="variablelist"><dl><dt><span class="term"><code class="filename">user_dir/username/received/</code></span></dt><dd><p>Received faxes are saved here.</p></dd><dt><span class="term"><code class="filename">user_dir/username/sendq/</code></span></dt><dd><p>Fax files to be sent are queued here by <span class="command"><strong>capisuitefax</strong></span>.</p></dd></dl></div><p>This option is mandatory.</p></dd><dt><a id="fax_send_tries"></a><span class="term"><code class="option">send_tries="10"</code></span></dt><dd><p>When a fax can't be sent to the destination for any reason, it's tried for several times.
+							This setting limits the number of tries. If all tries failed, the job will be moved to the failed dir
+							(see <code class="option">fax_spool_dir</code>) and the user will get a mail.
+						</p><p>This option is optional. If not given, it defaults to 10 tries.</p></dd><dt><a id="fax_send_delays"></a><span class="term"><code class="option">send_delays="60,60,60,300,300,3600,3600,18000,36000"</code></span></dt><dd><p>When a fax can't be sent to the destination for any reason, it's tried again.
+						This setting specifies the delays in seconds between subsequent tries. The different values are
+						separated with commas and <span class="emphasis"><em>no blanks</em></span>. The list should have send_tries-1
+						(see <code class="option">fax_send_tries</code>) values - if not, surplus entries are ignored and missing
+						entries are filled up with the last value. The default should just be ok giving you increasing
+						delays for up to 10 tries.</p><p>This option is optional. If not given, it defaults to the list shown above.</p></dd><dt><a id="fax_send_controller"></a><span class="term"><code class="option">send_controller="1"</code></span></dt><dd><p>If you have more than one ISDN controller installed (some active cards for more than
+						one basic rate interface like the AVM C2 or C4 are also represented as multiple controllers for
+						CAPI applications like <span class="application">CapiSuite</span>), you can decide which controller (and therefore which basic rate
+						interface) should be used for sending your faxes. All controllers are numbered starting with 1.
+						If you're not sure which controller has which number, increase the log level to at least 2
+						in <span class="application">CapiSuite</span> (see <a class="xref" href="ch01s02.html#configcs" title="Configuration of CapiSuite">the section called “Configuration of <span class="application">CapiSuite</span>”</a>), restart it and have a look in the log file where all
+						controllers will be listed then. Unfortunately, <span class="application">CapiSuite</span> isn't able to use more than one controller
+						for sending faxes at the moment, so no list is allowed here. If you have only one controller,
+						just leave it at <code class="literal">1</code></p><p>This option is optional. If not given, it defaults controller 1.</p></dd><dt><a id="fax_outgoing_MSN"></a><span class="term"><code class="option">outgoing_MSN="&lt;your MSN&gt;"</code></span></dt><dd><p>This number is used as our own number for outgoing calls. If it's not given,
+						the first number of fax_numbers is used (see user sections). If
+						this one is also empty, the user can't send faxes. Please
+						replace with one valid MSN of your ISDN interface or leave empty. This value can be
+						overwritten in the user sections individually.</p><p>This option is optional. If not given, it defaults to empty.</p></dd><dt><a id="fax_outgoing_timeout"></a><span class="term"><code class="option">outgoing_timeout="60"</code></span></dt><dd><p>Default setting which defines how many seconds we will wait for a successful connection after
+						dialing the number. This value can be overwritten in the user sections individually.</p><p>This option is optional. If not given, it defaults to 60 seconds.</p></dd><dt><a id="fax_dial_prefix"></a><span class="term"><code class="option">dial_prefix=""</code></span></dt><dd><p>If anything is entered here, it will be used as a prefix which is added to any
+							number given to <span class="command"><strong>capisuitefax</strong></span> as prefix. This is e.g. very helpful if your
+							ISDN adapter is connected to a PBX which needs "0" for external calls. It's also possible to
+							disable its usage later for a certain fax document, so setting this will certainly not prevent
+							you from placing internal calls without prefix.
+						</p><p>This option is optional. If not given, it defaults to an empty prefix.</p></dd><dt><a id="fax_stationID"></a><span class="term"><code class="option">fax_stationID="&lt;your faxID&gt;"</code></span></dt><dd><p>Default fax station ID to use when sending a fax document. The station ID is
+						usually the number of your fax station in international format, so an example would be
+						"+49 89 123456" for a number in Munich, Germany. Station IDs may only consist of the "+"-sign,
+						spaces and the digits 0-9. The maximal length is 20. This value can be overwritten in the user
+						sections individually.</p><p>This option is mandatory.</p></dd><dt><a id="fax_headline"></a><span class="term"><code class="option">fax_headline="&lt;your faxheadline&gt;"</code></span></dt><dd><p>Default fax headline to use when sending a fax document. Where and if this
+						headline will be presented depends on the implementation of your CAPI driver. The headline
+						should have a reasonable length to fit on the top of a page, but there's no definite limit
+						given.</p><p>This option is optional. If not given, it defaults to an empty headline.</p></dd><dt><a id="fax_email_from"></a><span class="term"><code class="option">fax_email_from="&lt;mailaddress&gt;"</code></span></dt><dd><p>You can set a default originator ("From"-address) for the e-mails <span class="application">CapiSuite</span> sends
+						here.</p><p>This option is optional. If you set this to an empty string, the destinator is used as 
+						originator (i.e. if "gernot" receives a fax, the mail comes from "gernot" to "gernot").</p></dd></dl></div></div><div class="refsect1" title="The user sections"><a id="id2508306"></a><h2>The user sections</h2><div class="variablelist"><dl><dt><span class="term"><code class="option">outgoing_MSN</code></span></dt><dd><p>User specific value for the corresponding global option</p></dd><dt><span class="term"><code class="option">outgoing_timeout</code></span></dt><dd><p>User specific value for the corresponding global option</p></dd><dt><span class="term"><code class="option">fax_stationID</code></span></dt><dd><p>User specific value for the corresponding global option</p></dd><dt><span class="term"><code class="option">fax_headline</code></span></dt><dd><p>User specific value for the corresponding global option</p></dd><dt><span class="term"><code class="option">fax_email_from</code></span></dt><dd><p>User specific value for the corresponding global option</p></dd><dt><a id="fax_numbers"></a><span class="term"><code class="option">fax_numbers="&lt;number1&gt;,&lt;number2&gt;,..."</code></span></dt><dd><p>A list containing the numbers on which this user wants to receive incoming fax calls.
+						These numbers are used to differ between users - so the same number must not appear in more
+						than one user section! The numbers are separated with commas and <span class="emphasis"><em>no blanks</em></span>
+						are allowed. The first number of the list also serves as our own number for
+						sending a fax if outgoing_MSN is not set (see <code class="option">outgoing_MSN</code>).</p><p>If you want to use the same number for receiving fax and voice calls, please
+						<span class="emphasis"><em>do not</em></span> enter it here. Use the voice_numbers option instead
+						(see <a class="xref" href="re04.html" title="answering_machine.conf"><span class="refentrytitle">answering_machine.conf</span>(5)</a>) - the answering machine has a built in fax detection
+						and can also receive faxes.</p><p>When this list is set to <code class="literal">*</code>,
+						<span class="emphasis"><em>all</em></span> incoming calls will be accepted for this user (use with care!).
+						This is only useful for a setup with only one user which wants to receive any call as fax.
+						</p><p>If for any reason <span class="emphasis"><em>no destination</em></span> number is signalled for special
+						MSNs (austrian telecom seems to do this for the main MSN, where it is called "Global Call"),
+						you can use the special sign <code class="literal">-</code> which means "no destination number available".</p><p>This option is optional. If not given, the user can't receive fax documents.</p></dd><dt><a id="fax_email"></a><span class="term"><code class="option">fax_email=""</code></span></dt><dd><p>If given, this string indicates email-addresses where the received faxes will
+						be sent to. More addresses are separated by commas. If it is empty, they will be sent
+						to the user account on the system <span class="application">CapiSuite</span> is running on. The address is also used to send
+						status reports for sent fax jobs to. If you don't want emails to be sent at all, use the
+						action option (see option <code class="option">fax_action</code>) below.</p><p>This option is optional. If not given, the mail is sent to the system account.</p></dd><dt><a id="fax_action"></a><span class="term"><code class="option">fax_action="MailAndSave"</code></span></dt><dd><p>Here you can define what action will be taken when a call is received.
+							Currently, two possible actions are supported:
+							</p><div class="variablelist"><dl><dt><span class="term"><code class="option">MailAndSave</code></span></dt><dd><p>The received call will be mailed to the given address (see
+										<code class="option">fax_email</code> above) and saved to the <code class="option">fax_user_dir</code> (see global options)
+										</p></dd><dt><span class="term"><code class="option">SaveOnly</code></span></dt><dd><p>The call will be only saved to the fax_user_dir (see global options)</p></dd></dl></div><p>
+						</p><p>This option is mandatory.</p></dd></dl></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch01s03.html#script_config">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="re04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Features and configuration of the default scripts </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> answering_machine.conf</td></tr></table></div></body></html>

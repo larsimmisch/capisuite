@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Features and configuration of the default scripts</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch01.html" title="Chapter 1. Getting Started" /><link rel="prev" href="re02.html" title="capisuite.conf" /><link rel="next" href="re03.html" title="fax.conf" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Features and configuration of the default scripts</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="re02.html">Prev</a> </td><th width="60%" align="center">Chapter 1. Getting Started</th><td width="20%" align="right"> <a accesskey="n" href="re03.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="Features and configuration of the default scripts"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="scripts"></a>Features and configuration of the default scripts</h2></div></div></div><p>As already written above, <span class="application">CapiSuite</span> comes with default scripts
+		giving you the most used communication functions of an answering machine
+		and a fax device.</p><p>This section should help you to use them for your daily needs.</p><div class="sect2" title="Script features"><div class="titlepage"><div><div><h3 class="title"><a id="script_features"></a>Script features</h3></div></div></div><p>The scripts distributed with <span class="application">CapiSuite</span> give you the following main
+			functions:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>multi-user answering machine</p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><p>different users using different numbers and different announcements are supported</p></li><li class="listitem"><p>incoming calls are saved and sent to the user by email</p></li><li class="listitem"><p>the delay until a call is accepted and the maximum record length are freely adjustable</p></li><li class="listitem"><p>silence is detected and the call terminated after an adjustable silence period</p></li><li class="listitem"><p>incoming fax calls are automatically detected and received</p></li><li class="listitem"><p>comfortable, menu-controlled remote inquiry functions are supported telling you
+							the date/time when the call was received and the called and calling numbers.</p></li><li class="listitem"><p>record your own announcement via the remote inquiry menu</p></li><li class="listitem"><p>nearly each setting is configurable globally but can be overwritten for each user</p></li></ul></div></li><li class="listitem"><p>fax machine</p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><p>different users using different numbers are supported</p></li><li class="listitem"><p>incoming faxes are stored and sent to the user by email</p></li><li class="listitem"><p>command line tool for faxing PostScript documents included</p></li><li class="listitem"><p>number of tries and delays for sending faxes freely configurable</p></li><li class="listitem"><p>currently supports only one ISDN controller for outgoing faxes</p></li></ul></div></li></ul></div><p>As my native language is german, all waves distributed with <span class="application">CapiSuite</span> are in german only. If someone wants to
+			provide waves in english (or any other language), please contact me. Thx!</p></div><div class="sect2" title="How the scripts work"><div class="titlepage"><div><div><h3 class="title"><a id="howscriptswork"></a>How the scripts work</h3></div></div></div><p>Here follows a rough overview of how the scripts work in general. I will only explain
+			the behaviour which is important for the user here. If you want to understand the internals,
+			please refer to <a class="xref" href="ch02s06.html" title="Structural overview of the default scripts">the section called “Structural overview of the default scripts”</a>.</p><p>When an incoming call is received, several lists for the different users are
+			searched for the called number. The different users can define their own numbers in
+			the configuration (see below). So the scripts decide by looking on the called number
+			to which user the call destinates. If they find the number in the voice- or fax-number
+			list of any user, they'll answer the call with this service and give the caller the possibility to
+			leave his message or send his fax.</p><p>The received document is then saved to a local directory in some native format
+			and also converted to a well-known format and mailed to the user along with some
+			details of the call. Voice calls are sent as a WAV attachment, while fax calls
+			are sent as PDF documents attached to the mail.</p><p>So you'll normally get your incoming calls as a mail to a specified address -
+			but they're also saved in the local filesystem to be on the safe side.
+			It's your task to delete old files you don't need any more. For further instructions,
+			please see <a class="xref" href="ch01s03.html#deleteoldfiles" title="Deleting old files">the section called “Deleting old files”</a>.</p><p>There's also the possibility to do a remote inquiry on the answering machine.
+			The caller is presented a menu where he can choose to record
+			his announcement or to hear the saved voice calls. He will be told how many calls
+			are available, from whom and when they were received and so on. He'll also be
+			able to delete recorded calls he doesn't need any more.</p><p>Another script will check special queue directories for fax send jobs
+			regularly. To put jobs in this directory, the commandline tool <span class="command"><strong>capisuitefax</strong></span> is
+			provided. See <a class="xref" href="ch01s04.html" title="Using CapiSuite together with the default scripts">the section called “Using <span class="application">CapiSuite</span> together with the default scripts”</a> for further details on this.</p></div><div class="sect2" title="Script configuration"><div class="titlepage"><div><div><h3 class="title"><a id="script_config"></a>Script configuration</h3></div></div></div><p>There are some important options which the scripts need to know before you can use them -
+			things like the users' numbers and some details of how to handle the calls.</p><p>These options are read from two configuration files. All options for the two
+			files are described in short below. For all details, please see the comments
+			in the sample configuration files installed with <span class="application">CapiSuite</span>.</p></div><div class="sect2" title="Deleting old files"><div class="titlepage"><div><div><h3 class="title"><a id="deleteoldfiles"></a>Deleting old files</h3></div></div></div><p>As written above, all incoming and outgoing calls will be saved on
+			the local file system to assure nothing gets lost. There's no cleaning
+			up done by <span class="application">CapiSuite</span>, so these files will stay forever on your system
+			if you don't clean them up from time to time.</p><p>As it's not very convenient to do this manually, I would advise to
+			automate this process. <span class="application">cron</span> is predestinated for
+			such a task. On most modern GNU/Linux distributions, you can simply place
+			scripts in <code class="filename">/etc/cron.daily</code> and they will be called
+			automatically once a day.</p><p>An example for a bash script you can use is included in the <span class="application">CapiSuite</span> distribution.
+			Just copy <code class="filename">capisuite.cron</code> to <code class="filename">/etc/cron.daily/capisuite</code>
+			and assure it has correct permissions (owner root, executable bit set).</p><p>Now edit the file <code class="filename">cronjob.conf</code> and copy it to
+			your <span class="application">CapiSuite</span> configuration directory (usually <code class="filename">/etc/capisuite</code>
+			or <code class="filename">/usr/local/etc/capisuite</code>). It tells the cron job how
+			long the files should be stored in the different dirs.</p><p>The following options are available:</p><div class="variablelist"><dl><dt><span class="term"><code class="option">MAX_DAYS_RCVD="&lt;value&gt;"</code></span></dt><dd><p>Files stored in the user receive directories
+					which weren't accessed in the last <code class="option">&lt;value&gt;</code>
+					days are deleted. Set to <code class="option">0</code> to disable this
+					automatic deletion.</p></dd><dt><span class="term"><code class="option">MAX_DAYS_DONE="&lt;value&gt;"</code></span></dt><dd><p>Files stored in the global done directory
+					which weren't accessed in the last <code class="option">&lt;value&gt;</code>
+					days are deleted. Set to <code class="option">0</code> to disable this
+					automatic deletion.</p></dd><dt><span class="term"><code class="option">MAX_DAYS_FAILED="&lt;value&gt;"</code></span></dt><dd><p>Files stored in the global failed directory
+					which weren't accessed in the last <code class="option">&lt;value&gt;</code>
+					days are deleted. Set to <code class="option">0</code> to disable this
+					automatic deletion.</p></dd></dl></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="re02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch01.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="re03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">capisuite.conf </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> fax.conf</td></tr></table></div></body></html>

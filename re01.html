@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>capisuite</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="pr01.html#welcome" title="Welcome to CapiSuite" /><link rel="prev" href="pr01.html" title="Introduction" /><link rel="next" href="pr01s02.html" title="Structure of the manual" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">capisuite</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="pr01.html">Prev</a> </td><th width="60%" align="center">Welcome to <span class="application">CapiSuite</span></th><td width="20%" align="right"> <a accesskey="n" href="pr01s02.html">Next</a></td></tr></table><hr /></div><div class="refentry" title="capisuite"><a id="capisuite"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>capisuite — Python-scriptable ISDN telecommunication suite</p></div><div class="refsect1" title="Description"><a id="id2505607"></a><h2>Description</h2><p><span class="application">CapiSuite</span> is a Python-scriptable ISDN telecommunication suite.
+		It uses the new CAPI interface for accessing
+		your ISDN-hardware - so you'll need a card for which a CAPI compatible
+		driver is available. Currently these are all cards manufactured by AVM
+		and some Eicon cards.
+		</p><p><span class="application">CapiSuite</span> tries to give the user the ability to code his own ISDN applications
+		without having to fiddle around with all the dirty programming details like callback
+		functions, data buffers, protocol settings and so on.</p><p>I took a scripting language which is (in my opinion) very easy to understand,
+		to use and to learn - especially for beginners: Python. I extended it with some
+		functions providing the basic ISDN "building blocks" for the users application.
+		Behind these functions the heart of <span class="application">CapiSuite</span> implements all the dirty details
+		a user isn't interested in. My goal was to make script-coding as
+		simple as possible but to also give you the flexibility to realize what you
+		want.</p><p>To give you an impression, coding a simple answering machine is as easy as:
+
+		</p><div class="informalexample"><pre class="programlisting">def callIncoming (call, service, call_from, call_to):
+    connect_voice (call, 10)            # answer call after 10 secs
+    audio_send (call, "announcemnt.la") # play announcement
+    audio_send (call, "beep.la")        # play beep
+    audio_receive (call, "call.la", 10) # record call</pre></div><p>
+		</p><p>Of course some details are missing like creating a unique filename or storing
+		the additional information (called and calling party numbers, time, ...) - but I assume
+		you got my idea.</p><p>And - don't be afraid - if you just want to have a normal answering machine or send and
+		receive some fax documents, you can use the default scripts distributed with <span class="application">CapiSuite</span>.
+		They give you already some nice features - e.g. the answering machine is multi-user
+		ready, supports automatic fax detection and remote inquiry functions. You'll only
+		need to tell <span class="application">CapiSuite</span> some details like your own number, record an own announcement
+		and that's it.</p><p>So <span class="application">CapiSuite</span> is already equipped for your daily telecommunication needs - but if you don't
+		like to do the things the way I do - just change it or completely do it on your
+		own. And if you write nice scripts or have changes to my default scripts, I would
+		love to get and perhaps make them available for all users if you don't mind.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="pr01.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="pr01.html#welcome">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="pr01s02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Introduction </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Structure of the manual</td></tr></table></div></body></html>

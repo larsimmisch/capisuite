@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Tutorial: writing an incoming script</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch02.html" title="Chapter 2. Users Guide" /><link rel="prev" href="ch02s03.html" title="Used file formats" /><link rel="next" href="ch02s05.html" title="Example for an idle script" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Tutorial: writing an incoming script</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Users Guide</th><td width="20%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="Tutorial: writing an incoming script"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="incoming_tutorial"></a>Tutorial: writing an incoming script</h2></div></div></div><p>In this section, I'll show you how to code your own incoming script step by step.
+		We begin with simply accepting every incoming call, playing a beep. The last example
+		is a very simple but useful answering machine with fax recognition and receiving.</p><div class="sect2" title="Basics and a really dumb answering machine."><div class="titlepage"><div><div><h3 class="title"><a id="incoming_tut_basics"></a>Basics and a really dumb answering machine.</h3></div></div></div><p>Let's start with a very simple case: accept all incoming calls, beep and record
+			something so we have an audio file to play with later. First of all, create a new directory
+			somewhere which must be writable to <code class="literal">root</code>. We also need some test audio
+			file for sending. Let's take the beep which is distributed with <span class="application">CapiSuite</span>.</p><pre class="screen">mkdir capisuite-examples
+chmod 777 capisuite-examples # make it world-writeable
+cd capisuite-examples
+cp /usr/local/share/capisuite/beep.la .</pre><p>Perhaps you must change the path in the last line to reflect your installation.</p><p>Now copy and paste the example shown here to a file called <code class="filename">example.py</code>
+			in this directory. Don't forget to change the <code class="literal">my_path</code>-setting.</p><div class="example"><a id="id2511155"></a><p class="title"><b>Example 2.1. example.py</b></p><div class="example-contents"><pre class="programlisting">import capisuite<a id="incoming_ex1_1"></a><img src="images/callouts/1.png" alt="1" border="0" />
+
+my_path="/path/to/the/just/created/capisuite-examples/"<a id="incoming_ex1_2"></a><img src="images/callouts/2.png" alt="2" border="0" />
+
+def callIncoming(call,service,call_from,call_to):<a id="incoming_ex1_3"></a><img src="images/callouts/3.png" alt="3" border="0" />
+	capisuite.connect_voice(call,10)<a id="incoming_ex1_4"></a><img src="images/callouts/4.png" alt="4" border="0" />
+	capisuite.audio_send(call,my_path+"beep.la")<a id="incoming_ex1_5"></a><img src="images/callouts/5.png" alt="5" border="0" />
+	capisuite.audio_receive(call,my_path+"recorded.la",20,3)<a id="incoming_ex1_6"></a><img src="images/callouts/6.png" alt="6" border="0" />
+	capisuite.disconnect(call)<a id="incoming_ex1_7"></a><img src="images/callouts/7.png" alt="7" border="0" /></pre></div></div><br class="example-break" /><p>Let's walk through the script line by line:</p><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_1"><img src="images/callouts/1.png" alt="1" border="0" /></a> </p></td><td valign="top" align="left"><p>Import the capisuite module which holds all <span class="application">CapiSuite</span> specific functions.
+					All <span class="application">CapiSuite</span> objects (functions, constants) in this module can be referenced by
+					<code class="literal">capisuite.objectname</code> now. You could also do a
+					"<code class="literal">from capisuite import *</code>", which will insert all objects in the
+					current namespace - but this isn't recommended as they may collide with other
+					global objects.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>The imported module <code class="literal">capisuite</code> isn't available
+					as extra module, so you can't do this in an interactive Python session.
+					It's included in the <span class="application">CapiSuite</span> binary and only available in scripts interpreted
+					by <span class="application">CapiSuite</span>.</p></div></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_2"><img src="images/callouts/2.png" alt="2" border="0" /></a> </p></td><td valign="top" align="left"><p>Please change this to the real path you use for running these examples.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_3"><img src="images/callouts/3.png" alt="3" border="0" /></a> </p></td><td valign="top" align="left"><p>Define the necessary function as explained in
+					<a class="xref" href="ch02s02.html#ug_scripts_incoming" title="The incoming script">the section called “The incoming script”</a></p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_4"><img src="images/callouts/4.png" alt="4" border="0" /></a> </p></td><td valign="top" align="left"><p>That's the first <span class="application">CapiSuite</span> function we use: it accepts the pending call. The
+					first parameter tells <span class="application">CapiSuite</span> which call you mean. This parameter is necessary
+					for nearly all <span class="application">CapiSuite</span> functions. Ok, we only have one call now - but please
+					think about an incoming script which also wants to place an outgoing call at
+					the same time (for example to transfer a call). In this case <span class="application">CapiSuite</span> wouldn't know
+					which call you mean - so you must pass the reference you got to all connection
+					related functions.</p><p>You can also tell <span class="application">CapiSuite</span> to wait for an arbitrary time before accepting a
+					call - that's what the second parameter is used for. So this script will wait
+					10 seconds before connecting with the caller. Don't think this parameter is
+					useless and you could call a Python function (like <code class="literal">time.sleep()</code>)
+					to wait instead. This won't work for any delay longer than 4 (or 8, depending
+					on your ISDN setup) seconds as the call will timeout if an ISDN device doesn't
+					"pre-accept" it by telling your network provider that it's ringing. <span class="application">CapiSuite</span> will
+					do so if necessary - so please just use this parameter.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_5"><img src="images/callouts/5.png" alt="5" border="0" /></a> </p></td><td valign="top" align="left"><p>This call should be fairly self-explainig. Send the audio file stored in
+					<code class="filename">beep.la</code>.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_6"><img src="images/callouts/6.png" alt="6" border="0" /></a> </p></td><td valign="top" align="left"><p>Record an audio file for maximal 20 seconds - stopping earlier if more than
+					3 seconds of silence are recognized.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_7"><img src="images/callouts/7.png" alt="7" border="0" /></a> </p></td><td valign="top" align="left"><p>Last, but not least - disconnect. Hang up. Finish. It's over.</p></td></tr></table></div><p><span class="application">CapiSuite</span> configuration must be changed to use the just created script.
+			Do this by editing your <code class="filename">capisuite.conf</code> and replacing the
+			<code class="literal">incoming_script</code> value by the path to the file you just
+			created (see <a class="xref" href="ch01s02.html#configcs" title="Configuration of CapiSuite">the section called “Configuration of <span class="application">CapiSuite</span>”</a>) and restart <span class="application">CapiSuite</span>.</p><p>Now test it: call any number which ends up at your ISDN card - if you have
+			connected it to your ISDN interface, than any number (MSN) will do - if it's connected
+			to a PBX, then you must call a number which was configured for the card in your PBX.</p><p>You should hear a beep and then you can speak something into this primitive answering
+			machine. Please don't hangup before the script does as this case isn't handled yet. Just
+			wait 3 seconds after saying something - it should disconnect after this period of silence.</p><p>If it doesn't work, you perhaps made an error when copying the script. In this case,
+			please have a look at the <span class="application">CapiSuite</span> log and error log, which you'll find in
+			<code class="filename">/var/log/capisuite</code> or <code class="filename">/usr/local/var/log/capisuite</code>
+			if you haven't changed the path.</p><p>A good trick to check for syntax errors is also to run your script through
+			the normal Python interpreter. Do this by calling <span class="command"><strong>python /path/to/your/example.py</strong></span>.
+			Naturally, it will complain about the <code class="literal">import capisuite</code> as this is no standard
+			Python module. But before it does this, it will check the syntax of your script - so if you get
+			any <span class="emphasis"><em>other</em></span> error, please fix it and try again. If you only get
+
+			</p><pre class="screen">Traceback (most recent call last):
+  File "../scripts/incoming.py", line 16, in ?
+    import capisuite,cs_helpers
+ImportError: No module named capisuite</pre><p>
+
+			then your script has a correct syntax.</p><p>I hope you got your script working by now - if not, don't hesitate to ask on the
+			<span class="application">CapiSuite</span> mailing lists <span class="emphasis"><em>if</em></span> you have read a Python tutorial before.</p><p>In the next section we want to use an announcement, so please record some words
+			with this simple script and move the created file <code class="filename">recorded.la</code> to
+			<code class="filename">announce.la</code>.</p></div><div class="sect2" title="Improving it to a useful (?) state"><div class="titlepage"><div><div><h3 class="title"><a id="incoming_tut_improving"></a>Improving it to a useful (?) state</h3></div></div></div><p>Well, it's really not nice that the caller mustn't hangup - and it's even worse
+			that we do accept all incoming calls - perhaps by taking away your mothers important
+			calls?</p><p>Let's quickly improve this.</p><div class="example"><a id="id2511630"></a><p class="title"><b>Example 2.2. example.py, improved</b></p><div class="example-contents"><pre class="programlisting">import capisuite
+
+my_path="/path/to/the/just/created/capisuite-examples/"
+
+def callIncoming(call,service,call_from,call_to):
+	try:<a id="incoming_ex2_1"></a><img src="images/callouts/1.png" alt="1" border="0" />
+		if (call_to=="123"):<a id="incoming_ex2_2"></a><img src="images/callouts/2.png" alt="2" border="0" />
+			capisuite.connect_voice(call,10)
+			capisuite.audio_send(call,my_path+"announce.la")<a id="incoming_ex2_2a"></a><img src="images/callouts/3.png" alt="3" border="0" />
+			capisuite.audio_send(call,my_path+"beep.la")
+			capisuite.audio_receive(call,my_path+"recorded.la",20,3)
+			capisuite.disconnect(call)
+		else:
+			capisuite.reject(call,1)<a id="incoming_ex2_3"></a><img src="images/callouts/4.png" alt="4" border="0" />
+			capisuite.disconnect(call)<a id="incoming_ex2_3a"></a><img src="images/callouts/5.png" alt="5" border="0" />
+	except capisuite.CallGoneError:
+		capisuite.disconnect(call)<a id="incoming_ex2_4"></a><img src="images/callouts/6.png" alt="6" border="0" /></pre></div></div><br class="example-break" /><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex2_1"><img src="images/callouts/1.png" alt="1" border="0" /></a> </p></td><td valign="top" align="left"><p>If the other party hangs up unexpectedly, <span class="application">CapiSuite</span> will raise an
+					exception named <code class="literal">CallGoneError</code>. Therefore, you should
+					always put your code in a <code class="literal">try</code> statement and catch
+					the raised exception at the end of your script (or perhaps
+					earlier if needed). This exception can be raised by any call to a <span class="application">CapiSuite</span>
+					command which expects a connection like audio_send(). Since <span class="application">CapiSuite</span> 0.5, it's
+					not raised at once on normal disconnects; for example if the caller hangs up
+					<span class="emphasis"><em>during</em></span> audio_receive() the function will just finish.
+					An exception will not be raised until you call the <span class="emphasis"><em>next</em></span>
+					command which expects a connection. The reason for this change was to only
+					raise an exception on real errors and to make it possible to handle disconnects
+					in the normal flow of your scripts. On most scripts, this change shouldn't
+					have an effect.
+					</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex2_2"><img src="images/callouts/2.png" alt="2" border="0" /></a> </p></td><td valign="top" align="left"><p>Have a look at the called number (please replace <code class="literal">123</code>
+					with the number <span class="application">CapiSuite</span> should accept)...</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex2_2a"><img src="images/callouts/3.png" alt="3" border="0" /></a> </p></td><td valign="top" align="left"><p>Play the announcement we recorded in the last section. If you don't
+					like it, simply record a new one and move the <code class="filename">recorded.la</code>
+					again to <code class="filename">announce.la</code>.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex2_3"><img src="images/callouts/4.png" alt="4" border="0" /></a> </p></td><td valign="top" align="left"><p>Ignore the call.
+					The second parameter tells the exact reason for the reject - you can
+					ignore a call (any other ISDN device or phone will still be ringing for
+					that number) by using <code class="literal">1</code>, actively disconnect by
+					using <code class="literal">2</code> or any error condition which is
+					available in the ISDN specification (see <a class="xref" href="apb.html#capicodes_isdn" title="ISDN error codes">the section called “ISDN error codes”</a>
+					for available codes).</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex2_3a"><img src="images/callouts/5.png" alt="5" border="0" /></a> </p></td><td valign="top" align="left"><p>You always have to call <code class="literal">disconnect</code> at the end of your script,
+					as this will wait for the end of the call, while <code class="literal">reject</code> only initiates
+					the call reject. Otherwise you'll get a warning in the error log.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex2_4"><img src="images/callouts/6.png" alt="6" border="0" /></a> </p></td><td valign="top" align="left"><p>This is the exception handler for <code class="literal">CallGoneError</code> - the
+					exception <span class="application">CapiSuite</span> raises when the call is disconnected by the other party
+					unexpectedly. You should also call <code class="literal">disconnect</code> here to
+					wait until the call is completely disconnected.</p></td></tr></table></div><p>Save this to <code class="filename">example.py</code> again and test it.
+			It's not necessary to restart <span class="application">CapiSuite</span> as all scripts will be read at
+			each time they're executed. Now you're allowed to hang up, too ;-).
+			</p></div><div class="sect2" title="Using sensible file names"><div class="titlepage"><div><div><h3 class="title"><a id="incoming_tut_unique_names"></a>Using sensible file names</h3></div></div></div><p>We always used the same name to save the recorded message to which clearly isn't 
+			reasonable. We should really choose a new name for every new call. This isn't as simple as
+			it may sound - you must assure that the used algorithm will also work for multiple calls
+			arriving at the same time. Fortunately, the helpful programmer of <span class="application">CapiSuite</span> had the same problem
+			and so we can use the code he (hmmm... I?) has written.</p><p>The Python module <code class="filename">cs_helpers.py</code> contains some useful functions
+			which are needed by the default scripts provided with <span class="application">CapiSuite</span> but may be also helpful
+			for the use in your own scripts. It contains the function <code class="literal">uniqueName</code>
+			which does exactly what we need here. The syntax is:</p><pre class="screen">filename=cs_helpers.uniqueName(directory,prefix,sufix)</pre><p>The function will find a new unique filename in the given <code class="literal">directory</code>.
+			The created filename will be "<code class="filename">prefix-XXX.suffix</code>" where <code class="literal">XXX</code>
+			is the next free number started at 0. The next free number is remembered in a file
+			<code class="filename">prefix-nextnr</code> and the created name is returned.</p><p>We can simply add this call to our script:</p><div class="example"><a id="id2511977"></a><p class="title"><b>Example 2.3. using unique filenames</b></p><div class="example-contents"><pre class="programlisting">import capisuite<span class="emphasis"><em>,cs_helpers</em></span>
+
+my_path="/path/to/the/just/created/capisuite-examples/"
+
+def callIncoming(call,service,call_from,call_to):
+	try:
+		if (call_to=="123"):
+			<span class="emphasis"><em>filename=cs_helpers.uniqueName(my_path,"voice","la")</em></span>
+			capisuite.connect_voice(call,10)
+			capisuite.audio_send(call,my_path+"announce.la")
+			capisuite.audio_send(call,my_path+"beep.la")
+			capisuite.audio_receive(call,<span class="emphasis"><em>filename</em></span>,20,3)
+			capisuite.disconnect(call)
+		else:
+			capisuite.reject(call,1)
+	except capisuite.CallGoneError:
+		capisuite.disconnect(call)</pre></div></div><br class="example-break" /><p>If you're interested in other functions which <code class="literal">cs_helpers.py</code>
+			defines, just have a look at the reference at <a class="xref" href="ch02s06.html#default_helpers" title="cs_helpers.py">the section called “cs_helpers.py”</a>.</p></div><div class="sect2" title="Automatic fax recognition and receiving"><div class="titlepage"><div><div><h3 class="title"><a id="incoming_tut_fax_recognition"></a>Automatic fax recognition and receiving</h3></div></div></div><p>As last step, I want to show you how fax recognition and receiving works and
+			how to switch from voice to fax mode.</p><p>Here's the last and most complicated example of this section. It'll introduce
+			four new <span class="application">CapiSuite</span> functions and shows how to split up the functionality in another
+			function which is used by <code class="literal">callIncoming</code>. There are much changes
+			which are described below - but most of them should be nearly self-explanatory.
+			So I don't think this last step is too big. And you don't want to read 10 more steps
+			here, do you? ;-)</p><div class="example"><a id="id2512058"></a><p class="title"><b>Example 2.4. Adding fax functions</b></p><div class="example-contents"><pre class="programlisting">import capisuite,cs_helpers,os<a id="incoming_ex4_0"></a><img src="images/callouts/1.png" alt="1" border="0" />
+
+my_path="/path/to/the/just/created/capisuite-examples/"
+
+def callIncoming(call,service,call_from,call_to):
+	try:
+		if (call_to=="123"):
+			filename=cs_helpers.uniqueName(my_path,"voice","la")
+			capisuite.connect_voice(call,10)
+			capisuite.enable_DTMF(call)<a id="incoming_ex4_1"></a><img src="images/callouts/2.png" alt="2" border="0" />
+			capisuite.audio_send(call,my_path+"announce.la",1)<a id="incoming_ex4_2"></a><img src="images/callouts/3.png" alt="3" border="0" />
+			capisuite.audio_send(call,my_path+"beep.la",1)
+			capisuite.audio_receive(call,filename,20,3,1)
+			dtmf=capisuite.read_DTMF(call,0)<a id="incoming_ex4_3"></a><img src="images/callouts/4.png" alt="4" border="0" />
+			if (dtmf=="X"):<a id="incoming_ex4_4"></a><img src="images/callouts/5.png" alt="5" border="0" />
+				if (os.access(filename,os.R_OK)):<a id="incoming_ex4_5"></a><img src="images/callouts/6.png" alt="6" border="0" />
+					os.unlink(filename)
+				faxIncoming(call)<a id="incoming_ex4_6"></a><img src="images/callouts/7.png" alt="7" border="0" />
+			capisuite.disconnect(call)
+		else:
+			capisuite.reject(call,1)
+	except capisuite.CallGoneError:
+		capisuite.disconnect(call)
+
+def faxIncoming(call):
+	capisuite.switch_to_faxG3(call,"+49 123 45678","Test headline")<a id="incoming_ex4_7"></a><img src="images/callouts/8.png" alt="8" border="0" />
+	filename=cs_helpers.uniqueName(my_path,"fax","sff")
+	capisuite.fax_receive(call,filename)<a id="incoming_ex4_8"></a><img src="images/callouts/9.png" alt="9" border="0" /></pre></div></div><br class="example-break" /><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_0"><img src="images/callouts/1.png" alt="1" border="0" /></a> </p></td><td valign="top" align="left"><p>In this example, we need a normal Python module for the first time.
+					The <code class="literal">os</code> module holds functions for all kinds of operation
+					system services and is needed for deleting a file here.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_1"><img src="images/callouts/2.png" alt="2" border="0" /></a> </p></td><td valign="top" align="left"><p>DTMF is the abbreviation for Dual Tone Multi Frequency. These
+					are the tones which are generated when you press the digits on your
+					phone and are usually used for dialling. They're also sent by modern
+					fax machines before the transmission starts. Therefore, the same
+					functions can be used for recognizing pressed digits and fax machines.
+					</p><p>Before any DTMF is recognized by <span class="application">CapiSuite</span>, the according function must
+					be enabled by <code class="literal">enable_DTMF</code>.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_2"><img src="images/callouts/3.png" alt="3" border="0" /></a> </p></td><td valign="top" align="left"><p>All audio send and receive functions support abortion when a DTMF
+					tone is recognized. This is enabled by passing "<code class="literal">1</code>"
+					as last parameter. It will also prevent the function from starting
+					if a DTMF char was recognized <span class="emphasis"><em>before</em></span> but not yet
+					read by the script.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_3"><img src="images/callouts/4.png" alt="4" border="0" /></a> </p></td><td valign="top" align="left"><p><span class="application">CapiSuite</span> stores all received DTMF signals in a buffer from where they
+					can be read at any time. Reading is done by <code class="literal">read_DTMF</code>
+					which also clears the buffer. It will return all received characters in
+					a string, so if the caller presses "3","5","*", you'll get "35*".</p><p>The <code class="literal">0</code> tells <span class="application">CapiSuite</span> not to wait for DTMF signals - 
+					if none are available, it will simply return an empty string.
+					It's also possible to specify that it should wait for a certain amount of
+					time or until a certain number of signals have been received.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Please note that it's not necessary to check for received DTMF
+					after each audio send or receive function. Simply enable the DTMF abortion
+					in all commands in a block and check for received tones after the whole block.
+					</p></div></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_4"><img src="images/callouts/5.png" alt="5" border="0" /></a> </p></td><td valign="top" align="left"><p>Fax machines send a special tone which is represented as
+					"<code class="literal">X</code>" by the CAPI. So if you receive the string
+					"X", a fax machine is calling and we should start our fax handling routines.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_5"><img src="images/callouts/6.png" alt="6" border="0" /></a> </p></td><td valign="top" align="left"><p>Possibly, the announcement was so short that the recording has started
+					already before the fax is recognized. We won't save a file containing
+					only the fax beep and so we test if it was created (<code class="function">os.access</code>
+					checks for the existence of a file) and delete it if needed by calling
+					<code class="literal">os.unlink</code>.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_6"><img src="images/callouts/7.png" alt="7" border="0" /></a> </p></td><td valign="top" align="left"><p>Fax handling was realized in a separate function which is called here.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_7"><img src="images/callouts/8.png" alt="8" border="0" /></a> </p></td><td valign="top" align="left"><p>So far, this connection is in voice mode (which was set by using
+					<code class="literal">connect_voice</code>). If we want to receive a fax now, the
+					mode must be changed to fax. This is done by <code class="literal">switch_to_faxG3</code>.
+					As the fax protocol needs some additional parameters, they must be given
+					here. The first string is the so called <span class="emphasis"><em>fax station ID</em></span>
+					which is sent to the calling fax and shown in it's protocol, while the
+					second one is a <span class="emphasis"><em>fax headline</em></span>. This headline is mainly
+					used for sending faxes. To be honest, I personally don't know if it has any
+					sense to specify this if you only want to receive a fax. But it surely won't
+					harm ;-). If someone knows this for sure, please tell me.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>If you want to use an own number solely for fax purposes, you
+					should <span class="emphasis"><em>not</em></span> use <code class="literal">switch_to_faxG3</code>.
+					Use <code class="literal">connect_faxG3</code> instead.</p></div></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex4_8"><img src="images/callouts/9.png" alt="9" border="0" /></a> </p></td><td valign="top" align="left"><p>After the connection has been set to fax mode succesfully, we can
+					receive the fax document finally. The used function
+					<code class="literal">fax_receive</code> gets a new name which is again created by
+					calling <code class="literal">cs_helpers.uniqueName</code> as above.</p></td></tr></table></div><p>Congrats. You've finished my small tutorial. Now it's up to you - you can
+			play with the created script and try to make it more complete. Many of the
+			commands used above also return useful informations which we didn't use here.
+			There's still much to do - sending received calls to a user via e-mail, log
+			connections, ... If you want to complete this script,
+			<a class="xref" href="ch02s07.html" title="CapiSuite command reference">the section called “<span class="application">CapiSuite</span> command reference”</a> will be helpful. You can also read on here
+			to have a short look on the idle scripts, followed by a quick overview of the
+			structure of the default scripts shipped with <span class="application">CapiSuite</span>.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s03.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Used file formats </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Example for an idle script</td></tr></table></div></body></html>

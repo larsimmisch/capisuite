@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>How CapiSuite works, how it is configured and started</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch01.html" title="Chapter 1. Getting Started" /><link rel="prev" href="ch01.html" title="Chapter 1. Getting Started" /><link rel="next" href="re02.html" title="capisuite.conf" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">How <span class="application">CapiSuite</span> works, how it is configured and started</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01.html">Prev</a> </td><th width="60%" align="center">Chapter 1. Getting Started</th><td width="20%" align="right"> <a accesskey="n" href="re02.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="How CapiSuite works, how it is configured and started"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="csglobal"></a>How <span class="application">CapiSuite</span> works, how it is configured and started</h2></div></div></div><p>First, let's start with a short introduction what <span class="application">CapiSuite</span> actually
+		is and how it works. After that, the configuration and startup of <span class="application">CapiSuite</span>
+		will be explained in short.</p><div class="sect2" title="How does CapiSuite work?"><div class="titlepage"><div><div><h3 class="title"><a id="howwork"></a>How does <span class="application">CapiSuite</span> work?</h3></div></div></div><p><span class="application">CapiSuite</span> is a daemon (program which runs in the background) whos
+			main task is to sit around and wait until a call is incoming.
+			If this happens it will start a special Python script - the
+			<span class="emphasis"><em>incoming script</em></span> - and do what this script tells it, for example
+			record a voice call to implement an answering machine.</p><p>To also be able to issue outgoing calls, another script is called
+			at regular intervals - the <span class="emphasis"><em>idle script</em></span>. It can check any resource
+			to get instructions for placing a call - one can for example imagine
+			to check a special mail account or watch a special directory where
+			tasks are placed by the user.</p><p>So all user-visible actions and the behaviour of <span class="application">CapiSuite</span> are defined
+			in these two scripts.</p><p>You'll need to do two things now:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>provide scripts by either</p><div class="itemizedlist"><ul class="itemizedlist" type="circle"><li class="listitem"><p>using and configuring the default scripts distributed with <span class="application">CapiSuite</span> or</p></li><li class="listitem"><p>writing your own scripts (perhaps by using the default ones as templates)</p></li></ul></div></li><li class="listitem"><p>configure <span class="application">CapiSuite</span> itself and tell it where to find the two scripts</p></li></ul></div><p>This page concentrates on the general configuration of <span class="application">CapiSuite</span> - that consists mainly of
+			options telling it which scripts to use and where and how to log its activities. After
+			that, some details about starting <span class="application">CapiSuite</span> are described.</p><p>The next pages will then introduce the standard scripts you already installed along with
+			<span class="application">CapiSuite</span> and tell you how to use the answering maching and fax functions provided
+			by them.</p><p>The details on how to write your own scripts are covered in another part of the
+			documentation (<a class="xref" href="ch02.html" title="Chapter 2. Users Guide">Chapter 2, <i>Users Guide</i></a>).</p></div><div class="sect2" title="Configuration of CapiSuite"><div class="titlepage"><div><div><h3 class="title"><a id="configcs"></a>Configuration of <span class="application">CapiSuite</span></h3></div></div></div><p><span class="application">CapiSuite</span> uses a general configuration file for the core functions. This file should
+			be located in <code class="filename">/etc/capisuite/capisuite.conf</code> or <code class="filename">/usr/local/etc/capisuite/capisuite.conf</code>
+			depending on how you installed <span class="application">CapiSuite</span>. It's described in detail in <a class="xref" href="re02.html" title="capisuite.conf"><span class="refentrytitle">capisuite.conf</span>(5)</a>.
+			Most options are set to reasonable defaults already for using the standard scripts -
+			so if you want you can also skip this section.</p></div><div class="sect2" title="Startup of CapiSuite"><div class="titlepage"><div><div><h3 class="title"><a id="startcs"></a>Startup of CapiSuite</h3></div></div></div><p>As <span class="application">CapiSuite</span> is a daemon, it is normally activated during the system
+			startup process. Just add a call to
+
+			</p><pre class="screen"><span class="command"><strong>/path/to/capisuite -d</strong></span></pre><p>
+
+			in your startup scripts. In LSB conforming Linux distributions, you'll
+			find the startup scripts in <code class="filename">/etc/init.d</code>. For detailled documentation
+			how to add a service there please refer to the documentation of your
+			distribution. There's an example startup script written for SUSE Linux included
+			in the source distribution (see <code class="filename">rc.capisuite</code>) which should (hopefully)
+			work with other LSB compliant distributions, too. If you need to modify it, I'll
+			welcome your feedback and happily add instructions for other distributions here.</p><p>If you use the right RPM packages of <span class="application">CapiSuite</span>, the necessary scripts
+			should already be included. For activating them, please use your
+			distributors config tool. If you use the RPM distributed with SUSE Linux
+			and want to stay with the default scripts, everything should work "out of the box".
+			As soon as you have configured the default scripts, simply run
+			<span class="command"><strong>rccapisuite restart</strong></span>.</p><p>For debug purposes, you can also start <span class="application">CapiSuite</span> manually at any time
+			by just calling
+
+			</p><pre class="screen"><span class="command"><strong>/path/to/capisuite</strong></span></pre><p>There are also some other commandline options available:</p><div class="variablelist" title="commandline options of CapiSuite"><p class="title"><b>commandline options of <span class="application">CapiSuite</span></b></p><dl><dt><span class="term"><code class="option">--help, -h</code></span></dt><dd><p>show a short summary of commandline options</p></dd><dt><span class="term"><code class="option">--config=file, -c file</code></span></dt><dd><p>use a custom configuration file instead
+						of <code class="filename">/etc/capisuite/capisuite.conf</code> or
+						<code class="filename">/usr/local/etc/capisuite/capisuite.conf</code>.</p></dd><dt><span class="term"><code class="option">--daemon, -d</code></span></dt><dd><p>run as daemon (used in your startup script, see above)</p></dd></dl></div><p><span class="application">CapiSuite</span> can run as any user you want theoretically. It only needs read/write permissions to <code class="filename">/dev/capi20</code>.
+			If you use the default scripts, however, <span class="application">CapiSuite</span> <span class="emphasis"><em>must</em></span> run as <code class="literal">root</code>.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch01.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="re02.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 1. Getting Started </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> capisuite.conf</td></tr></table></div></body></html>

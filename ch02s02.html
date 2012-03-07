@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>A first look on the incoming and idle scripts</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch02.html" title="Chapter 2. Users Guide" /><link rel="prev" href="ch02.html" title="Chapter 2. Users Guide" /><link rel="next" href="ch02s03.html" title="Used file formats" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">A first look on the incoming and idle scripts</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Users Guide</th><td width="20%" align="right"> <a accesskey="n" href="ch02s03.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="A first look on the incoming and idle scripts"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="ug_writing_scripts"></a>A first look on the incoming and idle scripts</h2></div></div></div><p>In <a class="xref" href="ch01s02.html#howwork" title="How does CapiSuite work?">the section called “How does <span class="application">CapiSuite</span> work?”</a> I already told you that there are two kinds
+		of scripts used in <span class="application">CapiSuite</span>. Now let's have a closer look on them.</p><div class="sect2" title="The incoming script"><div class="titlepage"><div><div><h3 class="title"><a id="ug_scripts_incoming"></a>The incoming script</h3></div></div></div><p>Every time a call is received by <span class="application">CapiSuite</span>, it will call the incoming script -
+			to be precise it will call a function named <code class="literal">callIncoming</code> in
+			a python script located somewhere on your disk. This "somewhere" was defined in
+			<a class="xref" href="ch01s02.html#configcs" title="Configuration of CapiSuite">the section called “Configuration of <span class="application">CapiSuite</span>”</a>, remember?</p><p>So the given script must always define a function with the following signature:</p><pre class="programlisting">def callIncoming(call,service,call_from,call_to):
+	# function body
+	...</pre><p>The parameters given by <span class="application">CapiSuite</span> are:</p><div class="variablelist"><dl><dt><span class="term">call</span></dt><dd><p>reference to the incoming call. This will be used
+					later in all <span class="application">CapiSuite</span>-functions you call to tell the system which call
+					you mean. You'll only pass this parameter on to other functions - the
+					script can't do anything other with it (it's
+					<span class="emphasis"><em>opaque</em></span>).</p></dd><dt><span class="term">service (integer)</span></dt><dd><p>Service of the incoming call as signalled by the ISDN,
+					set to one of the following values:
+					</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p><code class="literal">SERVICE_VOICE</code>: voice call</p></li><li class="listitem"><p><code class="literal">SERVICE_FAXG3</code>: analog fax call</p></li><li class="listitem"><p><code class="literal">SERVICE_OTHER</code>: other service not listed above</p></li></ul></div><p>
+					</p></dd><dt><span class="term">call_from (string)</span></dt><dd><p>the number of the calling party (source of the call) as Python string</p></dd><dt><span class="term">call_to (string)</span></dt><dd><p>the number of the called party (destination of the call) as Python string</p></dd></dl></div><p>The first task of the function should be to decide if it wants to accept or reject
+			the call. If it accepts it, it will normally do something with it (receive a fax, record
+			a voice call, play nice announcements, ...) and then disconnect. After it has done
+			all necessary work, it should finish immidiately. In a later chapter, I'll present
+			you some examples which should make things clearer.</p><p>Naturally, you can break down your application in more functions and perhaps more
+			scripts, which will be called and/or imported recursively - but the starting point is always
+			the <span class="emphasis"><em>incoming script</em></span> containing <code class="literal">callIncoming</code>.
+			If Python and <span class="application">CapiSuite</span> are correctly installed, you should also be able to import and use
+			any Python module.</p></div><div class="sect2" title="The idle script"><div class="titlepage"><div><div><h3 class="title"><a id="ug_scripts_idle"></a>The idle script</h3></div></div></div><p>As the incoming script will only be started when a call comes in, we need
+			another mechanism to initiate an outgoing call. As <span class="application">CapiSuite</span> can't know when you plan
+			to do so, it will just call a function named <code class="literal">idle</code> in the
+			so called "idle script" in regular intervals. For configuring the intervals and where
+			this script is located, please refer to <a class="xref" href="ch01s02.html#configcs" title="Configuration of CapiSuite">the section called “Configuration of <span class="application">CapiSuite</span>”</a>.</p><p>The called function must have the following signature:</p><pre class="programlisting">def idle(capi):
+	# function body
+	...</pre><p>The only parameter given by <span class="application">CapiSuite</span> is:</p><div class="variablelist"><dl><dt><span class="term">capi</span></dt><dd><p>This is a reference to an internal class of <span class="application">CapiSuite</span>
+					which handles the communication with the CAPI interface. You'll
+					have to pass on this parameter to some <span class="application">CapiSuite</span> functions. Nothing
+					else useful you can do with it in your script. This
+					parameter has internal reasons and will possibly (hopefully)
+					go away some day in the future. Just pass it on when told
+					to do so for now.</p></dd></dl></div><p>Now you can do what you want in this function. Most likely, you'll check
+			for a job in an email account, look for a file to send in a special directory
+			or so and place a call to send the job to the right destination.</p><p>Theoretically, you could also accomplish every other periodical task on your
+			system in the idle script - but perhaps we should leave such general things to
+			applications which were designed for this like <span class="application">cron</span>. ;-)</p><p>As above, <code class="literal">idle</code> can call other functions or scripts if
+			you like to and all Python modules are available for import.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 2. Users Guide </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Used file formats</td></tr></table></div></body></html>

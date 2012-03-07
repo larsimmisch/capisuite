@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>capisuite.conf</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch01s02.html#configcs" title="Configuration of CapiSuite" /><link rel="prev" href="ch01s02.html" title="How CapiSuite works, how it is configured and started" /><link rel="next" href="ch01s03.html" title="Features and configuration of the default scripts" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">capisuite.conf</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch01s02.html">Prev</a> </td><th width="60%" align="center">Configuration of <span class="application">CapiSuite</span></th><td width="20%" align="right"> <a accesskey="n" href="ch01s03.html">Next</a></td></tr></table><hr /></div><div class="refentry" title="capisuite.conf"><a id="capisuite.conf"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>capisuite.conf — configuration of the <span class="application">CapiSuite</span> daemon</p></div><div class="refsect1" title="Description"><a id="id2506893"></a><h2>Description</h2><p>The options for the <span class="application">CapiSuite</span> daemon are configured here. They will be
+			presented in brief here - for further details please
+			refer to the comments in the configuration file itself.</p></div><div class="refsect1" title="Options"><a id="id2506910"></a><h2>Options</h2><div class="variablelist"><dl><dt><span class="term"><code class="option">incoming_script="/path/to/incoming.py"</code></span></dt><dd><p>This option tells <span class="application">CapiSuite</span> which script should be executed at incoming
+						calls. Only change this if you want to use your own script.</p></dd><dt><span class="term"><code class="option">idle_script="/path/to/idle.py"</code></span></dt><dd><p>This option reflects the path and name of the idle script.
+						This script is called in regular intervalls to check if any outgoing
+						call should be done. As above, the default should be ok if you don't
+						use your own script.</p></dd><dt><span class="term"><code class="option">idle_script_interval="30"</code></span></dt><dd><p>Here you can define how often the idle script should be executed. The
+						number given is the interval between subsequent invocations in seconds.
+						Lesser numbers give you quicker response to queued jobs but also a higher
+						system load. The default should be ok in most cases.</p></dd><dt><span class="term"><code class="option">log_file="/path/to/capisuite.log"</code></span></dt><dd><p>This file will be used for all "normal" messages printed by
+						<span class="application">CapiSuite</span> telling you what it does. Error messages are written to a
+						special log (see below).</p></dd><dt><span class="term"><code class="option">log_level="1"</code></span></dt><dd><p>You can define how detailled the log output of <span class="application">CapiSuite</span> will be.
+						The default will give you some informational messages for each
+						incoming and outgoing call and should be enough for normal use. I would
+						recommend to only increase it if you encounter some problems.
+						Logs of higher level are mainly intended for developers, so just use
+						them if you want to report a problem or have some know-how of the CAPI
+						interface and the internals of <span class="application">CapiSuite</span>.</p></dd><dt><span class="term"><code class="option">log_error="/path/to/capisuite.error"</code></span></dt><dd><p>All errors which <span class="application">CapiSuite</span> detects internally and in your scripts
+						will end up here. They are written to an extra file so that they don't
+						get lost in the normal log. Please check this log regularly for any
+						messages - especially when you encounter problems. Please report all
+						messages you don't understand and which aren't caused by your
+						own script-modifications to the <span class="application">CapiSuite</span> team.</p></dd><dt><span class="term"><code class="option">DDI_length="0"</code></span></dt><dd><p>When your ISDN card is connected to an ISDN interface in PtP mode,
+						i.e. if you use DDI which, in understandable words mean you have only one
+						ISDN phone number and can define your own extensions as you like, you have
+						to set the length of your extension numbers here. In Germany, PtP mode is
+						called "Anlagenanschluss". Let's say you use 1234-000 till 1234-999, then your
+						DDI_length would be 3. If you set this to 0, DDI/PtP is disabled.</p><p>If you're not sure what all this should mean, then chances
+						are high you don't use DDI and can leave this option as it is.</p></dd><dt><span class="term"><code class="option">DDI_base_length="0"</code></span></dt><dd><p>This option is only used when DDI_length is not 0. This is the length
+					of your base number - in the example above it would be 4.</p></dd><dt><span class="term"><code class="option">DDI_stop_numbers=""</code></span></dt><dd><p>If you usually use extension numbers of a specified length, but also
+					want to use some shorter ones (e.g. the "-0" extension for you switchboard), then
+					you can list these shorter extensions here, separated by commas.</p></dd></dl></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch01s02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch01s02.html#configcs">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch01s03.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">How <span class="application">CapiSuite</span> works, how it is configured and started </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Features and configuration of the default scripts</td></tr></table></div></body></html>

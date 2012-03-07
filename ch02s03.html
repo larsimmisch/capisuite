@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Used file formats</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch02.html" title="Chapter 2. Users Guide" /><link rel="prev" href="ch02s02.html" title="A first look on the incoming and idle scripts" /><link rel="next" href="ch02s04.html" title="Tutorial: writing an incoming script" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Used file formats</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s02.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Users Guide</th><td width="20%" align="right"> <a accesskey="n" href="ch02s04.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="Used file formats"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="fileformats"></a>Used file formats</h2></div></div></div><p>Before we'll continue with writing scripts, please let me tell you some words 
+		about the file formats the <span class="application">CapiSuite</span> core uses.</p><p><span class="application">CapiSuite</span> always reads and saves files in the native format as they are be expected and given
+		by the CAPI ISDN drivers. This preserves it from having to convert everything from and to other
+		formats thus reducing unnecessary overhead.</p><p>As these formats aren't that well-known and you will need special tools to convert or
+		view/play them, I'll give you a short overview of how you can do this.</p><p>Most likely, your scripts will convert the special ISDN file formats to well-known
+		ones for sending them to you via e-mail for example. Nevertheless, I'd advice you to store
+		the received and sent files in the native <span class="application">CapiSuite</span> formats somewhere. This will protect you from
+		losing data in the case the conversion fails and will help you in debugging problems which may
+		arise with your scripts.</p><p>All tools which I refer to here are described in <a class="xref" href="ch01.html#require_soft" title="Software">the section called “Software”</a>. See
+		there for informations how to get them.</p><div class="sect2" title="Format of voice files (inversed A-Law, 8kHz, mono)"><div class="titlepage"><div><div><h3 class="title"><a id="voice_fileformat"></a>Format of voice files (inversed A-Law, 8kHz, mono)</h3></div></div></div><p>ISDN transmits voice data as waves with a sample-rate of 8kHz in mono. To
+			save bandwith, a compression called A-Law is used (at least in Europe, other countries
+			like the USA use u-Law which is quite similar to A-Law). For any reason
+			beyond my understanding, they use a bit-reversed form of A-Law called
+			"inversed A-Law".</p><div class="sect3" title="Creating A-Law files"><div class="titlepage"><div><div><h4 class="title"><a id="creating_alaw"></a>Creating A-Law files</h4></div></div></div><p>There are two possible ways to create A-Law files.</p><p>The first one is to call your computer with your phone (either use the default answering
+				machine script and configure it as described in <a class="xref" href="re04.html" title="answering_machine.conf"><span class="refentrytitle">answering_machine.conf</span>(5)</a>
+				or write a simple script yourself). Now, record whatever you want and take the created
+				output file (when you use the default scripts please take the file from the
+				user_dir, not the attachment of the mail as this is already converted) and use it.</p><p>You eventually want to trim the recorded file and remove unwanted
+				noise and silence at the beginning and the end. This can easily be done
+				by <span class="command"><strong>sox</strong></span> and <span class="command"><strong>play</strong></span> (both come together
+				with the <span class="command"><strong>sox</strong></span> package).</p><p><span class="command"><strong>sox</strong></span> is used to convert a file while <span class="command"><strong>play</strong></span>
+				is used to just play it. Both support the same effects including the trim option.
+				Both also detect what type of file you are using by looking at the suffix of
+				your file name. So all your inversed A-Law files should be named like
+				<code class="filename">something.la</code> (<code class="filename">.la</code> is the inversed
+				form of <code class="filename">.al</code> which stands for A-Law).</p><p>So let's first try to find the optimal values for the trim effect by calling
+				<span class="command"><strong>play:</strong></span></p><pre class="screen"><span class="command"><strong>play myfile.la trim &lt;start-offset&gt; &lt;duration&gt;</strong></span></pre><p>Now play around with start-offset and duration (both given in seconds) until
+				you know the right values. If you found them, you can use <span class="command"><strong>sox</strong></span>
+				to actually produce the needed file:</p><pre class="screen"><span class="command"><strong>sox myfile.la outfile.la trim &lt;start-offset&gt; &lt;duration&gt;</strong></span></pre><p>You'll now get a file named <code class="filename">outfile.la</code> which should
+				contain what you want.</p><p>The second way to create an inversed A-Law file is to record a normal WAV-file
+				with your favourite sound-tools and convert it to the destination format using
+				<span class="command"><strong>sox</strong></span>. You'll get the best results when your WAV file already
+				is in 8kHz, mono, 16 bit format. <span class="command"><strong>sox</strong></span> is able to convert
+				other waves if necessary but this usually will result in worse quality. You should
+				also normalize your sound file to about 50% of the maximum amplitude.</p><p>You can convert WAV to inversed A-Law by calling (thx to Carsten Heesch for the tip):</p><pre class="screen"><span class="command"><strong>sox myfile.wav -r 8000 -c 1 -b outfile.la resample -ql</strong></span></pre><p>If you used vbox in the past and want to convert your old message files, you can
+				use the following command:</p><pre class="screen"><span class="command"><strong>vboxtoau &lt; infile.msg | sox -tau - outfile.la</strong></span></pre></div><div class="sect3" title="Playing A-Law files"><div class="titlepage"><div><div><h4 class="title"><a id="playing_alaw"></a>Playing A-Law files</h4></div></div></div><p>Again, there are two possibilities. The <span class="command"><strong>play</strong></span> command
+				of <span class="command"><strong>sox</strong></span> is able to just play the inversed A-Law format without
+				any conversion. Just call <span class="command"><strong>play</strong></span> with the filename as parameter:</p><pre class="screen"><span class="command"><strong>play myfile.la</strong></span></pre><p>But you can also use sox to convert the A-Law files to the more common
+				WAV format by just invoking:</p><pre class="screen"><span class="command"><strong>sox myfile.la -w outfile.wav</strong></span></pre><p>The created <code class="filename">outfile.wav</code> can be played
+				by nearly any audio player without problems.</p></div></div><div class="sect2" title="Format of fax files (Structured Fax Files)"><div class="titlepage"><div><div><h3 class="title"><a id="fax_fileformat"></a>Format of fax files (Structured Fax Files)</h3></div></div></div><p>CAPI-compliant drivers will expect and provide fax files in a so called
+			Structured Fax File (SFF). As this seems to be a CAPI-specific format, there
+			are not much tools out there for GNU/Linux which are capable of handling it.
+			Finally I found some small tools written by Peter Schäfer, which we can
+			use here.</p><p><span class="application">CapiSuite</span> is also able to receive color fax files which will be stored in
+			a special file format I called CFF.</p><div class="sect3" title="Creating a SFF"><div class="titlepage"><div><div><h4 class="title"><a id="create_sff"></a>Creating a SFF</h4></div></div></div><p>In current Ghostscript releases, a patch from Peter has been
+				included to produce SF files. To see if your Ghostscript already
+				supports it, enter <span class="command"><strong>gs --help</strong></span> and look for
+				the so-called <span class="command"><strong>cfax</strong></span>-device in the long device list
+				presented to you. If it's not listed, you have to take a newer Ghostscript
+				or recompile it, sorry. I don't know any other way to produce SFF currently.</p><p>You need a PostScript file (as produced by nearly every Linux program
+				when you choose "print to file") first. Now you can call GhostScript to
+				convert it to a SFF:</p><pre class="screen"><span class="command"><strong>gs -dNOPAUSE -dBATCH -sDEVICE=cfax -sOutputFile=outfile.sff file.ps</strong></span></pre><p>If you're not sure if it worked you can use <span class="command"><strong>sffview</strong></span>
+				as described below.</p></div><div class="sect3" title="Viewing / converting from SFF"><div class="titlepage"><div><div><h4 class="title"><a id="view_sff"></a>Viewing / converting from SFF</h4></div></div></div><p>To simply view a received SFF, you can use the <span class="command"><strong>sffview</strong></span>
+				program. It's a simple but useful tool for viewing SF files without the need
+				to convert them. Just start it and you will get a GUI where you can open the
+				desired file.</p><p>If you want to convert a fax file to a more common format, I recommend
+				using <span class="command"><strong>sfftobmp</strong></span>. It supports quite some output formats
+				like JPEG, TIFF, PBM or BMP. I prefer multipage TIFF files as this is the only
+				format being able to store several pages in one file. To convert
+				SFF to multipage TIFF, call:</p><pre class="screen"><span class="command"><strong>sfftobmp -tif myfile.sff outfile.tiff</strong></span></pre><p>This will give you a TIFF file which you can convert now to nearly
+				any other useful format with the TIFF tools, for example <span class="command"><strong>tiff2ps</strong></span>.
+				</p></div><div class="sect3" title="Color faxes - the CFF format"><div class="titlepage"><div><div><h4 class="title"><a id="cff"></a>Color faxes - the CFF format</h4></div></div></div><p>There exists an enhancement to the fax standard which allows to transfer
+				documents in color. It's not very widely used, but as some people wanted it for <span class="application">CapiSuite</span>,
+				I added support for receiving these faxes with <span class="application">CapiSuite</span>.</p><p>The CFF format (I don't know if this is an official name for the format) basically
+				consists of concatenated JPEG images. Most programs who can handle JPEG files
+				should be able to open it and display at least the first page. Together with my patch
+				described in <a class="xref" href="ch01.html#require_soft" title="Software">the section called “Software”</a>, the jpeg2ps tool can convert it to
+				the PostScript format so you can open it with any usual viewer.</p><p>Currently, I don't know a nice way to create this format manually. Therefore,
+				<span class="application">CapiSuite</span> currently only supports the reception of these files. If someone knows
+				such a tool or is willing to implement one, please contact me!</p></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s02.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s04.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">A first look on the incoming and idle scripts </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Tutorial: writing an incoming script</td></tr></table></div></body></html>

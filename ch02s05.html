@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Example for an idle script</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2" /><link rel="home" href="index.html" title="CapiSuite 0.5.git" /><link rel="up" href="ch02.html" title="Chapter 2. Users Guide" /><link rel="prev" href="ch02s04.html" title="Tutorial: writing an incoming script" /><link rel="next" href="ch02s06.html" title="Structural overview of the default scripts" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Example for an idle script</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch02s04.html">Prev</a> </td><th width="60%" align="center">Chapter 2. Users Guide</th><td width="20%" align="right"> <a accesskey="n" href="ch02s06.html">Next</a></td></tr></table><hr /></div><div class="sect1" title="Example for an idle script"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idle_examples"></a>Example for an idle script</h2></div></div></div><p>After we've seen how to handle incoming calls, a very short introduction to
+		initiate outgoing calls by using the idle script will follow.</p><p>As written before, the idle script will be called by <span class="application">CapiSuite</span> in regular intervals
+		allowing you to look for stored jobs somewhere and sending them to the destinations.</p><p>The example shown here will look for a file <code class="filename">job-XXXX.sff</code> in
+		the example directory we created in the last section. This file will be faxed to the
+		destination indicated by <code class="literal">XXXX</code>. If you have no valid destination 
+		where you can send test faxes to, how about using <span class="application">CapiSuite</span> as source and destination at 
+		the same time? In this case, replace <code class="literal">XXXX</code> by the number your 
+		incoming script handles. This won't work if your ISDN card can't handle two fax 
+		transfers in parallel (some old AVM B1 cards have this limitation, for example).</p><p>We now need one or more fax files in the SFF format for our tests, so please
+		create some with a name like the one shown above. If you don't know how to do this,
+		please refer to <a class="xref" href="ch02s03.html#create_sff" title="Creating a SFF">the section called “Creating a SFF”</a>.</p><p>If I want to develop a <span class="application">CapiSuite</span> script but am not really sure how to do it, I often
+		start by coding a normal script which I can test without <span class="application">CapiSuite</span>. So let's create a script
+		which searches the files and extracts the destination numbers first. If this works,
+		we can continue by adding the <span class="application">CapiSuite</span> specific calls later.</p><div class="example"><a id="id2512510"></a><p class="title"><b>Example 2.5. idle_example.py</b></p><div class="example-contents"><pre class="programlisting">import os,re<a id="idle_ex1_1"></a><img src="images/callouts/1.png" alt="1" border="0" />
+
+my_path="/path/to/your/capisuite-examples/"
+
+files=os.listdir(my_path)<a id="idle_ex1_2"></a><img src="images/callouts/2.png" alt="2" border="0" />
+files=filter (lambda s: re.match("job-.*\.sff",s),files)<a id="idle_ex1_3"></a><img src="images/callouts/3.png" alt="3" border="0" />
+
+for job in files:<a id="idle_ex1_4"></a><img src="images/callouts/4.png" alt="4" border="0" />
+	destination=job[4:-3]<a id="idle_ex1_5"></a><img src="images/callouts/5.png" alt="5" border="0" /> # Hmmm.. Is this right?
+	print "found",job,"to destination",destination</pre></div></div><br class="example-break" /><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex1_1"><img src="images/callouts/1.png" alt="1" border="0" /></a> </p></td><td valign="top" align="left"><p>We know the <code class="literal">os</code> module already.
+				<code class="literal">re</code> provides functions for searching for regular
+				expressions. If you don't know what regular expressions are, please
+				read for example the Python documentation for the
+				<code class="literal">re</code>-module or some other documentation about them.
+				It's too complicated to explain it here.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex1_2"><img src="images/callouts/2.png" alt="2" border="0" /></a> </p></td><td valign="top" align="left"><p><code class="literal">os.listdir</code> returns the files in a given
+				directory as list.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_3"><img src="images/callouts/3.png" alt="3" border="0" /></a> </p></td><td valign="top" align="left"><p>This line is a little bit more tricky. It filters out all filenames
+				which doesn't follow the rule <span class="emphasis"><em>starting with "job-", then any
+				number of chars, ending with ".sff"</em></span> from the list. This is
+				done by the <code class="literal">filter</code> function. The function expects the name
+				of a function which checks the rule as first parameter and the list to filter
+				(<code class="literal">files</code>) as second one.</p><p>We could now define a new function and use its name here, but the
+				<code class="literal">lambda</code> keyword allows a much more elegant solution: it
+				defines a "nameless function" with the parameter <code class="literal">s</code>. The
+				function body follows directly behind and consists of a call to
+				<code class="literal">re.match</code> which checks if the given string
+				<code class="literal">s</code> matches the expression.
+				</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_4"><img src="images/callouts/4.png" alt="4" border="0" /></a> </p></td><td valign="top" align="left"><p>Iterate over all found filenames.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#incoming_ex1_5"><img src="images/callouts/5.png" alt="5" border="0" /></a> </p></td><td valign="top" align="left"><p>The destination is extracted from the given filename by using string
+				indexes.</p></td></tr></table></div><p>Now, save the script as <code class="filename">idle_example.py</code> in our example dir and run
+		it by calling <span class="command"><strong>python idle_example.py</strong></span>.</p><p>If you have provided SFF files with the right names they should be shown line by line
+		now. But... Obviously something doesn't work right here. The destination includes the
+		"<code class="literal">.</code>". Indeed, I've made a mistake when indexing the string. It should be
+		<code class="literal">destination=job[4:-4]</code> instead of <code class="literal">[4:-3]</code>. So let's change
+		that and test again. It should work now. That's the reason why I prefer to code such scripts
+		outside of <span class="application">CapiSuite</span> first. Debugging is much faster this way...</p><p>As we know now that the basic parts work, we can add the real communication functions.</p><p>Please save this example to <code class="filename">idle_example.py</code> in your example directory, again.</p><div class="example"><a id="id2512745"></a><p class="title"><b>Example 2.6. idle_example.py, version for <span class="application">CapiSuite</span></b></p><div class="example-contents"><pre class="programlisting">import os,re<span class="emphasis"><em>,capisuite</em></span>
+
+my_path="/path/to/your/capisuite-examples/"
+my_number="678"<a id="idle_ex2_1"></a><img src="images/callouts/1.png" alt="1" border="0" />
+my_stationID="+49 123 45678"
+my_headline="example headline"
+
+def idle(capi):<a id="idle_ex2_4"></a><img src="images/callouts/2.png" alt="2" border="0" />
+	files=os.listdir(my_path)
+	files=filter (lambda s: re.match("job-.*\.sff",s),files)
+
+	for job in files:
+		destination=job[4:-4]
+		capisuite.log("sending "+job+" to destination "+destination,1)<a id="idle_ex2_5"></a><img src="images/callouts/3.png" alt="3" border="0" />
+		try:
+			(call,result)=capisuite.call_faxG3(capi,1,my_number,destination,
+			              60,my_stationID,my_headline)<a id="idle_ex2_6"></a><img src="images/callouts/4.png" alt="4" border="0" />
+			if (result!=0):<a id="idle_ex2_7"></a><img src="images/callouts/5.png" alt="5" border="0" />
+				capisuite.log("job "+job+" failed at call setup with reason "
+				              +str(hex(result)),1)
+				os.rename(my_path+job,my_path+"failed-"+job)<a id="idle_ex2_9"></a><img src="images/callouts/6.png" alt="6" border="0" />
+				return<a id="idle_ex2_10"></a><img src="images/callouts/7.png" alt="7" border="0" />
+			capisuite.fax_send(call,my_path+job)<a id="idle_ex2_11"></a><img src="images/callouts/8.png" alt="8" border="0" />
+			(result,resultB3)=capisuite.disconnect(call)<a id="idle_ex2_12"></a><img src="images/callouts/9.png" alt="9" border="0" />
+		except capisuite.CallGoneError:
+			(result,resultB3)=capisuite.disconnect(call)
+
+		if (result in (0,0x3400,0x3480,0x3490,0x349f) and resultB3==0):<a id="idle_ex2_13"></a><img src="images/callouts/10.png" alt="10" border="0" />
+			capisuite.log("job "+job+" was successful",1)
+			os.rename(my_path+job,my_path+"done-"+job)
+			return
+		else:
+			capisuite.log("job "+job+" failed during send with reasons "
+			              +str(hex(result))+","+str(hex(resultB3)),1)
+			os.rename(my_path+job,my_path+"failed-"+job)</pre></div></div><br class="example-break" /><div class="calloutlist"><table border="0" summary="Callout list"><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_1"><img src="images/callouts/1.png" alt="1" border="0" /></a> </p></td><td valign="top" align="left"><p>Some parameters for sending the fax are set here. <code class="literal">my_number</code> is your own number
+				which is used for sending the fax. <code class="literal">my_stationID</code> is the fax station ID, which will 
+				be transmitted to the other fax machine and shown on the sent fax page. Only digits and "+" are allowed.
+				You can also define a short text which will show up in the fax headline in <code class="literal">fax_headline</code>.
+				</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_4"><img src="images/callouts/2.png" alt="2" border="0" /></a> </p></td><td valign="top" align="left"><p>As explained in <a class="xref" href="ch02s02.html#ug_scripts_idle" title="The idle script">the section called “The idle script”</a>, you have to define a function called 
+				<code class="literal">idle</code> which will be executed in regular intervals by <span class="application">CapiSuite</span> then. So all code
+				has been moved to this function.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_5"><img src="images/callouts/3.png" alt="3" border="0" /></a> </p></td><td valign="top" align="left"><p>We can't print messages to stdout as the script will run in the context of a daemon. So <span class="application">CapiSuite</span>
+				provides functions for creating entries in the <span class="application">CapiSuite</span> log file. <code class="function">log</code> expects at
+				least two parameters: the message and a log level. This level corresponds to the log level setting
+				in the global <span class="application">CapiSuite</span> configuration (see <a class="xref" href="ch01s02.html#configcs" title="Configuration of CapiSuite">the section called “Configuration of <span class="application">CapiSuite</span>”</a>). If the level of the message is
+				<span class="emphasis"><em>less or equal</em></span> the level set in the configuration, it is printed to the logs.
+				So you can insert messages for debug purposes which aren't printed to the logs in normal operation
+				by using levels higher than 1.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_6"><img src="images/callouts/4.png" alt="4" border="0" /></a> </p></td><td valign="top" align="left"><p>This function initiates an outgoing call using the fax service. The parameters are:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>reference to the Capi object you got from <span class="application">CapiSuite</span> (parameter to <code class="function">idle</code>).</p></li><li class="listitem"><p>the (number of the) controller to use for outgoing calls. The first controller has always number "1".</p></li><li class="listitem"><p>own number to use for the outgoing call</p></li><li class="listitem"><p>destination number to call</p></li><li class="listitem"><p>maximum time to wait for a successful connection in seconds</p></li><li class="listitem"><p>the fax station ID</p></li><li class="listitem"><p>fax headline</p></li></ul></div><p>The function returns a tuple containing a reference to the created call and an error value.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_7"><img src="images/callouts/5.png" alt="5" border="0" /></a> </p></td><td valign="top" align="left"><p>This block checks if the connection was successful. For a detailled description of possible error values,
+				please see the <a class="xref" href="ch02s07.html" title="CapiSuite command reference">the section called “<span class="application">CapiSuite</span> command reference”</a>. 0 means "everything was ok, call is established".</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_9"><img src="images/callouts/6.png" alt="6" border="0" /></a> </p></td><td valign="top" align="left"><p>If the call wasn't successful, rename the fax file to prevent the script from sending the same file
+				over and over.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_10"><img src="images/callouts/7.png" alt="7" border="0" /></a> </p></td><td valign="top" align="left"><p>Don't forget to exit the <code class="function">idle</code> function if the call couldn't be established!</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_11"><img src="images/callouts/8.png" alt="8" border="0" /></a> </p></td><td valign="top" align="left"><p>Another very simple <span class="application">CapiSuite</span> command: send the given file as fax document.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_12"><img src="images/callouts/9.png" alt="9" border="0" /></a> </p></td><td valign="top" align="left"><p>We previously ignored the reasons <span class="emphasis"><em>why</em></span> a call was disconnected. Now we have to
+				analyze them because we need to know if the file was transferred succesful. Therefore,
+				<code class="function">disconnect</code> returns a tuple containing of the physical and logical error value. Every
+				ISDN connection contains one physical and (at least) one logical connection. One could imagine the physical
+				connection as "the wire" connecting us to our destination, while the logical connection refers to
+				the fax protocol which uses this "wire". You have to look on both values to see if everything was ok.</p></td></tr><tr><td width="5%" valign="top" align="left"><p><a href="#idle_ex2_13"><img src="images/callouts/10.png" alt="10" border="0" /></a> </p></td><td valign="top" align="left"><p>Allowed values for the physical disconnection are 0,0x3400,0x3480, 0x3490 and 0x349f. These all mean "no error
+				occured, call was disconnected normally". The logical value may only be 0 if everything went ok. For further
+				information on error values, please refer to <a class="xref" href="ch02s07.html" title="CapiSuite command reference">the section called “<span class="application">CapiSuite</span> command reference”</a>.</p></td></tr></table></div><p>After you've saved the file and changed the default values to your own configuration, please alter the value of
+		<code class="literal">idle_script</code> in the <span class="application">CapiSuite</span> configuration to point to this script as described in <a class="xref" href="ch01s02.html#configcs" title="Configuration of CapiSuite">the section called “Configuration of <span class="application">CapiSuite</span>”</a>.
+		</p><p>Restart <span class="application">CapiSuite</span> and watch the logs. Some minutes later, the <code class="filename">job-XXX.sff</code> files should've been sent
+		and renamed to either <code class="filename">done-job-XXX.sff</code> or <code class="filename">failed-job-XXX.sff</code>. If the job failed,
+		please consult the error log and the error values explained in
+		<a class="xref" href="ch02s07.html" title="CapiSuite command reference">the section called “<span class="application">CapiSuite</span> command reference”</a> and <a class="xref" href="apb.html" title="Appendix B. CAPI 2.0 Error Codes">Appendix B, <i>CAPI 2.0 Error Codes</i></a>.</p><p>Hopefully, this tutorial helped you in understanding how to code your own scripts. Please continue with changing the
+		examples or the files distributed with <span class="application">CapiSuite</span> (read <a class="xref" href="ch02s06.html" title="Structural overview of the default scripts">the section called “Structural overview of the default scripts”</a> before). You will find a
+		complete reference of the available commands in <a class="xref" href="ch02s07.html" title="CapiSuite command reference">the section called “<span class="application">CapiSuite</span> command reference”</a>.</p><p>If you have any trouble in getting your scripts up and running, please use the <span class="application">CapiSuite</span> mailing lists. And don't forget to have
+		fun. ;-)</p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch02s04.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="ch02.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="ch02s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Tutorial: writing an incoming script </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Structural overview of the default scripts</td></tr></table></div></body></html>
