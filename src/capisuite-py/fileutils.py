@@ -30,12 +30,12 @@ def controlname(path):
     return "%s.txt" % os.path.splitext(path)[0]
 
 
-def _getLock(lockname_=None, forfile=None, blocking=0):
+def _getLock(name, forfile=None, blocking=0):
     if forfile:
-        lockname_ = lockname(forfile)
-    elif not lockname_:
-        raise ValueError, lockname_
-    lockfile = open(lockname_, "w")
+        name = lockname(forfile)
+    elif not name:
+        raise ValueError, "missing lock name"
+    lockfile = open(name, "w")
     try:
         if blocking:
             fcntl.lockf(lockfile, fcntl.LOCK_EX)
@@ -49,8 +49,8 @@ def _getLock(lockname_=None, forfile=None, blocking=0):
             raise
     # currently log is only available if running within capisuite
     if hasattr(core, 'log'):
-        core.log("lock taken %s" % lockname_, 3)
-    return (lockname_, lockfile)
+        core.log("lock taken %s" % name, 3)
+    return (name, lockfile)
 
 
 def _releaseLock((lockname, lockfile)):

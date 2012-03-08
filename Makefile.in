@@ -236,7 +236,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 spooldir = @localstatedir@/spool/capisuite
 pkgsysconfdir = @sysconfdir@/capisuite
-doc_DATA = COPYING NEWS README
+doc_DATA = COPYING NEWS README.md
 EXTRA_DIST = rc.capisuite.in capisuite.cronin cronjob.conf ChangeLog.complete ChangeLog.2003 ChangeLog.2004
 SUBDIRS = src scripts docs
 all: config.h

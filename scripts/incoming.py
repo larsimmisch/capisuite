@@ -102,7 +102,7 @@ def faxIncoming(config, user, call, already_connected):
     'already_connected' ture if we're already connected (that means we must
     switch to fax mode)
     """
-    # todo: use config.getQueue + _mkdir here
+    # todo: use config.getQueueFiles + _mkdir here
     receivedQ = fileutils._mkuserdir(user,
                                      config.get('GLOBAL', "fax_user_dir"),
                                      user, "received")
@@ -240,7 +240,7 @@ def voiceIncoming(config, user, call):
                 if os.access(filename, os.R_OK):
                     os.unlink(filename)
                 call.log("Starting remote inquiry...", 1)
-                remoteInquiry(call, user, config, receivedQ)
+                remoteInquiry(config, user, call, receivedQ)
 
     except core.CallGoneError:
         # catch this here to get the cause info in the mail
@@ -281,15 +281,14 @@ def remoteInquiry(config, user, call, receivedQ):
     'receivedQ' the received queue dir of the user
     """
     try:
-        lock = fileutils._getLock(lockname=os.path.join(receivedQ,
-                                                        'inquiry_lock'),
-                                  blocking=0)
+        lock = fileutils._getLock(
+            os.path.join(receivedQ, 'inquiry_lock'), blocking=0)
     except fileutils.LockTakenError:
         say(config, user, call, "fernabfrage-aktiv.la")
         return
     try:
         # read directory contents
-        messages = capisuite.voice.getQueue(config, user)
+        messages = capisuite.voice.getQueueFiles(config, user)
 
         # read the number of the message heard last at the last inquiry
         lastinquiry = capisuite.voice.getInquiryCounter(config, user)
