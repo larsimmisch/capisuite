@@ -1,6 +1,6 @@
 # -*- mode: python -*-
-#         cs_helpers.py - some helper functions for CapiSuite scripts
-#         -----------------------------------------------------------
+#   helpers.py - some helper functions for CapiSuite scripts
+#   -----------------------------------------------------------
 #    copyright            : (C) 2002 by Gernot Hillier
 #    email                : gernot@hillier.de
 #    version              : $Revision: 1.20 $
@@ -91,7 +91,7 @@ def cff2ps(infile, outfile):
     __call("cff to ps", "jpeg2ps", "-m", infile , "-o", outfile)
 
 def la2wav(infile, outfile):
-    __call('la to wav', "sox", infile, '-w', outfile)
+    __call('la to wav', "sox", "-c", "1", "-r", "8000", infile, outfile)
 
 class ConvertionError(Exception): pass
 
