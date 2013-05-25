@@ -93,13 +93,15 @@ class CSConfigParser(ConfigParser):
         Returns the value for this option or None if it's not found
         """
         if self.has_option(user, option):
-            return self.get(user, option)
+            retval = self.get(user, option)
         elif self.has_option('GLOBAL', option):
-            return self.get('GLOBAL', option)
+            retval = self.get('GLOBAL', option)
         elif fail:
             raise NoOptionError(user, option)
-        else:
-            return default
+        # don't return empty values
+        if retval:
+            return retval
+        return default
 
     def listUsers(self):
         ul = [ u
