@@ -48,18 +48,14 @@ def uniqueName(*args, **kwargs):
     return capisuite.fileutils.uniqueName(*args, **kwargs)[1]
 
 def __sendmail(mail_from, mail_to, msg):
-    import popen2, capisuite.core
-
-    r,w = popen2.popen2("{ /usr/sbin/sendmail -t -f %s } 2>&1" % escape(mail_from))
+    import capisuite.core
+    from subprocess import Popen,PIPE,STDOUT
+    sendmail_p = Popen(['/usr/sbin/sendmail', '-t'], stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     try:
-        w.write(msg.as_string())
+        text = sendmail_p.communicate(msg.as_string())[0]
     except IOError: #Errno 32: Broken Pipe
         capisuite.core.error("Error while calling sendmail. Not installed?\n")
         return 0
-    w.close()
-    #ret = sendmail.wait()
-    text = r.read()
-    r.close()
     if text:
         capisuite.core.error("Error while calling sendmail")#, return code=%i" % ret)
         capisuite.core.error(text)
@@ -67,14 +63,14 @@ def __sendmail(mail_from, mail_to, msg):
     capisuite.core.log("sendmail finished successful",3)
     return 1
 
-def __sendmail(fromaddr, toaddr, msg):
-    import smtplib, capisuite.core
-    smtpserver, port = 'localhost', 25
-    server = smtplib.SMTP(smtpserver, port)
-    server.sendmail(fromaddr, (toaddr), msg.as_string())
-    server.quit()
-    capisuite.core.log("mail sent successfully",3)
-    return 1
+#def __sendmail(fromaddr, toaddr, msg):
+#    import smtplib, capisuite.core
+#    smtpserver, port = 'localhost', 25
+#    server = smtplib.SMTP(smtpserver, port)
+#    server.sendmail(fromaddr, (toaddr), msg.as_string())
+#    server.quit()
+#    capisuite.core.log("mail sent successfully",3)
+#    return 1
 
 
 def __call(msg, cmd, *args):
