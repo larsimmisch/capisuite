@@ -224,18 +224,11 @@
 						</listitem>
 					</varlistentry>
 					<varlistentry>
-						<term>tiff2ps</term>
-						<listitem><para>A small utility to convert TIFF files to the Postscript format. It's needed by
-							the default script to convert faxes to PDF files (SFF->TIFF->PS->PDF :-} ).
+						<term>tiff2pdf</term>
+						<listitem><para>A small utility to losslessly convert TIFF files to the PDF format. It's needed by
+							the default script to convert faxes to PDF files (SFF->TIFF->PDF :-} ).
 							It's often included in a package called <literal>tiff</literal> or
 							<literal>tifftools</literal>. Details on <ulink url="http://www.libtiff.org"/>
-						</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term>ps2pdf</term>
-						<listitem><para>Again a small utility for the SFF->PDF chain - this time for the
-							conversion of Adobe PostScript to Adobe PDF. It's part of Ghostscript, so
-							you most likely have it already. (<ulink url="http://www.gnu.org/software/ghostscript/ghostscript.html"/>)
 						</para></listitem>
 					</varlistentry>
 					<varlistentry>
@@ -1788,7 +1781,7 @@ is not present, current time as returned by localtime() is used.
 				<screen><command>sfftobmp -tif myfile.sff outfile.tiff</command></screen>
 
 				<para>This will give you a TIFF file which you can convert now to nearly
-				any other useful format with the TIFF tools, for example <command>tiff2ps</command>.
+				any other useful format with the TIFF tools, for example <command>tiff2pdf</command>.
 				</para>
 			</sect3>
 			<sect3 id="cff"><title>Color faxes - the CFF format</title>
