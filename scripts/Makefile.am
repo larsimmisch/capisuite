@@ -7,9 +7,14 @@ EXTRA_DIST = helpers.pyin fax.confin answering_machine.confin capisuitefax.in
 
 pkgsysconf_DATA = fax.conf answering_machine.conf
 
-bin_SCRIPTS = capisuitefax
+bin_SCRIPTS = capisuitefax capisuite-checkconfig
 
 SUBDIRS = waves
+
+capisuite-checkconfig: capisuite-checkconfig.in
+	rm -f $@
+	sed 's,@\pkgsysconfdir@,$(pkgsysconfdir),g' $< >$@
+	chmod 755 $@
 
 capisuitefax: capisuitefax.in
 	rm -f $@
