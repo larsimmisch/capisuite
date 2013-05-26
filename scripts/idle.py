@@ -64,7 +64,7 @@ def idle(capi):
             assert controlfile == os.path.abspath(controlfile)
             try:
                 # lock the job so that it isn't deleted while sending
-                lock = _getLock(forfile=controlfile, blocking=0)
+                lock = _getLock('dummy', forfile=controlfile, blocking=0)
             except LockTakenError:
                 # if we didn't get the lock, continue with next job
                 continue
