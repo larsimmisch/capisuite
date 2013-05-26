@@ -248,20 +248,12 @@
 						</listitem>
 					</varlistentry>
 					<varlistentry>
-						<term>tiff2ps</term>
-						<listitem><para>Ein kleines Utility, um TIFF-Dateien ins Postscript-Format zu
+						<term>tiff2pdf</term>
+						<listitem><para>Ein kleines Utility, um TIFF-Dateien verlustfrei ins PDF-Format zu
                             konvertieren. Es wird von den Standard-Skripten benötigt, um Faxe in PDF-Dateien
-							umzuwandeln (SFF->TIFF->PS->PDF :-} ). Es ist oft in einem Paket namens 
+							umzuwandeln (SFF->TIFF->PDF :-} ). Es ist oft in einem Paket namens 
                             <literal>tiff</literal> oder <literal>tifftools</literal> enthalten. 
                             Details unter <ulink url="http://www.libtiff.org"/>
-						</para></listitem>
-					</varlistentry>
-					<varlistentry>
-						<term>ps2pdf</term>
-						<listitem><para>Noch ein kleines Utility für die Kette SFF->PDF - diesmal für
-							die Konvertierung von Adobe PostScript in Adobe PDF. Es ist bei Ghostscript
-                            dabei, sodass Sie es höchst wahrscheinlich bereits haben.
-                            (<ulink url="http://www.gnu.org/software/ghostscript/ghostscript.html"/>)
 						</para></listitem>
 					</varlistentry>
 					<varlistentry>
@@ -1976,7 +1968,7 @@ is not present, current time as returned by localtime() is used.
 				<screen><command>sfftobmp -tif myfile.sff outfile.tiff</command></screen>
 
 				<para>Sie erhalten eine TIFF-Datei, die Sie mit den TIFF-Tools (z.B.
-                <command>tiff2ps</command>) in nahezu jedes andere nützliche Format
+                <command>tiff2pdf</command>) in nahezu jedes andere nützliche Format
 				konvertieren können.
 				</para>
 			</sect3>
