@@ -23,7 +23,7 @@ if sfftobmp_major_version <= 2:
         __call('sff to tif', "sfftobmp", "-tif", infile, outfile)
 else:
     def sff2tif(infile, outfile):
-        __call('sff to tif', "sfftobmp", "-tif", infile, "-o", outfile)
+        __call('sff to tif', "sfftobmp", "-q", "-t4", infile, "-o", outfile)
 
 # Note: readConfig is now imported from capisuite.config
 
@@ -125,13 +125,13 @@ def sendMIMEMail(mail_from, mail_to, mail_subject, mail_type,
             # convert sff -> tif
             sff2tif(attachment, "%s.tif" % basepath)
             # convert tif -> ps -> pdf
-            cmd = "tiff2ps -h11 -H12 -L.5 -w8.5 -a %s | ps2pdf -sPAPERSIZE=a4 - -" % escape("%s.tif" %basepath)
+            cmd = "tiff2pdf %s" % escape("%s.tif" %basepath)
             try:
                 status, content = commands.getstatusoutput(cmd)
             finally:
                 os.unlink("%s.tif" % basepath)
             if status:
-                raise ConvertionError("Error while calling tiff2ps or ps2pdf. "
+                raise ConvertionError("Error while calling tiff2pdf. "
                                       "Not installed?")
             filepart = email.MIMEBase.MIMEBase("application","pdf",
                                                name = "%s.pdf" % basename)
