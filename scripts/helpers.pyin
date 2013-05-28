@@ -50,11 +50,11 @@ def uniqueName(*args, **kwargs):
 def __sendmail(mail_from, mail_to, msg):
     import capisuite.core
     from subprocess import Popen,PIPE,STDOUT
-    sendmail_p = Popen(['/usr/sbin/sendmail', '-t'], stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     try:
+        sendmail_p = Popen(['/usr/sbin/sendmail', '-t'], stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
         text = sendmail_p.communicate(msg.as_string())[0]
-    except IOError: #Errno 32: Broken Pipe
-        capisuite.core.error("Error while calling sendmail. Not installed?\n")
+    except OSError as (errno, errstr): #Errno 32: Broken Pipe
+        capisuite.core.error("Error while calling sendmail. Not installed? (%s)\n" % errstr)
         return 0
     if text:
         capisuite.core.error("Error while calling sendmail")#, return code=%i" % ret)
