@@ -10,3 +10,6 @@ config.py: config.py.in
 	sed -e 's,@pkgsysconfdir@,$(pkgsysconfdir),g' $< >$@
 
 all-local: config.py
+
+clean:
+	rm config.py
