@@ -44,7 +44,7 @@ def idle(capi):
     failedQ = os.path.join(spool, "failed")
 
     if not os.access(doneQ, os.W_OK) or not os.access(failedQ, os.W_OK):
-        core.error("Can't read/write to the necessary spool dirs")
+        core.error("Can't read/write to the necessary spool dirs below %s" % spool)
         return
 
     # search in all user-specified sendq's

@@ -1,0 +1,7 @@
+*.o
+*.pyc
+*.pyo
+*.a
+*.so
+.deps/
+autom4te.cache/

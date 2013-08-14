@@ -1,7 +1,7 @@
 spooldir = @localstatedir@/spool/capisuite
 pkgsysconfdir = @sysconfdir@/capisuite
 
-dist_pkglib_DATA = idle.py incoming.py README
+dist_pkgdata_DATA = idle.py incoming.py README
 pkgpython_PYTHON = helpers.py
 EXTRA_DIST = helpers.pyin fax.confin answering_machine.confin capisuitefax.in
 
