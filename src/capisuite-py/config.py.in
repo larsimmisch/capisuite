@@ -92,6 +92,7 @@ class CSConfigParser(ConfigParser):
     
         Returns the value for this option or None if it's not found
         """
+        retval = None
         if self.has_option(user, option):
             retval = self.get(user, option)
         elif self.has_option('GLOBAL', option):
@@ -99,7 +100,7 @@ class CSConfigParser(ConfigParser):
         elif fail:
             raise NoOptionError(user, option)
         # don't return empty values
-        if retval:
+        if not retval is None:
             return retval
         return default
 

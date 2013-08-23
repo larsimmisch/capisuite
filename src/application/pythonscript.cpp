@@ -99,14 +99,14 @@ PythonScript::run() throw (ApplicationError)
 			if ( !(py_traceback=cStringIO->cgetvalue(catch_stderr)) )
 				throw ApplicationError("unable to get traceback","PythonScript::run()");
 			
-			int length;
+			Py_ssize_t length;
 			char *traceback;
 			if (PyString_AsStringAndSize(py_traceback, &traceback, &length))
 				throw ApplicationError("unable to convert traceback to char*","PythonScript::run()");
 
                         error << prefix() << "A python error occured. See traceback below." << endl;
 			error << prefix(false) << "Python traceback: ";
-			for (int i=0;i<length-1;i++) {
+			for (Py_ssize_t i=0;i<length-1;i++) {
 				error << traceback[i];
 				if (traceback[i]=='\n')
 					error << prefix(false) << "Traceback: ";
