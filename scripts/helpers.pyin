@@ -10,7 +10,7 @@
 #  the Free Software Foundation; either version 2 of the License, or
 #  (at your option) any later version.
 
-import os, commands
+import os, commands, time
 from capisuite.config import *
 from capisuite.voice import sayNumber, getAudio
 
@@ -114,6 +114,7 @@ def sendMIMEMail(mail_from, mail_to, mail_subject, mail_type,
     msg['Subject']=mail_subject
     msg['From']=mail_from
     msg['To']=mail_to
+    msg['Date'] = time.strftime('%a, %d %b %Y %H:%M:%S %z')
 
     msg.preamble = 'This is a Multipart-MIME-message. Please use a capable mailer.\n'
     msg.epilogue = '' # To guarantee the message ends with a newline
@@ -206,6 +207,7 @@ def sendSimpleMail(mail_from, mail_to, mail_subject, text):
     msg['Subject'] = mail_subject
     msg['From'] = mail_from
     msg['To'] = mail_to
+    msg['Date'] = time.strftime('%a, %d %b %Y %H:%M:%S %z')
     return __sendmail(mail_from, mail_to, msg)
 
 
