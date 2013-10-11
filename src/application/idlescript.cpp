@@ -28,6 +28,7 @@ void* idlescript_exec_handler(void* arg)
 	IdleScript *instance=static_cast<IdleScript*>(arg);
 	instance->run();
 	pthread_cleanup_pop(1); // run the cleanup_handler and then deregister it
+	return NULL;
 }
 
 void idlescript_cleanup_handler(void* arg)

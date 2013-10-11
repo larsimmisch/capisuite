@@ -36,6 +36,7 @@ void* capi_exec_handler(void* arg)
 
 	Capi *instance=static_cast<Capi*>(arg);
 	instance->run();
+	return NULL;
 }
 
 Capi::Capi (ostream& debug, unsigned short debug_level, ostream &error, unsigned short DDILength, unsigned short DDIBaseLength, vector<string> DDIStopNumbers, unsigned maxLogicalConnection, unsigned maxBDataBlocks,unsigned maxBDataLen) throw (CapiError, CapiMsgError)

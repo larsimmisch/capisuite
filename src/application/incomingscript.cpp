@@ -31,6 +31,7 @@ void* incomingscript_exec_handler(void* arg)
 	IncomingScript *instance=static_cast<IncomingScript*>(arg);
 	instance->run();
 	pthread_cleanup_pop(1); // run the cleanup_handler and then deregister it
+	return NULL;
 }
 
 void incomingscript_cleanup_handler(void* arg)
