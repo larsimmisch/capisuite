@@ -140,7 +140,7 @@ _python_liblocalmod=`grep '^LOCALMODLIBS=' $python_configdir/Makefile | sed 's/^
 _python_libbasemod=`grep '^BASEMODLIBS=' $python_configdir/Makefile | sed 's/^.*=//'`
 
 pgac_tab="	" # tab character
-python_libspec=`echo X"$_python_libs $_python_libc $_python_libm -lpython$python_version $_python_liblocalmod $_python_libbasemod" | sed -e 's/^X//' -e "s/[[ $pgac_tab]][[ $pgac_tab]]*/ /g"`
+python_libspec=`echo X"-lpython$python_version $_python_liblocalmod $_python_libbasemod $_python_libm $_python_libs $_python_libc" | sed -e 's/^X//' -e "s/[[ $pgac_tab]][[ $pgac_tab]]*/ /g"`
 LIBS="$LIBS $python_libspec"
 LDFLAGS="$LDFLAGS -L$python_configdir $python_linkforshared"
 AC_MSG_RESULT([${python_libspec}])
