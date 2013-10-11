@@ -21,6 +21,7 @@
 #include <string.h>
 #include <errno.h> // for errno
 #include <iconv.h> // for iconv(), iconv_open(), iconv_close()
+#include <cstring>
 #include "capi.h"
 #include "callinterface.h"
 #include "connection.h"

@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
 #include "connection.h"
 #include "applicationinterface.h"
 #include "capi.h"
