@@ -338,7 +338,7 @@ Capi::connect_resp (_cword messageNumber, _cdword plci, _cword reject, _cword B1
 		debug << prefix() << "info: " << info << endl;
 
 	if (info != 0)
-   		throw(CapiMsgError(info,"Error while CONNECT_REQ: "+Capi::describeParamInfo(info),"Capi::connect_resp()"));
+   		throw(CapiMsgError(info,"Error while CONNECT_RESP: "+Capi::describeParamInfo(info),"Capi::connect_resp()"));
 
 }
 
