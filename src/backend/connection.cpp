@@ -94,7 +94,7 @@ Connection::Connection (Capi* capi, _cdword controller, string call_from, bool c
 				CIPvalue=16;
 			break;
 			case FAXG3:
-				CIPvalue=4;
+				CIPvalue=17;
 			break;
 			default:
 				throw CapiExternalError("unsupported service given","Connection::Connection()");
