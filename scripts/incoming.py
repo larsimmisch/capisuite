@@ -188,10 +188,10 @@ def voiceIncoming(config, user, call):
         call.log("call from %s to %s for %s connecting with voice" % \
             (call.from_nr, call.to_nr, user), 1)
         call.connect_voice(delay)
-
-        userdir = config.get('GLOBAL', "voice_user_dir")
         action = _getAction(config, user, "voice_action",
                             ("saveonly", "mailandsave", "none"))
+
+        userdir = config.get('GLOBAL', "voice_user_dir")
         receivedQ = fileutils._mkuserdir(user, userdir, user, "received")
         userannouncement = os.path.join(
             userdir, user,
@@ -289,12 +289,14 @@ def remoteInquiry(config, user, call, receivedQ):
     try:
         # read directory contents
         messages = capisuite.voice.getQueueFiles(config, user)
-
         # read the number of the message heard last at the last inquiry
         lastinquiry = capisuite.voice.getInquiryCounter(config, user)
         # filter out old messages
-        oldmessages = [m for m in messages if m[0] <= lastinquiry]
-        messages    = [m for m in messages if m[0] >  lastinquiry]
+        oldmessages = [m for m in capisuite.voice.getQueueFiles(config, user) if int(m[0]) <= lastinquiry]
+        messages    = [m for m in capisuite.voice.getQueueFiles(config, user) if int(m[0]) >  lastinquiry]
+        #oldmessages = [m for m in messages if m[0] <= lastinquiry]
+        #messages    = [m for m in messages if m[0] >  lastinquiry]
+	call.log("Count of messages = %x" % lastinquiry, 1)
         oldmessages.sort()
         messages.sort()
 
@@ -351,23 +353,27 @@ def cmd_inquiry(config, user, call, oldmessages, messages, lastinquiry):
         i = 0
         while i < len(curr_msgs):
             msgnum, controlfile = curr_msgs[i]
-            descr = config.JobDescription(controlfile)
+	    call.log("controlfile = %s" % controlfile, 1 )
+            userdir = config.get('GLOBAL', "voice_user_dir")
+            controlfilepath = os.path.join(userdir, user, "received", controlfile )
+	    call.log("controlfilepath = %s" % controlfilepath, 1 )
+            filename, descr = capisuite.config.readDescription(controlfilepath)
             # play the announcement
             for f in _getSoundsForAnnounceMessages(i, descr):
                 say(config, user, call, "%s.la" % f)
             # play the recorded file
-            call.audio_send(descr.get('filename'), 1)
+            call.audio_send(filename, 1)
             cmd = ""
             while cmd not in ("1", "4", "5", "6"):
                 say(config, user, call, "erklaerung.la")
                 cmd = call.read_DTMF(0, 1)
             if cmd == "1":
-                cmd_deleteMessage(config, user, call, controlfile)
+                cmd_deleteMessage(config, user, call, controlfilepath)
                 del curr_msgs[i]
             elif cmd == "4":
                 if msgnum > lastinquiry:
                     lastinquiry = msgnum
-                    capisuite.voice.setInquiryCounter(config, user, msgnum)
+                    capisuite.voice.setInquiryCounter(config, user, int(msgnum))
                 i += 1
             elif cmd == "5":
                 i -= 1
@@ -386,7 +392,7 @@ def _getSoundsForAnnounceMessages(msgnum, descr):
     yield 'fuer'
     for f in getNumberFiles(descr.get('call_to')): yield f
     yield 'am'
-    calltime = time.strptime(descr.get('time'))
+    calltime = time.strptime(descr.get('date'))
     for f in getNumberFiles(calltime[2]): yield f
     yield '.'
     for f in getNumberFiles(calltime[1]): yield f
@@ -397,7 +403,7 @@ def _getSoundsForAnnounceMessages(msgnum, descr):
     for f in getNumberFiles(calltime[4]): yield f
 
 def cmd_deleteMessage(config, user, call, controlfile):
-    capisuite.fax.abortJob(controlfile)
+    capisuite.voice.abortJob(controlfile)
     say(config, user, call, "nachricht-geloescht.la")
 
 
