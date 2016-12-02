@@ -90,6 +90,7 @@ python_linkforshared=`${PYTHON} -c "import distutils.sysconfig; print distutils.
 if test "$python_prefix" != "$python_execprefix"; then
   python_includespec="-I${python_execprefix}/include/python${python_version} $python_includespec"
 fi
+python_makefile=`${PYTHON} -c "import distutils.sysconfig; print distutils.sysconfig.get_makefile_filename()"`
 
 AC_SUBST(python_version)[]dnl
 AC_SUBST(python_prefix)[]dnl
@@ -128,16 +129,16 @@ AC_DEFUN([PGAC_CHECK_PYTHON_EMBED_SETUP],
 [AC_REQUIRE([PGAC_CHECK_PYTHON_DIRS])
 AC_MSG_CHECKING([how to link an embedded Python application])
 
-if test ! -f "$python_configdir/Makefile"; then
+if test ! -f "$python_makefile"; then
   AC_MSG_RESULT(no)
   AC_MSG_ERROR([Python Makefile not found])
 fi
 
-_python_libs=`grep '^LIBS=' $python_configdir/Makefile | sed 's/^.*=//'`
-_python_libc=`grep '^LIBC=' $python_configdir/Makefile | sed 's/^.*=//'`
-_python_libm=`grep '^LIBM=' $python_configdir/Makefile | sed 's/^.*=//'`
-_python_liblocalmod=`grep '^LOCALMODLIBS=' $python_configdir/Makefile | sed 's/^.*=//'`
-_python_libbasemod=`grep '^BASEMODLIBS=' $python_configdir/Makefile | sed 's/^.*=//'`
+_python_libs=`grep '^LIBS=' $python_makefile | sed 's/^.*=//'`
+_python_libc=`grep '^LIBC=' $python_makefile | sed 's/^.*=//'`
+_python_libm=`grep '^LIBM=' $python_makefile | sed 's/^.*=//'`
+_python_liblocalmod=`grep '^LOCALMODLIBS=' $python_makefile | sed 's/^.*=//'`
+_python_libbasemod=`grep '^BASEMODLIBS=' $python_makefile | sed 's/^.*=//'`
 
 pgac_tab="	" # tab character
 python_libspec=`echo X"-lpython$python_version $_python_liblocalmod $_python_libbasemod $_python_libm $_python_libs $_python_libc" | sed -e 's/^X//' -e "s/[[ $pgac_tab]][[ $pgac_tab]]*/ /g"`
