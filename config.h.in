@@ -1,4 +1,4 @@
-/* config.h.in.  Generated from configure.in by autoheader.  */
+/* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* we have a CAPI_LIBRARY_V2 implementation */
 #undef HAVE_CAPI_LIBRARY_V2

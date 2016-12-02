@@ -1,8 +1,9 @@
-AC_INIT(src/main.cpp)
+AC_INIT
+AC_CONFIG_SRCDIR([src/main.cpp])
 AM_INIT_AUTOMAKE(capisuite,0.5.git)
 AM_CONFIG_HEADER(config.h)
 
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -24,8 +25,9 @@ CS_SET_DOCDIR
 
 AC_CHECK_LIB(capi20,capi20_register,,AC_MSG_ERROR(libcapi20 not found))
 AC_CHECK_LIB(pthread,pthread_create,,AC_MSG_ERROR(libpthread not found))
-AM_PATH_PYTHON(2.2)
+AM_PATH_PYTHON([2.7])
 PGAC_CHECK_PYTHON_EMBED_SETUP
 CPPFLAGS='-DLOCALSTATEDIR=\"$(localstatedir)\" -DPKGDATADIR=\"$(pkgdatadir)\" -DPKGSYSCONFDIR=\"$(sysconfdir)/capisuite\" -DPKGLIBDIR=\"$(pkglibdir)\" $(python_includespec)'
 
-AC_OUTPUT(Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile src/capisuite-py/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile)
+AC_CONFIG_FILES([Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile src/capisuite-py/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile])
+AC_OUTPUT
