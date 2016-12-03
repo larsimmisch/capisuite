@@ -29,5 +29,5 @@ AM_PATH_PYTHON([2.7])
 PGAC_CHECK_PYTHON_EMBED_SETUP
 CPPFLAGS='-DLOCALSTATEDIR=\"$(localstatedir)\" -DPKGDATADIR=\"$(pkgdatadir)\" -DPKGSYSCONFDIR=\"$(sysconfdir)/capisuite\" -DPKGLIBDIR=\"$(pkglibdir)\" $(python_includespec)'
 
-AC_CONFIG_FILES([Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile src/capisuite-py/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile src/capisuite-py/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile scripts/capisuite.service])
 AC_OUTPUT

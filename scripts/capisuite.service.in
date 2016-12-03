@@ -1,0 +1,18 @@
+[Unit]
+Description=capi suite (answering machine)
+
+# In real life, this unit needs to be started after the capi implementation has started, but this is wildly different
+# between installations.
+# In my case, it is:
+# After=network.target mISDNcapid.service
+# See https://gist.github.com/larsimmisch/62bb9affe6032eeb7a687f6870c10416 for an example of the mISDNcapid service definition
+
+After=network.target 
+
+[Service]
+ExecStart=@sbindir@/capisuite
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

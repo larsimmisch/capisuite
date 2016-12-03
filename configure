@@ -5555,7 +5555,7 @@ $as_echo "${python_libspec}" >&6; }
 
 CPPFLAGS='-DLOCALSTATEDIR=\"$(localstatedir)\" -DPKGDATADIR=\"$(pkgdatadir)\" -DPKGSYSCONFDIR=\"$(sysconfdir)/capisuite\" -DPKGLIBDIR=\"$(pkglibdir)\" $(python_includespec)'
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile src/capisuite-py/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/backend/Makefile src/modules/Makefile src/application/Makefile src/capisuite-py/Makefile scripts/Makefile scripts/waves/Makefile docs/Makefile scripts/capisuite.service"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6296,6 +6296,7 @@ do
     "scripts/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
     "scripts/waves/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/waves/Makefile" ;;
     "docs/Makefile") CONFIG_FILES="$CONFIG_FILES docs/Makefile" ;;
+    "scripts/capisuite.service") CONFIG_FILES="$CONFIG_FILES scripts/capisuite.service" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
